@@ -45,6 +45,9 @@ public class CommandLineParser implements Runnable{
             }
 
             String[] samples = FileReader.getSamples();
+            //TODO: NA's meegeven?
+            //TODO: aantal genen rapporteren
+
             SummaryGenerator.summaryGenerator(samples);
 
         }
@@ -59,16 +62,26 @@ public class CommandLineParser implements Runnable{
     static class Filter implements Runnable {
 
         // Filter options:
-        @Option(names = {"-file", "-f"},
+        @Option(names = {"--file", "-f"},
                 description = "Path to file containing the data",
                 arity = "1")
         Path filePath;
 
-        @Option(names = "-pos", description = "Positional argument to filter data, choose from: Chr (chromosome), Gene, fpos (starting position), tpos (end position)")
+        @Option(names = "-pos", description = "Positional argument to filter data, choose from: Chr (chromosome), Gene")
         String pos;
 
-        @Option(names = {"-sample", "-s"}, description = "Name(s) of the sample(s) to filter on")
+        @Option(names = {"--sample", "-s"}, description = "Name(s) of the sample(s) to filter on")
         String[] samples;
+
+//        @Option(names = {"--hyper"}, description = "")
+//        float cutoff;
+
+//        @Option(names = {"--hypo"}, description = "")
+//        float cutoff;
+
+        //TODO: cut-off toevoegen
+        //--hyper alleen b-waarden > cutoff
+        //--hypo alleen b-waarden < cutoff
 
         @Override
         public void run() {
@@ -80,6 +93,7 @@ public class CommandLineParser implements Runnable{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
         }
     }
 
@@ -90,7 +104,7 @@ public class CommandLineParser implements Runnable{
 
     static class Compare implements Runnable {
 
-        @Option(names = {"-file", "-f"},
+        @Option(names = {"--file", "-f"},
                 description = "Path to file containing the data",
                 arity = "1")
         Path filePath;
@@ -100,6 +114,8 @@ public class CommandLineParser implements Runnable{
 
         @Option(names = {"-sample", "-s"}, description = "Name(s) of the sample(s) to compare")
         String[] samples;
+
+        //TODO: cut-off toevoegen
 
         @Override
         public void run() {
