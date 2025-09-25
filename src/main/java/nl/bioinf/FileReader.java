@@ -29,7 +29,6 @@ public class FileReader {
                 String[] lineSplit = line.split(",");
                 ArrayList<Double> bValues = getBValues(lineSplit);
                 methylationData.addData(lineSplit[0], lineSplit[1], bValues);
-                System.out.println("line = " + Arrays.toString(line.split(",")));
             }
 
         } catch (NoSuchFileException ex) {
@@ -58,7 +57,6 @@ public class FileReader {
     private static ArrayList<Double> getBValues(String[] lineSplit){
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = 6; i < lineSplit.length; i++) {
-            System.out.println("i = " + lineSplit[i]);
             betaValues.add(Double.parseDouble(lineSplit[i]));
         }
 
