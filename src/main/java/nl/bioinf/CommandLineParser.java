@@ -39,7 +39,6 @@ class Summary implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Generating Summary file...");
 
         try {
             FileReader.readCSV(filePath);
@@ -47,11 +46,8 @@ class Summary implements Runnable {
             throw new RuntimeException(e);
         }
 
-        String[] samples = FileReader.getSamples();
-        //TODO: NA's meegeven?
-        //TODO: aantal genen rapporteren
-
-        SummaryGenerator.summaryGenerator(samples);
+        MethylationArray data = FileReader.getData();
+        SummaryGenerator.summaryGenerator(data);
 
     }
 }
@@ -70,9 +66,17 @@ class Filter implements Runnable {
             arity = "1")
     Path filePath;
 
-    @Option(names = "-pos",
-            description = "Positional argument to filter data, choose from: Chr (chromosome), Gene")
-    String pos;
+//    @Option(names = "-pos",
+//            description = "Positional argument to filter data, choose from: Chr (chromosome), Gene")
+//    String pos;
+
+    @ArgGroup(exclusive = true, multiplicity = "1")
+    Exclusive exclusive;
+
+    static class Exclusive {
+        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") int[] chr;
+        @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
+    }
 
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on")
@@ -89,14 +93,15 @@ class Filter implements Runnable {
     //--hypo alleen b-waarden < cutoff
     @Override
     public void run() {
-        System.out.println("Filtering sample(s) " + Arrays.toString(samples) + " on " + pos);
-        DataFilter.filterPos(pos);
 
         try {
             FileReader.readCSV(filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        MethylationArray data = FileReader.getData();
+        DataFilter.filterSamples(data, samples);
+        DataFilter.filterPos(data, exclusive.chr, exclusive.genes);
     }
 }
 

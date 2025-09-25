@@ -11,20 +11,24 @@ public class FileReader {
 
     static List<String> data = new ArrayList<>(); // List because its resizable
     static String headerLine;
-
+    static MethylationArray methylationData;
     public static void readCSV(Path filePath) throws IOException {
 
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
             headerLine =  br.readLine();
             String line;
-
+            methylationData = new MethylationArray();
             if (headerLine == null) {
                 System.err.println("File is empty"); //Error handling: Empty file
             }
 
+            methylationData.setSamples(getSamples(headerLine));
+
             while ((line = br.readLine()) != null) {
                 data.add(line);
-                System.out.println("line = " + Arrays.toString(line.split(",")));
+                String[] lineSplit = line.split(",");
+                ArrayList<Double> bValues = getBValues(lineSplit);
+                methylationData.addData(lineSplit[0], lineSplit[1], bValues);
             }
 
         } catch (NoSuchFileException ex) {
@@ -34,25 +38,29 @@ public class FileReader {
         } // catch for unreadable file?
     }
 
-    public static String[] getSamples() {
+    private static ArrayList<String> getSamples(String header) {
 
-        // get samples from csv, assuming standard input, where samples start at fifth column
-        String[] headerSplit = headerLine.split(",");
-        String[] samples = new String[(headerSplit.length)-5];
-
-        for (int i = 5; i < headerSplit.length; i++) {
-
-            samples[i-5] = headerSplit[i];
+        ArrayList<String> samples = new ArrayList<>();
+        String[] headerSplit = header.split(",");
+        for (int i = 6; i < headerSplit.length; i++) {
+            samples.add(headerSplit[i]);
         }
-
 
         return samples;
 
     }
 
-    public static float[] getBValues(){
+    public static MethylationArray getData() {
+        return methylationData;
+    }
+
+    private static ArrayList<Double> getBValues(String[] lineSplit){
+        ArrayList<Double> betaValues = new ArrayList<>();
+        for (int i = 6; i < lineSplit.length; i++) {
+            betaValues.add(Double.parseDouble(lineSplit[i]));
+        }
 
 
-        return null;
+        return betaValues;
     }
 }
