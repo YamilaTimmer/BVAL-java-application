@@ -44,14 +44,14 @@ class Summary implements Runnable {
         try {
             FileReader.readCSV(filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error: Could not read file: '" + filePath + "'. ");
         }
 
-        String[] samples = FileReader.getSamples();
-        //TODO: NA's meegeven?
-        //TODO: aantal genen rapporteren
-
-        SummaryGenerator.summaryGenerator(samples);
+//        String[] samples = FileReader.getSamples();
+//        //TODO: NA's meegeven?
+//        //TODO: aantal genen rapporteren
+//
+//        SummaryGenerator.summaryGenerator(samples);
 
     }
 }
@@ -67,7 +67,8 @@ class Filter implements Runnable {
     // Filter options:
     @Option(names = {"-f", "--file"},
             description = "Path to file containing the data",
-            arity = "1")
+            arity = "1",
+            required = true)
     Path filePath;
 
     @Option(names = "-pos",
@@ -76,17 +77,21 @@ class Filter implements Runnable {
 
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on")
+            // Need to be specified as --sample [sample] --sample [sample], etc
     String[] samples;
 
-//        @Option(names = {"--hyper"}, description = "")
-//        float cutoff;
+    static class Exclusive {
+        @Option(names = "-hypo",
+                description = "Only filter on beta-values below the cutoff, allows for finding hypomethylated regions",
+                required = true)
+        float hypoCutoff;
 
-//        @Option(names = {"--hypo"}, description = "")
-//        float cutoff;
+        @Option(names = "-hyper",
+                description = "Only filter on beta-values above the cutoff, allows for finding hypermethylated regions",
+                required = true)
+        float hyperCutoff;
+    }
 
-    //TODO: cut-off toevoegen
-    //--hyper alleen b-waarden > cutoff
-    //--hypo alleen b-waarden < cutoff
     @Override
     public void run() {
         System.out.println("Filtering sample(s) " + Arrays.toString(samples) + " on " + pos);
@@ -108,7 +113,8 @@ class Filter implements Runnable {
 class Compare implements Runnable {
     @Option(names = {"-f", "--file"},
             description = "Path to file containing the data",
-            arity = "1")
+            arity = "1",
+            required = true)
     Path filePath;
 
     @Option(names = "-pos", description = "Positional argument to filter data, choose from: Chr (chromosome), Gene, fpos (starting position), tpos (end position)")
@@ -117,7 +123,14 @@ class Compare implements Runnable {
     @Option(names = {"-s", "--sample"}, description = "Name(s) of the sample(s) to compare")
     String[] samples;
 
-    //TODO: cut-off toevoegen
+    @ArgGroup(exclusive = true, multiplicity = "1")
+    Exclusive exclusive;
+
+    static class Exclusive {
+        @Option(names = "-hypo", required = true) double hypoCutoff;
+        @Option(names = "-hyper", required = true) double hyperCutoff;
+    }
+
     @Override
     public void run() {
         System.out.println("Comparing sample(s) " + Arrays.toString(samples) + "on " + pos);
