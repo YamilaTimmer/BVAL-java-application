@@ -47,11 +47,11 @@ class Summary implements Runnable {
             throw new RuntimeException(e);
         }
 
-        String[] samples = FileReader.getSamples();
+        MethylationArray data = FileReader.getData();
         //TODO: NA's meegeven?
         //TODO: aantal genen rapporteren
 
-        SummaryGenerator.summaryGenerator(samples);
+        SummaryGenerator.summaryGenerator(data.getSamples());
 
     }
 }
