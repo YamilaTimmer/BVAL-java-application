@@ -46,10 +46,8 @@ class Summary implements Runnable {
             System.err.println("Error: Could not read file: '" + filePath + "'. ");
         }
 
-
         MethylationArray data = FileReader.getData();
         SummaryGenerator.summaryGenerator(data);
-
 
     }
 }
@@ -69,14 +67,10 @@ class Filter implements Runnable {
             required = true)
     Path filePath;
 
-//    @Option(names = "-pos",
-//            description = "Positional argument to filter data, choose from: Chr (chromosome), Gene")
-//    String pos;
-
     @ArgGroup(exclusive = true, multiplicity = "1")
-    Exclusive exclusive;
+    PosArguments posArguments;
 
-    static class Exclusive {
+    static class PosArguments {
         @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") int[] chr;
         @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
     }
@@ -86,17 +80,20 @@ class Filter implements Runnable {
             // Need to be specified as --sample [sample] --sample [sample], etc
     String[] samples;
 
-    static class Exclusive {
-        @Option(names = "-hypo",
-                description = "Only filter on beta-values below the cutoff, allows for finding hypomethylated regions",
-                required = true)
-        float hypoCutoff;
-
-        @Option(names = "-hyper",
-                description = "Only filter on beta-values above the cutoff, allows for finding hypermethylated regions",
-                required = true)
-        float hyperCutoff;
-    }
+//    @ArgGroup(exclusive = true, multiplicity = "1")
+//    CutOffArguments cutOffArguments;
+//
+//    static class CutOffArguments {
+//        @Option(names = "-hypo",
+//                description = "Only filter on beta-values below the cutoff, allows for finding hypomethylated regions",
+//                required = false)
+//        float hypoCutoff;
+//
+//        @Option(names = "-hyper",
+//                description = "Only filter on beta-values above the cutoff, allows for finding hypermethylated regions",
+//                required = false)
+//        float hyperCutoff;
+//    }
 
     @Override
     public void run() {
@@ -108,7 +105,7 @@ class Filter implements Runnable {
         }
         MethylationArray data = FileReader.getData();
         DataFilter.filterSamples(data, samples);
-        DataFilter.filterPos(data, exclusive.chr, exclusive.genes);
+        DataFilter.filterPos(data, posArguments.chr, posArguments.genes);
     }
 }
 
@@ -124,23 +121,28 @@ class Compare implements Runnable {
             required = true)
     Path filePath;
 
-    @Option(names = "-pos", description = "Positional argument to filter data, choose from: Chr (chromosome), Gene, fpos (starting position), tpos (end position)")
-    String pos;
-
     @Option(names = {"-s", "--sample"}, description = "Name(s) of the sample(s) to compare")
     String[] samples;
 
     @ArgGroup(exclusive = true, multiplicity = "1")
-    Exclusive exclusive;
+    Filter.PosArguments posArguments;
 
-    static class Exclusive {
-        @Option(names = "-hypo", required = true) double hypoCutoff;
-        @Option(names = "-hyper", required = true) double hyperCutoff;
+    static class PosArguments {
+        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") int[] chr;
+        @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
     }
+
+//    @ArgGroup(exclusive = true, multiplicity = "1")
+//    CutOffArguments cutOffArguments;
+//
+//    static class CutOffArguments {
+//        @Option(names = "-hypo", required = false) double hypoCutoff;
+//        @Option(names = "-hyper", required = false) double hyperCutoff;
+//    }
 
     @Override
     public void run() {
-        System.out.println("Comparing sample(s) " + Arrays.toString(samples) + "on " + pos);
+        //To be implemented
     }
 
 }
