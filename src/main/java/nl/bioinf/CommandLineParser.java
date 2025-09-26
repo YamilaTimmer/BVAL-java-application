@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import static nl.bioinf.DataFilter.filterData;
+
 // TODO: replace reused options like file with mixins
 // TODO: add colors for --help usage
 
@@ -71,7 +73,7 @@ class Filter implements Runnable {
     PosArguments posArguments;
 
     static class PosArguments {
-        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") int[] chr;
+        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") String[] chr;
         @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
     }
 
@@ -103,9 +105,9 @@ class Filter implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        MethylationArray data = FileReader.getData();
-        DataFilter.filterSamples(data, samples);
-        DataFilter.filterPos(data, posArguments.chr, posArguments.genes);
+
+        //MethylationArray data = FileReader.getData();
+        filterData(samples, posArguments.chr, posArguments.genes);
     }
 }
 

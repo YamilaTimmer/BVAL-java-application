@@ -28,7 +28,7 @@ public class FileReader {
                 data.add(line);
                 String[] lineSplit = line.split(",");
                 ArrayList<Double> bValues = getBValues(lineSplit);
-                methylationData.addData(lineSplit[0], lineSplit[1], bValues);
+                methylationData.addData(lineSplit[2], lineSplit[1], bValues);
             }
 
         } catch (NoSuchFileException ex) {

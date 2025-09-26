@@ -16,19 +16,19 @@ public class MethylationArray {
 
 
 
-    public void addData(String probe, String gene, ArrayList<Double> betaValues) throws IllegalArgumentException {
+    public void addData(String chromosome, String gene, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
             throw new IllegalArgumentException(("Number of betavalues does not match number of samples."));
         }
-        data.add(new MethylationData(probe, gene, betaValues));
+        data.add(new MethylationData(chromosome, gene, betaValues));
     }
 
     public ArrayList<MethylationData> getData() {
-        return new ArrayList<>(data);
+        return data;
     }
 
     public ArrayList<String> getSamples() {
-        return new ArrayList<String>(samples);
+        return samples;
     }
 
     @Override
@@ -40,4 +40,4 @@ public class MethylationArray {
     }
 }
 
-record MethylationData(String probe, String gene, ArrayList<Double> betaValues) {}
+record MethylationData(String chromosome, String gene, ArrayList<Double> betaValues) {}

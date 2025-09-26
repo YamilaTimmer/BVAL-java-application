@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class SummaryGenerator {
 
     public static void summaryGenerator(MethylationArray methylationData){
-        System.out.println("Generating Summary file...");
+        System.out.println("Generating summary...");
+        System.out.println("---------------------");
 
         // Get methylationdata/sampledata
         ArrayList<String> samples = methylationData.getSamples();
         ArrayList<MethylationData> dataRows = methylationData.getData();
 
-        System.out.println(dataRows);
         double betaVal = 0.0;
 
         for (MethylationData row : dataRows) {
@@ -22,7 +22,6 @@ public class SummaryGenerator {
 
             }
         }
-
 
         betaVal = betaVal / (dataRows.size() * samples.size());
 
