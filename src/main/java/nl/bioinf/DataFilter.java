@@ -9,6 +9,7 @@ import static nl.bioinf.FileReader.methylationData;
 public class DataFilter {
 
     static void filterSamples(String[] samplesFilter) {
+        //Retrieve data
         ArrayList<String> samples = methylationData.getSamples();
         ArrayList<MethylationData> dataRows = methylationData.getData();
 
@@ -32,22 +33,24 @@ public class DataFilter {
             }
         }
 
+        // Retrieve old data and initiate new arraylist
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
             ArrayList<Double> filteredBetaValues = new ArrayList<>();
 
-
-            //Keep the values that correspond to the filtered samples
+            // Keep the values that correspond to the filtered samples
             for (int index : columnsToKeep) {
                 filteredBetaValues.add(oldBetaValues.get(index));
             }
 
-            oldBetaValues.clear(); //Remove items from list
-            oldBetaValues.addAll(filteredBetaValues); //Replace with filtered values
+            oldBetaValues.clear(); // Remove items from list
+            oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
             }
 
         System.out.println("Succesfully filtered on sample(s): " + Arrays.toString(samplesFilter));
         System.out.println("");
+
+        // Replace samples with the remaining samples
         samples.clear();
         samples.addAll(filteredSamples);
     }
@@ -62,6 +65,7 @@ public class DataFilter {
             // Use iterator for removing rows from MethylationData, if user passed gene filter argument
             Iterator<MethylationData> iter = dataRows.iterator();
 
+            // As long as there is a next row
             while (iter.hasNext()) {
                 MethylationData row = iter.next();
 
@@ -72,8 +76,6 @@ public class DataFilter {
                 }
             }
             System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
-
-
 
     }
 

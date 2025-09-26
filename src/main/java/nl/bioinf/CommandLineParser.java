@@ -77,28 +77,13 @@ class Filter implements Runnable {
     }
 
     @Option(names = {"-s", "--sample"},
-            description = "Name(s) of the sample(s) to filter on")
-            // Need to be specified as --sample [sample] --sample [sample], etc
+            description = "Name(s) of the sample(s) to filter on",
+            arity = "0..*")
     String[] samples;
 
     @Option(names = {"-c", "--cutoff"},
             description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
     float cutoff;
-
-//    @ArgGroup(exclusive = true, multiplicity = "0..1")
-//    CutOffArguments cutOffArguments;
-//
-//    static class CutOffArguments {
-//        @Option(names = "-hypo",
-//                description = "Only filter on beta-values below the cutoff, allows for finding hypomethylated regions",
-//                required = false)
-//        float hypoCutoff;
-//
-//        @Option(names = "-hyper",
-//                description = "Only filter on beta-values above the cutoff, allows for finding hypermethylated regions",
-//                required = false)
-//        float hyperCutoff;
-//    }
 
     @Override
     public void run() {
@@ -154,24 +139,17 @@ class Compare implements Runnable {
             required = true)
     Path filePath;
 
-    @Option(names = {"-s", "--sample"}, description = "Name(s) of the sample(s) to compare")
+    @Option(names = {"-s", "--sample"},
+            description = "Name(s) of the sample(s) to compare",
+            arity = "0..*")
     String[] samples;
 
     @ArgGroup(exclusive = true, multiplicity = "1")
     Filter.PosArguments posArguments;
 
-    static class PosArguments {
-        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") int[] chr;
-        @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
-    }
-
-//    @ArgGroup(exclusive = true, multiplicity = "1")
-//    CutOffArguments cutOffArguments;
-//
-//    static class CutOffArguments {
-//        @Option(names = "-hypo", required = false) double hypoCutoff;
-//        @Option(names = "-hyper", required = false) double hyperCutoff;
-//    }
+    @Option(names = {"-c", "--cutoff"},
+            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
+    float cutoff;
 
     @Override
     public void run() {
