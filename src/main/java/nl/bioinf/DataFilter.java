@@ -99,4 +99,25 @@ public class DataFilter {
         System.out.println("Succesfully filtered on chromosome(s) : " + Arrays.toString(chromosomes));
 
     }
+    static void filterByCutOff(float cutoff){
+
+        ArrayList<MethylationData> dataRows = methylationData.getData();
+
+        // Retrieve rows and make new rows for filtered values
+        for (MethylationData row : dataRows) {
+            ArrayList<Double> oldBetaValues = row.betaValues();
+            ArrayList<Double> filteredBetaValues = new ArrayList<>();
+
+            // If betavalue >= cutoff, add to arraylist of filtered values
+            for(Double betavalue : oldBetaValues){
+                if (betavalue >= cutoff){
+                    filteredBetaValues.add(betavalue);
+                }
+            }
+
+            // Initiate new list of beta values, with only those that are >= to cutoff
+            oldBetaValues.clear(); //Remove items from list
+            oldBetaValues.addAll(filteredBetaValues); //Replace with filtered values
+        }
+    }
 }

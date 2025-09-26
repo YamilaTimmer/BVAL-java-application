@@ -81,7 +81,11 @@ class Filter implements Runnable {
             // Need to be specified as --sample [sample] --sample [sample], etc
     String[] samples;
 
-//    @ArgGroup(exclusive = true, multiplicity = "1")
+    @Option(names = {"-c", "--cutoff"},
+            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
+    float cutoff;
+
+//    @ArgGroup(exclusive = true, multiplicity = "0..1")
 //    CutOffArguments cutOffArguments;
 //
 //    static class CutOffArguments {
@@ -127,6 +131,11 @@ class Filter implements Runnable {
             System.out.println("Use -chr [chromosome] to filter on chromosome(s)");
             System.out.println("Use -gene [gene] to filter on gene(s)");
         }
+
+        if (cutoff != 0.0){
+            DataFilter.filterByCutOff(cutoff);
+        }
+
         System.out.println("");
         System.out.println("Data after filtering: " + methylationData);
 
