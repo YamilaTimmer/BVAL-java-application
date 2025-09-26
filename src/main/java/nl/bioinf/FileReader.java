@@ -57,6 +57,10 @@ public class FileReader {
     private static ArrayList<Double> getBValues(String[] lineSplit){
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = 6; i < lineSplit.length; i++) {
+            if (lineSplit[i].toLowerCase().equals("na")) {
+                betaValues.add((double) -1); continue;
+            }
+
             betaValues.add(Double.parseDouble(lineSplit[i]));
         }
 
