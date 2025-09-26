@@ -8,23 +8,6 @@ import static nl.bioinf.FileReader.methylationData;
 
 public class DataFilter {
 
-    static void filterData(String[] samples, String[] chr, String[] genes){
-        System.out.println("");
-        System.out.println("Data before filtering: " + methylationData);
-        System.out.println("");
-
-        if (samples != null){
-            filterSamples(samples);
-        }
-       if (chr != null){
-           filterByChr(chr);
-       }
-       if (genes != null) {
-           filterByGene(genes);
-       }
-        System.out.println("");
-        System.out.println("Data after filtering: " + methylationData);
-    }
     static void filterSamples(String[] samplesFilter) {
         ArrayList<String> samples = methylationData.getSamples();
         ArrayList<MethylationData> dataRows = methylationData.getData();
@@ -88,7 +71,7 @@ public class DataFilter {
 
                 }
             }
-            System.out.println("Succesfully filtered on : " + Arrays.toString(genes));
+            System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
 
 
 
@@ -113,7 +96,7 @@ public class DataFilter {
             }
         }
 
-        System.out.println("Succesfully filtered on : " + Arrays.toString(chromosomes));
+        System.out.println("Succesfully filtered on chromosome(s) : " + Arrays.toString(chromosomes));
 
     }
 }

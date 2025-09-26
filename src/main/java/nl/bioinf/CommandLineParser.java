@@ -3,9 +3,8 @@ import picocli.CommandLine.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 
-import static nl.bioinf.DataFilter.filterData;
+import static nl.bioinf.FileReader.methylationData;
 
 // TODO: replace reused options like file with mixins
 // TODO: add colors for --help usage
@@ -69,7 +68,7 @@ class Filter implements Runnable {
             required = true)
     Path filePath;
 
-    @ArgGroup(exclusive = true, multiplicity = "1")
+    @ArgGroup(exclusive = true, multiplicity = "0..1")
     PosArguments posArguments;
 
     static class PosArguments {
@@ -106,8 +105,31 @@ class Filter implements Runnable {
             throw new RuntimeException(e);
         }
 
-        //MethylationArray data = FileReader.getData();
-        filterData(samples, posArguments.chr, posArguments.genes);
+        System.out.println("");
+        System.out.println("Data before filtering: " + methylationData);
+        System.out.println("");
+
+        if (samples != null) {
+            DataFilter.filterSamples(samples);
+        }
+
+        // Check if posArguments is not null, because user does not have to give
+        // these arguments (otherwise nullpointerexception)
+        if (posArguments != null) {
+            if (posArguments.chr != null) {
+                DataFilter.filterByChr(posArguments.chr);
+            } else if (posArguments.genes != null) {
+                DataFilter.filterByGene(posArguments.genes);
+            }
+
+        }
+        else{
+            System.out.println("Use -chr [chromosome] to filter on chromosome(s)");
+            System.out.println("Use -gene [gene] to filter on gene(s)");
+        }
+        System.out.println("");
+        System.out.println("Data after filtering: " + methylationData);
+
     }
 }
 
