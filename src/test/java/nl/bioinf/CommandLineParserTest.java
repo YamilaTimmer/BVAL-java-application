@@ -1,41 +1,109 @@
 package nl.bioinf;
 
+import jdk.jfr.Description;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommandLineParserTest {
+
+    final PrintStream originalOut = System.out;
+    final PrintStream originalErr = System.err;
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    final ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+    //@Before   // JUnit 4
+    @BeforeEach // JUnit 5
+    public void setUpStreams() {
+        out.reset();
+        err.reset();
+        System.setOut(new PrintStream(out));
+        System.setErr(new PrintStream(err));
+
+    }
+
+    @AfterEach // JUnit 5
+    public void restoreStreams() {
+        System.setOut(originalOut);
+        System.setErr(originalErr);
+    }
+
+
     @Test
-    @DisplayName("Summary usecase test")
-    // assert that if user uses summary command with no arguments, usage help + message is shown
+    @Description("Summary command without arguments prints usage")
     void testSummaryWithoutArguments() {
+        Summary summary = new Summary();
+        CommandLine cmd = new CommandLine(summary);
 
+        int exitCode = cmd.execute(""); // no arguments
+
+        // Picocli should return usage info, when arguments are missing
+        assertEquals(CommandLine.ExitCode.USAGE, exitCode);
+    }
+
+    @Test
+    @Description("Summary command with expected parameters prints summary output")
+    void testSummaryWithArguments() throws IOException {
+        Summary summary = new Summary();
+        CommandLine cmd = new CommandLine(summary);
+
+        // Create temp file that simulates real expected input, with header row and 1 data row
+        Path tempFile = Files.createTempFile("exampledata", ".csv");
+        Files.writeString(tempFile, "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3" + System.lineSeparator() +
+                "cg00000029,TP53,17,7565097,7565097,+,0.87,0.85,0.89");
+
+        // Run with --file option + temp file
+        int exitCode = cmd.execute("-f", tempFile.toString());
+        String output = out.toString();
+
+        assertEquals(CommandLine.ExitCode.OK, exitCode); // ExitCode should be OK (0)
+
+        String expectedOutput =
+                """
+                Generating summary...
+                ---------------------
+                Number of samples: 3
+                Number of genes: 1
+                Avg beta value: 0.87
+                Amount of NA values: 0
+                """.replace("\n", System.lineSeparator());
+
+        assertEquals(expectedOutput, output);
 
     }
-    // assert that if user gives wrong arguments, msg is printed
+
+    @Test
+    @Description("Usage info should be printed when user passes undefined arguments")
     void testIllegalArgument(){
+        CommandLineParser commandLineParser = new CommandLineParser();
+        CommandLine cmd = new CommandLine(commandLineParser);
+
+        int exitCode = cmd.execute("test 12");
+        assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
 
     }
-    // assert that if user gives >1 file, msg is printed
+
+    @Test
+    @Description("Usage help/warning should be printed if user passes more than the max amount of files (1)")
     void testTooManyFilesForArgument(){
         Summary summary = new Summary();
         CommandLine cmd = new CommandLine(summary);
 
-        // two arguments for --file
-        int exitCode = cmd.execute("--file", "data1.csv", "data2.csv");
+        // Pass Two arguments for --file
+        int exitCode = cmd.execute("--file", "data1.csv", "--file",  "data2.csv");
 
-        assertEquals(2, exitCode); // invalid input
+        assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
     }
-    void testTooManyFileArguments() {
-        Summary summary = new Summary();
-        CommandLine cmd = new CommandLine(summary);
 
-        // two arguments for --file
-        int exitCode = cmd.execute("--file", "data1.csv", "--file", "data2.csv");
 
-        assertEquals(2, exitCode); // invalid input
-        //assertTrue("Too many arguments for option '--file'");
-    }
 }

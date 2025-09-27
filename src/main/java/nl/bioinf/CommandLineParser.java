@@ -27,7 +27,7 @@ public class CommandLineParser implements Runnable {
 }
 // Summary use-case, takes file and returns summary of file
 @Command(name = "summary",
-        description = "Takes file and provides short summary on e.g. amount of samples and avg. beta-values",
+        description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
         mixinStandardHelpOptions = true)
 
 class Summary implements Runnable {
