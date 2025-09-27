@@ -7,7 +7,10 @@ import picocli.CommandLine;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        int exitCode = new CommandLine(new CommandLineParser()).execute(args);
+        CommandLine cmd = new CommandLine(new CommandLineParser())
+                .setColorScheme(CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.ON));
+
+        int exitCode = cmd.execute(args);
         System.exit(exitCode);
 
         }

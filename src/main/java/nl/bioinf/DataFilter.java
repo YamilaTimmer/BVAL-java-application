@@ -13,6 +13,7 @@ public class DataFilter {
         ArrayList<String> samples = methylationData.getSamples();
         ArrayList<MethylationData> dataRows = methylationData.getData();
 
+
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
 
@@ -101,22 +102,29 @@ public class DataFilter {
         System.out.println("Succesfully filtered on chromosome(s) : " + Arrays.toString(chromosomes));
 
     }
-    static void filterByCutOff(float cutoff){
+    static void filterByCutOff(float cutoff, String direction){
 
         ArrayList<MethylationData> dataRows = methylationData.getData();
 
+        //if (direction != null && cutoff == 0.0)
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
             ArrayList<Double> filteredBetaValues = new ArrayList<>();
 
-            // If betavalue >= cutoff, add to arraylist of filtered values
-            for(Double betavalue : oldBetaValues){
-                if (betavalue >= cutoff){
-                    filteredBetaValues.add(betavalue);
+            // Filter on cutoff, depending on hypo/hyper
+            for (Double betaValue : oldBetaValues) {
+                if (direction.equals("hypo")) {
+                    if (betaValue <= cutoff) {
+                        filteredBetaValues.add(betaValue);
+                    }
+                }
+                else {
+                    if (betaValue >= cutoff) {
+                        filteredBetaValues.add(betaValue);
+                    }
                 }
             }
-
             // Initiate new list of beta values, with only those that are >= to cutoff
             oldBetaValues.clear(); //Remove items from list
             oldBetaValues.addAll(filteredBetaValues); //Replace with filtered values

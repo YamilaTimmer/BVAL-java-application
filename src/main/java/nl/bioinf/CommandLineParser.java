@@ -72,8 +72,8 @@ class Filter implements Runnable {
     PosArguments posArguments;
 
     static class PosArguments {
-        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") String[] chr;
-        @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
+        @Option(names = {"-chr", "--chromosome"}, description = "Positional argument to filter data on one or more chromosomes") String[] chr;
+        @Option(names = {"-g", "--gene"}, description = "Positional argument to filter data on one or more genes") String[] genes;
     }
 
     @Option(names = {"-s", "--sample"},
@@ -84,6 +84,10 @@ class Filter implements Runnable {
     @Option(names = {"-c", "--cutoff"},
             description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
     float cutoff;
+
+    @Parameters(index = "0", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
+    String direction;
+
 
     @Override
     public void run() {
@@ -113,12 +117,16 @@ class Filter implements Runnable {
 
         }
         else{
-            System.out.println("Use -chr [chromosome] to filter on chromosome(s)");
-            System.out.println("Use -gene [gene] to filter on gene(s)");
+            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
+            System.out.println("\u001B[34mInfo: Use -gene [gene] to filter on gene(s)\u001B[0m");
         }
 
         if (cutoff != 0.0){
-            DataFilter.filterByCutOff(cutoff);
+            DataFilter.filterByCutOff(cutoff, direction);
+        }
+
+        if(cutoff == 0.0 && direction != null){
+            System.out.println("\u001B[34mInfo:Specify a cutoff value with -c\u001B[0m");
         }
 
         System.out.println("");
