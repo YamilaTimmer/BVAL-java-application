@@ -6,9 +6,14 @@ import java.nio.file.Path;
 
 import static nl.bioinf.FileReader.methylationData;
 
-// TODO: replace reused options like file with mixins
-// TODO: add colors for --help usage
-
+// classes for options that are reused in multiple subcommands
+class FileOption {
+    @Option(names = {"-f", "--file"},
+            description = "Path to file containing the data",
+            arity = "1",
+            required = true)
+    Path filePath;
+}
 
 // Parent class that will be called in main
 @Command(name = "BVAL",
@@ -31,20 +36,17 @@ public class CommandLineParser implements Runnable {
         mixinStandardHelpOptions = true)
 
 class Summary implements Runnable {
-    @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
-            required = true,
-            arity = "1") // Makes it so that 1 file is required
-    Path filePath;
+    @Mixin
+    FileOption fileOptions;
 
 
     @Override
     public void run() {
 
         try {
-            FileReader.readCSV(filePath);
+            FileReader.readCSV(fileOptions.filePath);
         } catch (IOException e) {
-            System.err.println("Error: Could not read file: '" + filePath + "'. ");
+            System.err.println("Error: Could not read file: '" + fileOptions.filePath + "'. ");
         }
 
         MethylationArray data = FileReader.getData();
@@ -53,7 +55,6 @@ class Summary implements Runnable {
     }
 }
 
-
 // Filter use-case, takes file, allows user to filter and returns overview to user
 @Command(name = "filter",
         description = "Takes file and allows user to filter it and provides an overview afterwards",
@@ -61,12 +62,8 @@ class Summary implements Runnable {
 
 class Filter implements Runnable {
 
-    // Filter options:
-    @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
-            arity = "1",
-            required = true)
-    Path filePath;
+    @Mixin
+    FileOption fileOptions;
 
     @ArgGroup(exclusive = true, multiplicity = "0..1")
     PosArguments posArguments;
@@ -82,7 +79,7 @@ class Filter implements Runnable {
     String[] samples;
 
     @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
+            description = "Cutoff value [0.0-1.0] to filter betavalues on, by default the values higher than the cutoff are kept")
     float cutoff;
 
     @Parameters(index = "0", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
@@ -93,7 +90,7 @@ class Filter implements Runnable {
     public void run() {
 
         try {
-            FileReader.readCSV(filePath);
+            FileReader.readCSV(fileOptions.filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -104,6 +101,8 @@ class Filter implements Runnable {
 
         if (samples != null) {
             DataFilter.filterSamples(samples);
+        }else{
+            System.out.println("\u001B[34mInfo: Use -s [sample1, sample2, etc.] to filter on gene(s)\u001B[0m");
         }
 
         // Check if posArguments is not null, because user does not have to give
@@ -118,14 +117,20 @@ class Filter implements Runnable {
         }
         else{
             System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
-            System.out.println("\u001B[34mInfo: Use -gene [gene] to filter on gene(s)\u001B[0m");
+            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
         }
 
-        if (cutoff != 0.0){
+        if (cutoff < 1 && cutoff > 0.0 && direction != null){
             DataFilter.filterByCutOff(cutoff, direction);
         }
-
-        if(cutoff == 0.0 && direction != null){
+        else if (cutoff < 1 && cutoff > 0.0 && direction == null){
+            direction = "hyper";
+            DataFilter.filterByCutOff(cutoff, direction);
+        }
+        else if (cutoff > 1.0 | cutoff < 0.0){
+            System.out.println("\u001B[31mError: Please provide a cutoff value between 0.0 and 1.0 \u001B[0m");
+        }
+        else if(cutoff == 0.0 && direction != null){
             System.out.println("\u001B[34mInfo:Specify a cutoff value with -c\u001B[0m");
         }
 
@@ -141,11 +146,9 @@ class Filter implements Runnable {
         mixinStandardHelpOptions = true)
 
 class Compare implements Runnable {
-    @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
-            arity = "1",
-            required = true)
-    Path filePath;
+
+    @Mixin
+    FileOption fileOptions;
 
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to compare",

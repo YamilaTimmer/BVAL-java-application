@@ -99,7 +99,7 @@ public class DataFilter {
             }
         }
 
-        System.out.println("Succesfully filtered on chromosome(s) : " + Arrays.toString(chromosomes));
+        System.out.println("\u001B[32mSuccesfully filtered on chromosome(s) : \u001B[0m" + Arrays.toString(chromosomes));
 
     }
     static void filterByCutOff(float cutoff, String direction){
