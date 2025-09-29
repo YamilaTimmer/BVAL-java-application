@@ -10,8 +10,10 @@ public class DataFilter {
 
     public static ArrayList<String> samples = methylationData.getSamples();
     public static ArrayList<MethylationData> dataRows = methylationData.getData();
+    public static MethylationArray methylationArray= new MethylationArray();
 
-    ArrayList<MethylationData> filterSamples(String[] samplesFilter) {
+
+    MethylationArray filterSamples(String[] samplesFilter) {
         //Retrieve data
 
         System.out.println("-------------------------------------");
@@ -48,18 +50,19 @@ public class DataFilter {
             oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
             }
 
-        System.out.println("Succesfully filtered on sample(s): " + Arrays.toString(samplesFilter));
+        System.out.println("Succesfully filtered on sample(s): " + filteredSamples);
         System.out.println("");
 
-        // Replace samples with the remaining samples
-        // TODO: implement, rn its not being returned
         samples.clear();
         samples.addAll(filteredSamples);
 
-        return dataRows;
+        methylationArray.setData(dataRows);
+        methylationArray.setSamples(samples);
+
+        return methylationArray;
     }
 
-    static ArrayList<MethylationData> filterByGene(String[] genes){
+    static MethylationArray filterByGene(String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
@@ -77,12 +80,14 @@ public class DataFilter {
 
                 }
             }
-            System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
 
-            return dataRows;
+        methylationArray.setData(dataRows);
+        System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
+
+        return methylationArray;
     }
 
-    static ArrayList<MethylationData> filterByChr(String[] chromosomes){
+    static MethylationArray filterByChr(String[] chromosomes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
@@ -101,14 +106,15 @@ public class DataFilter {
 
         System.out.println("\u001B[32mSuccesfully filtered on chromosome(s) : \u001B[0m" + Arrays.toString(chromosomes));
 
-        return dataRows;
+        methylationArray.setData(dataRows);
+
+        return methylationArray;
     }
 
-    static ArrayList<MethylationData> filterByCutOff(float cutoff, String direction){
+    static MethylationArray filterByCutOff(float cutoff, String direction){
 
         ArrayList<MethylationData> dataRows = methylationData.getData();
 
-        //if (direction != null && cutoff == 0.0)
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
@@ -127,10 +133,14 @@ public class DataFilter {
                     }
                 }
             }
+
             // Initiate new list of beta values, with only those that are >= to cutoff
             oldBetaValues.clear(); //Remove items from list
             oldBetaValues.addAll(filteredBetaValues); //Replace with filtered values
         }
-        return dataRows;
+
+        methylationArray.setData(dataRows);
+
+        return methylationArray;
     }
 }

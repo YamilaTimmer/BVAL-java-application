@@ -14,7 +14,9 @@ public class MethylationArray {
         this.samples = samples;
     }
 
-
+    public void setData(ArrayList<MethylationData> data) {
+        this.data = data;
+    }
 
     public void addData(String chromosome, String gene, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
