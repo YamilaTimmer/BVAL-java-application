@@ -3,6 +3,7 @@ package nl.bioinf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import static nl.bioinf.FileReader.methylationData;
 
@@ -10,8 +11,8 @@ public class DataFilter {
 
     static void filterSamples(String[] samplesFilter) {
         //Retrieve data
-        ArrayList<String> samples = methylationData.getSamples();
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        List<String> samples = methylationData.getSamples();
+        List<MethylationData> dataRows = methylationData.getData();
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
@@ -60,7 +61,7 @@ public class DataFilter {
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
 
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        List<MethylationData> dataRows = methylationData.getData();
 
             // Use iterator for removing rows from MethylationData, if user passed gene filter argument
             Iterator<MethylationData> iter = dataRows.iterator();
@@ -84,7 +85,7 @@ public class DataFilter {
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
 
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        List<MethylationData> dataRows = methylationData.getData();
 
         // Use iterator for removing rows from MethylationData, if user passed chr filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
@@ -103,7 +104,7 @@ public class DataFilter {
     }
     static void filterByCutOff(float cutoff){
 
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        List<MethylationData> dataRows = methylationData.getData();
 
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {

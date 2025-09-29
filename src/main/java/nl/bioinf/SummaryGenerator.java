@@ -1,6 +1,7 @@
 package nl.bioinf;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SummaryGenerator {
 
@@ -9,8 +10,8 @@ public class SummaryGenerator {
         System.out.println("---------------------");
 
         // Get methylationdata/sampledata
-        ArrayList<String> samples = methylationData.getSamples();
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        List<String> samples = methylationData.getSamples();
+        List<MethylationData> dataRows = methylationData.getData();
         int amountNAValues = 0;
 
         double betaVal = 0.0;
