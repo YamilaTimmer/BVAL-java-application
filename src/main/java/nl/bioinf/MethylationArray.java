@@ -24,11 +24,11 @@ public class MethylationArray {
     }
 
     public ArrayList<MethylationData> getData() {
-        return data;
+        return new ArrayList<>(data);
     }
 
     public ArrayList<String> getSamples() {
-        return samples;
+        return new ArrayList<>(samples);
     }
 
     @Override

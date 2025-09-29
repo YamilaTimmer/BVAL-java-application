@@ -3,6 +3,8 @@ import picocli.CommandLine.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static nl.bioinf.FileReader.methylationData;
 
@@ -99,8 +101,11 @@ class Filter implements Runnable {
         System.out.println("Data before filtering: " + methylationData);
         System.out.println("");
 
+        ArrayList<MethylationData> output = new ArrayList<>();
+
         if (samples != null) {
-            DataFilter.filterSamples(samples);
+            DataFilter dataFilter = new DataFilter();
+            output = dataFilter.filterSamples(samples);
         }else{
             System.out.println("\u001B[34mInfo: Use -s [sample1, sample2, etc.] to filter on gene(s)\u001B[0m");
         }
@@ -109,9 +114,9 @@ class Filter implements Runnable {
         // these arguments (otherwise nullpointerexception)
         if (posArguments != null) {
             if (posArguments.chr != null) {
-                DataFilter.filterByChr(posArguments.chr);
+                output = DataFilter.filterByChr(posArguments.chr);
             } else if (posArguments.genes != null) {
-                DataFilter.filterByGene(posArguments.genes);
+                output = DataFilter.filterByGene(posArguments.genes);
             }
 
         }
@@ -125,7 +130,7 @@ class Filter implements Runnable {
         }
         else if (cutoff < 1 && cutoff > 0.0 && direction == null){
             direction = "hyper";
-            DataFilter.filterByCutOff(cutoff, direction);
+            output = DataFilter.filterByCutOff(cutoff, direction);
         }
         else if (cutoff > 1.0 | cutoff < 0.0){
             System.out.println("\u001B[31mError: Please provide a cutoff value between 0.0 and 1.0 \u001B[0m");
@@ -135,7 +140,7 @@ class Filter implements Runnable {
         }
 
         System.out.println("");
-        System.out.println("Data after filtering: " + methylationData);
+        System.out.println("Data after filtering: "+ output);
 
     }
 }

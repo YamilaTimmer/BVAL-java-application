@@ -8,11 +8,11 @@ import static nl.bioinf.FileReader.methylationData;
 
 public class DataFilter {
 
-    static void filterSamples(String[] samplesFilter) {
-        //Retrieve data
-        ArrayList<String> samples = methylationData.getSamples();
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+    public static ArrayList<String> samples = methylationData.getSamples();
+    public static ArrayList<MethylationData> dataRows = methylationData.getData();
 
+    ArrayList<MethylationData> filterSamples(String[] samplesFilter) {
+        //Retrieve data
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
@@ -52,16 +52,17 @@ public class DataFilter {
         System.out.println("");
 
         // Replace samples with the remaining samples
+        // TODO: implement, rn its not being returned
         samples.clear();
         samples.addAll(filteredSamples);
+
+        return dataRows;
     }
 
-    static void filterByGene(String[] genes){
+    static ArrayList<MethylationData> filterByGene(String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
-
-        ArrayList<MethylationData> dataRows = methylationData.getData();
 
             // Use iterator for removing rows from MethylationData, if user passed gene filter argument
             Iterator<MethylationData> iter = dataRows.iterator();
@@ -78,14 +79,13 @@ public class DataFilter {
             }
             System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
 
+            return dataRows;
     }
 
-    static void filterByChr(String[] chromosomes){
+    static ArrayList<MethylationData> filterByChr(String[] chromosomes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
-
-        ArrayList<MethylationData> dataRows = methylationData.getData();
 
         // Use iterator for removing rows from MethylationData, if user passed chr filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
@@ -101,8 +101,10 @@ public class DataFilter {
 
         System.out.println("\u001B[32mSuccesfully filtered on chromosome(s) : \u001B[0m" + Arrays.toString(chromosomes));
 
+        return dataRows;
     }
-    static void filterByCutOff(float cutoff, String direction){
+
+    static ArrayList<MethylationData> filterByCutOff(float cutoff, String direction){
 
         ArrayList<MethylationData> dataRows = methylationData.getData();
 
@@ -129,5 +131,6 @@ public class DataFilter {
             oldBetaValues.clear(); //Remove items from list
             oldBetaValues.addAll(filteredBetaValues); //Replace with filtered values
         }
+        return dataRows;
     }
 }
