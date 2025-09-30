@@ -104,27 +104,38 @@ class Filter implements Runnable {
         System.out.println("");
 
 
-        if (samples != null) {
-            DataFilter dataFilter = new DataFilter();
-            methylationArray = dataFilter.filterSamples(samples);
-        }else{
-            System.out.println("\u001B[34mInfo: Use -s [sample1, sample2, etc.] to filter on gene(s)\u001B[0m");
+
+        // Check before passing, otherwise NullPointerException
+        if (samples != null){
+            SampleFilter sampleFilter = new SampleFilter(samples);
+            if (sampleFilter.pass(methylationArray) == true){
+                methylationArray = DataFilter.filterSamples(samples);
+            }
+
+        }
+
+        if (posArguments != null && posArguments.chr != null ) {
+            ChrFilter chrFilter = new ChrFilter(posArguments.chr);
+
+            if (chrFilter.pass(methylationArray) == true){
+                methylationArray = DataFilter.filterByChr(posArguments.chr);
+            }
         }
 
         // Check if posArguments is not null, because user does not have to give
         // these arguments (otherwise nullpointerexception)
-        if (posArguments != null) {
-            if (posArguments.chr != null) {
-                methylationArray = DataFilter.filterByChr(posArguments.chr);
-            } else if (posArguments.genes != null) {
-                methylationArray = DataFilter.filterByGene(posArguments.genes);
-            }
-
-        }
-        else{
-            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
-            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
-        }
+//        if (posArguments != null) {
+//            if (posArguments.chr != null) {
+//                methylationArray = DataFilter.filterByChr(posArguments.chr);
+//            } else if (posArguments.genes != null) {
+//                methylationArray = DataFilter.filterByGene(posArguments.genes);
+//            }
+//
+//        }
+//        else{
+//            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
+//            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
+//        }
 
 
         if (cutoff <= 1 && cutoff >= 0.0){

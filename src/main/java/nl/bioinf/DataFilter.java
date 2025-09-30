@@ -13,7 +13,7 @@ public class DataFilter {
     public static MethylationArray methylationArray= new MethylationArray();
 
 
-    MethylationArray filterSamples(String[] samplesFilter) {
+    static MethylationArray filterSamples(String[] samplesFilter) {
         //Retrieve data
 
         System.out.println("-------------------------------------");

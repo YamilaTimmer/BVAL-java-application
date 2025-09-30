@@ -29,6 +29,14 @@ public class MethylationArray {
         return new ArrayList<>(data);
     }
 
+    public ArrayList<String> getGenes() {
+        ArrayList<String> genes = new ArrayList<>();
+        for (MethylationData d : data) {
+            genes.add(d.gene());
+        }
+        return genes;
+    }
+
     public ArrayList<String> getSamples() {
         return new ArrayList<>(samples);
     }
