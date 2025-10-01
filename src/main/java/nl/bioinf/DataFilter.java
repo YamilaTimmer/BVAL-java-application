@@ -10,24 +10,23 @@ public class DataFilter {
 
     public static ArrayList<String> samples = methylationData.getSamples();
     public static ArrayList<MethylationData> dataRows = methylationData.getData();
-    public static MethylationArray methylationArray= new MethylationArray();
 
 
-    static MethylationArray filterSamples(String[] samplesFilter) {
+    static void filterSamples(MethylationArray methylationArray, String[] samplesFilter) {
         //Retrieve data
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
 
-        // Look at which betavalues columns need to be kept, based on filter samples
+        // Look at which beta values columns need to be kept, based on filter samples
         ArrayList<Integer> columnsToKeep = new ArrayList<>();
         ArrayList<String> filteredSamples = new ArrayList<>();
 
         for (int i = 0; i < samples.size(); i++) {
             String sample = samples.get(i);
 
-            for (String samplefilter : samplesFilter) {
-                if (sample.equals(samplefilter)) {
+            for (String sampleFilter : samplesFilter) {
+                if (sample.equals(sampleFilter)) {
                     columnsToKeep.add(i); // remember the index to keep
                     filteredSamples.add(sample);
 
@@ -51,7 +50,6 @@ public class DataFilter {
             }
 
         System.out.println("Succesfully filtered on sample(s): " + filteredSamples);
-        System.out.println("");
 
         samples.clear();
         samples.addAll(filteredSamples);
@@ -59,10 +57,9 @@ public class DataFilter {
         methylationArray.setData(dataRows);
         methylationArray.setSamples(samples);
 
-        return methylationArray;
     }
 
-    static MethylationArray filterByGene(String[] genes){
+    static void filterByGene(MethylationArray methylationArray, String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
@@ -84,10 +81,9 @@ public class DataFilter {
         methylationArray.setData(dataRows);
         System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
 
-        return methylationArray;
     }
 
-    static MethylationArray filterByChr(String[] chromosomes){
+    static void filterByChr(MethylationArray methylationArray, String[] chromosomes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
@@ -108,12 +104,11 @@ public class DataFilter {
 
         methylationArray.setData(dataRows);
 
-        return methylationArray;
     }
 
-    static MethylationArray filterByCutOff(float cutoff, String direction){
+    static void filterByCutOff(MethylationArray methylationArray, float cutoff, String direction){
 
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        ArrayList<MethylationData> dataRows = methylationArray.getData();
 
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
@@ -141,6 +136,5 @@ public class DataFilter {
 
         methylationArray.setData(dataRows);
 
-        return methylationArray;
     }
 }

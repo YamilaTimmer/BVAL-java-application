@@ -48,10 +48,8 @@ class Summary implements Runnable {
         } catch (IOException e) {
             System.err.println("Error: Could not read file: '" + fileOptions.filePath + "'. ");
         }
-
         MethylationArray data = FileReader.getData();
         SummaryGenerator.summaryGenerator(data);
-
     }
 }
 
@@ -79,7 +77,7 @@ class Filter implements Runnable {
     String[] samples;
 
     @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value [0.0-1.0] to filter betavalues on, by default the values higher than the cutoff are kept")
+            description = "Cutoff value [0.0-1.0] to filter beta values on, by default the values higher than the cutoff are kept")
     float cutoff;
 
     @Parameters(index = "0", defaultValue = "hyper", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
@@ -95,54 +93,39 @@ class Filter implements Runnable {
             throw new RuntimeException(e);
         }
 
+        // Make new MethylationArray object to store filtered values in and set same samples
         MethylationArray methylationArray = new MethylationArray();
+        methylationArray.setSamples(methylationData.getSamples());
 
-        System.out.println("");
         System.out.println("Data before filtering: " + methylationData);
-        System.out.println("");
 
-
-        // Check before passing, otherwise NullPointerException
+        // Build composite filter, which holds all filters
+        CompositeMethylationArrayFilter compositeMethylationArrayFilter = new CompositeMethylationArrayFilter();
         if (samples != null){
-            SampleFilterCheck sampleFilter = new SampleFilterCheck(samples);
-            if (sampleFilter.pass(methylationArray)){
-                methylationArray = DataFilter.filterSamples(samples);
-            }
-
+            compositeMethylationArrayFilter.addFilter(new SampleFilterCheck(samples));
         }
-
         if (posArguments != null && posArguments.chr != null ) {
-            ChrFilterCheck chrFilterCheck = new ChrFilterCheck(posArguments.chr);
-
-            if (chrFilterCheck.pass(methylationArray)){
-                methylationArray = DataFilter.filterByChr(posArguments.chr);
-            }
+            compositeMethylationArrayFilter.addFilter(new ChrFilterCheck(posArguments.chr));
         }
-
         if (posArguments != null && posArguments.genes != null ) {
-            GeneFilterCheck geneFilterCheck = new GeneFilterCheck(posArguments.chr);
-
-            if (geneFilterCheck.pass(methylationArray)){
-                methylationArray = DataFilter.filterByChr(posArguments.chr);
-            }
+            compositeMethylationArrayFilter.addFilter(new GeneFilterCheck(posArguments.genes));
         }
 
-        CutOffFilterCheck cutOffFilterCheck = new CutOffFilterCheck(cutoff, direction);
+        // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
+        compositeMethylationArrayFilter.addFilter(new CutOffFilterCheck(cutoff, direction));
 
-        if (cutOffFilterCheck.pass(methylationArray)){
-            methylationArray = DataFilter.filterByCutOff(cutoff, direction);
+        if (compositeMethylationArrayFilter.pass(methylationArray)){
+            DataFilter.filterSamples(methylationArray, samples);
+            DataFilter.filterByChr(methylationArray, posArguments.chr);
+            DataFilter.filterByCutOff(methylationArray, cutoff, direction);
+
         }
 
+        System.out.println("Data after filtering on cutoff: "+ methylationArray);
 
         // TODO: print tips for user?
 //            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
 //            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
-
-
-
-
-        System.out.println("");
-        System.out.println("Data after filtering: "+ methylationArray);
 
     }
 }
@@ -154,20 +137,20 @@ class Filter implements Runnable {
 
 class Compare implements Runnable {
 
-    @Mixin
-    FileOption fileOptions;
-
-    @Option(names = {"-s", "--sample"},
-            description = "Name(s) of the sample(s) to compare",
-            arity = "0..*")
-    String[] samples;
-
-    @ArgGroup(exclusive = true, multiplicity = "1")
-    Filter.PosArguments posArguments;
-
-    @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
-    float cutoff;
+//    @Mixin
+//    FileOption fileOptions;
+//
+//    @Option(names = {"-s", "--sample"},
+//            description = "Name(s) of the sample(s) to compare",
+//            arity = "0..*")
+//    String[] samples;
+//
+//    @ArgGroup(exclusive = true, multiplicity = "1")
+//    Filter.PosArguments posArguments;
+//
+//    @Option(names = {"-c", "--cutoff"},
+//            description = "Cutoff value to filter beta values on, by default the values higher than the cutoff are kept")
+//    float cutoff;
 
     @Override
     public void run() {

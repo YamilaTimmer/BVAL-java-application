@@ -8,7 +8,7 @@ public class SummaryGenerator {
         System.out.println("Generating summary...");
         System.out.println("---------------------");
 
-        // Get methylationdata/sampledata
+        // Get methylation data/sample data
         ArrayList<String> samples = methylationData.getSamples();
         ArrayList<MethylationData> dataRows = methylationData.getData();
         int amountNAValues = 0;

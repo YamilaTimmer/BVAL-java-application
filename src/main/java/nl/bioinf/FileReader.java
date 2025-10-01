@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileReader {
@@ -57,7 +56,7 @@ public class FileReader {
     private static ArrayList<Double> getBValues(String[] lineSplit){
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = 6; i < lineSplit.length; i++) {
-            if (lineSplit[i].toLowerCase().equals("na")) {
+            if (lineSplit[i].equalsIgnoreCase("na")) {
                 betaValues.add((double) -1); continue;
             }
 

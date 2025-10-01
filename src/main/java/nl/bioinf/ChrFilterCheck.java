@@ -18,14 +18,18 @@ public class ChrFilterCheck implements MethylationArrayFilter {
 
             try {
                 int chrInt = Integer.parseInt(chr);
-                if (chrInt < 0 | chrInt > 23) {
+                if (chrInt < 1 | chrInt > 23) {
+                    System.err.println("Please provide chromosome(s) between 1-23 or X/Y. Input: '" + chr + "'");
+
                     return false;
                 }
             }catch (NumberFormatException e){
+                System.err.println("Please provide chromosome(s) between 1-23 or X/Y. Input: '" + chr + "'");
                 return false;
             }
         }
         return true;
 
     }
+
 }
