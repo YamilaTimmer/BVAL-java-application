@@ -3,8 +3,6 @@ import picocli.CommandLine.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static nl.bioinf.FileReader.methylationData;
 
@@ -84,7 +82,7 @@ class Filter implements Runnable {
             description = "Cutoff value [0.0-1.0] to filter betavalues on, by default the values higher than the cutoff are kept")
     float cutoff;
 
-    @Parameters(index = "0", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
+    @Parameters(index = "0", defaultValue = "hyper", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
     String direction;
 
 
@@ -100,56 +98,48 @@ class Filter implements Runnable {
         MethylationArray methylationArray = new MethylationArray();
 
         System.out.println("");
-        System.out.println("Data before filtering: " + methylationArray);
+        System.out.println("Data before filtering: " + methylationData);
         System.out.println("");
-
 
 
         // Check before passing, otherwise NullPointerException
         if (samples != null){
-            SampleFilter sampleFilter = new SampleFilter(samples);
-            if (sampleFilter.pass(methylationArray) == true){
+            SampleFilterCheck sampleFilter = new SampleFilterCheck(samples);
+            if (sampleFilter.pass(methylationArray)){
                 methylationArray = DataFilter.filterSamples(samples);
             }
 
         }
 
         if (posArguments != null && posArguments.chr != null ) {
-            ChrFilter chrFilter = new ChrFilter(posArguments.chr);
+            ChrFilterCheck chrFilterCheck = new ChrFilterCheck(posArguments.chr);
 
-            if (chrFilter.pass(methylationArray) == true){
+            if (chrFilterCheck.pass(methylationArray)){
                 methylationArray = DataFilter.filterByChr(posArguments.chr);
             }
         }
 
-        // Check if posArguments is not null, because user does not have to give
-        // these arguments (otherwise nullpointerexception)
-//        if (posArguments != null) {
-//            if (posArguments.chr != null) {
-//                methylationArray = DataFilter.filterByChr(posArguments.chr);
-//            } else if (posArguments.genes != null) {
-//                methylationArray = DataFilter.filterByGene(posArguments.genes);
-//            }
-//
-//        }
-//        else{
-//            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
-//            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
-//        }
+        if (posArguments != null && posArguments.genes != null ) {
+            GeneFilterCheck geneFilterCheck = new GeneFilterCheck(posArguments.chr);
 
-
-        if (cutoff <= 1 && cutoff >= 0.0){
-            if (direction == null){
-                direction = "hyper";
+            if (geneFilterCheck.pass(methylationArray)){
+                methylationArray = DataFilter.filterByChr(posArguments.chr);
             }
+        }
+
+        CutOffFilterCheck cutOffFilterCheck = new CutOffFilterCheck(cutoff, direction);
+
+        if (cutOffFilterCheck.pass(methylationArray)){
             methylationArray = DataFilter.filterByCutOff(cutoff, direction);
         }
-        else if (cutoff > 1.0 | cutoff < 0.0){
-            System.out.println("\u001B[31mError: Please provide a cutoff value between 0.0 and 1.0 \u001B[0m");
-        }
-        else if(cutoff == 0.0 && direction != null){
-            System.out.println("\u001B[34mInfo:Specify a cutoff value with -c\u001B[0m");
-        }
+
+
+        // TODO: print tips for user?
+//            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
+//            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
+
+
+
 
         System.out.println("");
         System.out.println("Data after filtering: "+ methylationArray);

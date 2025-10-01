@@ -1,15 +1,10 @@
 package nl.bioinf;
 
-import java.util.ArrayList;
-
-import static nl.bioinf.FileReader.methylationData;
-
-public class ChrFilter implements MethylationArrayFilter {
+public class ChrFilterCheck implements MethylationArrayFilter {
     public static String[] filterChr;
-    public static ArrayList<MethylationData> dataRows = methylationData.getData();
 
-    public ChrFilter(String[] filterChr) {
-        ChrFilter.filterChr = filterChr;
+    public ChrFilterCheck(String[] filterChr) {
+        ChrFilterCheck.filterChr = filterChr;
 
     }
 
@@ -17,7 +12,7 @@ public class ChrFilter implements MethylationArrayFilter {
     public boolean pass(MethylationArray methylationArray) {
 
         for (String chr : filterChr){
-            if (chr.equals("X") || chr.equals("Y")){
+            if (chr.equalsIgnoreCase("X") || chr.equalsIgnoreCase("Y")){
                 continue;
             }
 
