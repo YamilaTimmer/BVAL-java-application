@@ -25,6 +25,11 @@ public class MethylationArraySampleComparer {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
 
+                if (sample1 == -1 || sample2 == -1) {
+                    throw new IndexOutOfBoundsException(String.format("Sample not found in the data. Compared samples: %s vs %s%n",
+                                                                        samples[i], samples[j]));
+                }
+
                 double[] sample1BetaValues = getBetaValues(data, sample1);
                 double[] sample2BetaValues = getBetaValues(data, sample2);
                 String sampleNames = String.format("%s vs %s", samples[i], samples[j]);
