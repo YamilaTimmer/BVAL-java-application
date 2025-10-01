@@ -95,15 +95,62 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage help/warning should be printed if user passes more than the max amount of files (1)")
-    void testTooManyFilesForArgument(){
+    void testTooManyFiles(){
         Summary summary = new Summary();
         CommandLine cmd = new CommandLine(summary);
 
         // Pass Two arguments for --file
-        int exitCode = cmd.execute("--file", "data1.csv", "--file",  "data2.csv");
+        int exitCode = cmd.execute("--file data1.csv data2.csv");
 
         assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
     }
+
+    @Test
+    @Description("Usage help/warning should be printed if user passes more than the max amount of chromosomes")
+    void testTooManyChromosomes(){
+        Filter filter = new Filter();
+        CommandLine cmd = new CommandLine(filter);
+
+        // Pass too many arguments for -chr
+        int tooManyChr = cmd.execute("--file data1.csv -chr 10 12 13");
+        int tooManyGenes = cmd.execute("--file data1.csv -g TP53 TP53 TP53");
+        int tooManySamples = cmd.execute("--file data1.csv -s Sample1 Sample2 Sample3");
+
+        assertEquals(CommandLine.ExitCode.USAGE, tooManyChr); // Check if Picocli returns usage info
+        assertEquals(CommandLine.ExitCode.USAGE, tooManyGenes); // Check if Picocli returns usage info
+        assertEquals(CommandLine.ExitCode.USAGE, tooManySamples); // Check if Picocli returns usage info
+
+    }
+
+    @Test
+    @Description("Usage help/warning should be printed if user passes both -chr and -g options (they are mutually exclusive)")
+    void bothChromosomeAndGeneArePassed(){
+
+        Filter filter = new Filter();
+        CommandLine cmd = new CommandLine(filter);
+
+        // Pass Two arguments for --file
+        int exitCode = cmd.execute("--file data1.csv -chr 10 -gene TP53");
+
+        assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
+    }
+
+    @Test
+    @Description("Usage help/warning should be printed if user passes both hypo and hyper (they are mutually exclusive)")
+    void bothDirectionArgsArePassed(){
+
+        Filter filter = new Filter();
+        CommandLine cmd = new CommandLine(filter);
+
+        // Pass Two arguments for --file
+        int exitCode = cmd.execute("--file data1.csv -chr 10 hypo hyper");
+
+        assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
+    }
+
+
+
+
 
 
 }

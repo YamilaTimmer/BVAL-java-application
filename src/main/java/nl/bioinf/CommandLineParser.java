@@ -4,6 +4,7 @@ import picocli.CommandLine.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
+
 import static nl.bioinf.FileReader.methylationData;
 
 // classes for options that are reused in multiple subcommands
@@ -67,8 +68,12 @@ class Filter implements Runnable {
     PosArguments posArguments;
 
     static class PosArguments {
-        @Option(names = {"-chr", "--chromosome"}, description = "Positional argument to filter data on one or more chromosomes") String[] chr;
-        @Option(names = {"-g", "--gene"}, description = "Positional argument to filter data on one or more genes") String[] genes;
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on one or more chromosomes")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on one or more genes")
+        String[] genes;
     }
 
     @Option(names = {"-s", "--sample"},
@@ -76,11 +81,16 @@ class Filter implements Runnable {
             arity = "0..*")
     String[] samples;
 
+
     @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value [0.0-1.0] to filter beta values on, by default the values higher than the cutoff are kept")
+            defaultValue = "0.0",
+            description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than the cutoff are kept. Default: ${DEFAULT-VALUE}")
     float cutoff;
 
-    @Parameters(index = "0", defaultValue = "hyper", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
+    @Parameters(index = "0",
+            defaultValue = "hyper",
+            arity = "0..1",
+            description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff. Default: ${DEFAULT-VALUE}")
     String direction;
 
 
