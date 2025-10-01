@@ -3,6 +3,7 @@ import picocli.CommandLine.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static nl.bioinf.FileReader.methylationData;
 
@@ -144,16 +145,32 @@ class Compare implements Runnable {
             arity = "0..*")
     String[] samples;
 
-    @ArgGroup(exclusive = true, multiplicity = "1")
-    Filter.PosArguments posArguments;
+//    @ArgGroup(exclusive = true, multiplicity = "1")
+//    Filter.PosArguments posArguments;
+//
+//    @Option(names = {"-c", "--cutoff"},
+//            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
+//    float cutoff;
 
-    @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
-    float cutoff;
+    @Option(names = {"-m", "--methods"},
+            description = "Name(s) of the different statistic methods: t-test, spearman, wilcoxon-test",
+            arity = "1..*")
+    String[] methods;
+
 
     @Override
     public void run() {
-        //To be implemented
+        try {
+            FileReader.readCSV(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        MethylationArray data = FileReader.getData();
+        SampleCompareDataClass corrData = MethylationArraySampleComparer.performStatisticalMethods(data, samples, methods);
+        System.out.println(corrData);
+
+
     }
 
 }
