@@ -14,10 +14,17 @@ public class MethylationArray {
     }
 
     public void setHeader(String header) {
-        this.header = header;
+        String[] headerSplit = header.split(",");
+        StringBuilder headerString = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            headerString.append(headerSplit[i] + ",");
+        }
+        this.header = headerString.toString();
     }
 
     public String getHeader() {
+        StringBuilder headerSamplesCombined = new StringBuilder();
+        headerSamplesCombined.append(header).append(String.format("%s%n", this.samples));
         return header;
     }
 
@@ -51,7 +58,6 @@ record MethylationData(String chromosome, String gene, ArrayList<Double> betaVal
         StringBuilder stringToReturn = new StringBuilder();
         stringToReturn.append(String.format("%s,%s,", gene, chromosome));
         for (double value : betaValues) {
-            System.out.println("value = " + value);
             stringToReturn.append(String.format("%.2f,", value));
         }
         stringToReturn.append(String.format("%n"));
