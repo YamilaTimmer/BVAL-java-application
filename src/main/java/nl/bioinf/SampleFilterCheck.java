@@ -1,7 +1,7 @@
 package nl.bioinf;
 
 import java.util.ArrayList;
-import static nl.bioinf.FileReader.methylationData;
+import static nl.bioinf.MethylationFileReader.methylationData;
 
 public class SampleFilterCheck implements MethylationArrayFilter{
 

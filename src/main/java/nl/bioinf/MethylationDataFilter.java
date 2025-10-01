@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import static nl.bioinf.FileReader.methylationData;
+import static nl.bioinf.MethylationFileReader.methylationData;
 
-public class DataFilter {
+public class MethylationDataFilter {
 
     public static ArrayList<String> samples = methylationData.getSamples();
     public static ArrayList<MethylationData> dataRows = methylationData.getData();

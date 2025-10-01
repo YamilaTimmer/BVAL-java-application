@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 
-import static nl.bioinf.FileReader.methylationData;
+import static nl.bioinf.MethylationFileReader.methylationData;
 
 // classes for options that are reused in multiple subcommands
 class FileOption {
@@ -45,18 +45,18 @@ class Summary implements Runnable {
     public void run() {
 
         try {
-            FileReader.readCSV(fileOptions.filePath);
+            MethylationFileReader.readCSV(fileOptions.filePath);
         } catch (IOException e) {
             System.err.println("Error: Could not read file: '" + fileOptions.filePath + "'. ");
         }
-        MethylationArray data = FileReader.getData();
+        MethylationArray data = MethylationFileReader.getData();
         SummaryGenerator.summaryGenerator(data);
     }
 }
 
 // Filter use-case, takes file, allows user to filter and returns overview to user
 @Command(name = "filter",
-        description = "Takes file and allows user to filter it and provides an overview afterwards",
+        description = "@|bold Takes methylation beta value file and allows for filtering based on samples/chromosomes/genes/cutoff.|@",
         mixinStandardHelpOptions = true)
 
 class Filter implements Runnable {
@@ -69,10 +69,10 @@ class Filter implements Runnable {
 
     static class PosArguments {
         @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on one or more chromosomes")
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes")
         String[] chr;
         @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on one or more genes")
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes")
         String[] genes;
     }
 
@@ -98,7 +98,7 @@ class Filter implements Runnable {
     public void run() {
 
         try {
-            FileReader.readCSV(fileOptions.filePath);
+            MethylationFileReader.readCSV(fileOptions.filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -125,9 +125,9 @@ class Filter implements Runnable {
         compositeMethylationArrayFilter.addFilter(new CutOffFilterCheck(cutoff, direction));
 
         if (compositeMethylationArrayFilter.pass(methylationArray)){
-            DataFilter.filterSamples(methylationArray, samples);
-            DataFilter.filterByChr(methylationArray, posArguments.chr);
-            DataFilter.filterByCutOff(methylationArray, cutoff, direction);
+            MethylationDataFilter.filterSamples(methylationArray, samples);
+            MethylationDataFilter.filterByChr(methylationArray, posArguments.chr);
+            MethylationDataFilter.filterByCutOff(methylationArray, cutoff, direction);
 
         }
 

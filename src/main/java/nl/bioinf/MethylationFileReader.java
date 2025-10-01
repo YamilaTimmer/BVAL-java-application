@@ -6,11 +6,12 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileReader {
+public class MethylationFileReader {
 
     static List<String> data = new ArrayList<>(); // List because its resizable
     static String headerLine;
     static MethylationArray methylationData;
+
     public static void readCSV(Path filePath) throws IOException {
 
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
@@ -18,7 +19,7 @@ public class FileReader {
             String line;
             methylationData = new MethylationArray();
             if (headerLine == null) {
-                System.err.println("File is empty"); //Error handling: Empty file
+                throw new IOException("File is empty: '" + filePath + "'"); //Error handling: Empty file
             }
 
             methylationData.setSamples(getSamples(headerLine));
@@ -31,10 +32,10 @@ public class FileReader {
             }
 
         } catch (NoSuchFileException ex) {
-            System.err.println("File not found '" + filePath + "'"); // Error handling: File not found
+            throw new NoSuchFileException("File not found: '" + filePath + "'");
         } catch (AccessDeniedException ex) {
-            System.err.println("Permission denied '" + filePath + "'"); // Error handling: no permission to read file
-        } // catch for unreadable file?
+            throw new AccessDeniedException("Permission denied: '" + filePath + "'");
+        }
     }
 
     private static ArrayList<String> getSamples(String header) {
@@ -62,7 +63,6 @@ public class FileReader {
 
             betaValues.add(Double.parseDouble(lineSplit[i]));
         }
-
 
         return betaValues;
     }
