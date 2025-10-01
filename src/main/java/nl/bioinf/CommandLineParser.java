@@ -1,9 +1,10 @@
 package nl.bioinf;
 import picocli.CommandLine.*;
+import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.*;
 
 import static nl.bioinf.FileReader.methylationData;
 
@@ -151,15 +152,30 @@ class Compare implements Runnable {
 //    @Option(names = {"-c", "--cutoff"},
 //            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
 //    float cutoff;
-
+    @Spec CommandSpec spec;
     @Option(names = {"-m", "--methods"},
-            description = "Name(s) of the different statistic methods: t-test, spearman, wilcoxon-test",
-            arity = "1..*")
+            defaultValue = "t-test,spearman,wilcoxon-test",
+            split = ",",
+            description = "Name(s) of the different statistic methods, acceptable values: t-test spearman wilcoxon-test",
+            arity = "0..*")
     String[] methods;
+
+    private void validateMethodInput() {
+        List<String> validMethods = new ArrayList<>();
+        Collections.addAll(validMethods, new String[]{"t-test", "spearman", "wilcoxon-test"});
+
+        for (String method : methods) {
+            if (!validMethods.contains(method)) {
+                throw new ParameterException(spec.commandLine(),
+                        String.format("Invalid value '%s' for option '--method'", method));
+            }
+        }
+    }
 
 
     @Override
     public void run() {
+        validateMethodInput();
         try {
             FileReader.readCSV(filePath);
         } catch (IOException e) {

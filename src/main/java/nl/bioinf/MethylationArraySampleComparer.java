@@ -6,15 +6,16 @@ import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.Set;
+import java.util.function.BiFunction;
 
 public class MethylationArraySampleComparer {
-    private static Map<String, BiConsumer<double[], double[]>> statisticalMethods = new HashMap<>();
+    private static Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
 
     static {
         statisticalMethods.put("spearman", MethylationArraySampleComparer::runSpearman);
         statisticalMethods.put("t-test", MethylationArraySampleComparer::runTTest);
-        statisticalMethods.put("wilcoxon-test", MethylationArraySampleComparer::runWilconsonTest);
+        statisticalMethods.put("wilcoxon-test", MethylationArraySampleComparer::runWilcoxonTest);
     }
 
     public static SampleCompareDataClass performStatisticalMethods(MethylationArray data, String[] samples, String[] methods) {
@@ -31,11 +32,11 @@ public class MethylationArraySampleComparer {
 
                 for (String statisticalMethod : methods) {
 
-                    statisticalData.addToData(statisticalMethod, new SpearmansCorrelation().correlation(sample1BetaValues, sample2BetaValues));
+                    BiFunction<double[], double[], Double> func = statisticalMethods.get(statisticalMethod);
+                    double methodOutput = func.apply(sample1BetaValues, sample2BetaValues);
+                    statisticalData.addToData(statisticalMethod, methodOutput);
 
                 }
-
-
             }
         }
         return statisticalData;
@@ -47,7 +48,7 @@ public class MethylationArraySampleComparer {
     private static double runTTest(double[] sample1, double[] sample2) {
         return new TTest().pairedTTest(sample1, sample2);
     }
-    private static double runWilconsonTest(double[] sample1, double[] sample2) {
+    private static double runWilcoxonTest(double[] sample1, double[] sample2) {
         return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
     }
 
