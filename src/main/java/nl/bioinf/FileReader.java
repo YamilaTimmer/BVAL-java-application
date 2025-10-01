@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileReader {
@@ -21,7 +20,7 @@ public class FileReader {
             if (headerLine == null) {
                 System.err.println("File is empty"); //Error handling: Empty file
             }
-
+            methylationData.setHeader(headerLine);
             methylationData.setSamples(getSamples(headerLine));
 
             while ((line = br.readLine()) != null) {

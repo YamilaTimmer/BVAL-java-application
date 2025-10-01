@@ -123,6 +123,11 @@ class Filter implements Runnable {
 
         System.out.println("");
         System.out.println("Data after filtering: " + methylationData);
+        try {
+            FilterFileWriter.writeData(methylationData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

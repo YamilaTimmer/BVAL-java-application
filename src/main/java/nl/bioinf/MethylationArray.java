@@ -7,9 +7,18 @@ import java.util.List;
 public class MethylationArray {
     private List<String> samples= new ArrayList<>();
     private List<MethylationData> data = new ArrayList<>();
+    private String header;
 
     public void setSamples(ArrayList<String> samples) {
         this.samples = samples;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public String getHeader() {
+        return header;
     }
 
     public void addData(String chromosome, String gene, ArrayList<Double> betaValues) throws IllegalArgumentException {
@@ -20,11 +29,11 @@ public class MethylationArray {
     }
 
     public List<MethylationData> getData() {
-        return Collections.unmodifiableList(data);
+        return new ArrayList<>(data); // Collections.unmodifiableList(data);
     }
 
     public List<String> getSamples() {
-        return Collections.unmodifiableList(samples);
+        return new ArrayList<>(samples); // Collections.unmodifiableList(samples);
     }
 
     @Override
@@ -36,4 +45,16 @@ public class MethylationArray {
     }
 }
 
-record MethylationData(String chromosome, String gene, ArrayList<Double> betaValues) {}
+record MethylationData(String chromosome, String gene, ArrayList<Double> betaValues) {
+    @Override
+    public String toString() {
+        StringBuilder stringToReturn = new StringBuilder();
+        stringToReturn.append(String.format("%s,%s,", gene, chromosome));
+        for (double value : betaValues) {
+            System.out.println("value = " + value);
+            stringToReturn.append(String.format("%.2f,", value));
+        }
+        stringToReturn.append(String.format("%n"));
+        return stringToReturn.toString();
+    }
+}
