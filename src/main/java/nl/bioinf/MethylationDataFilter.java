@@ -12,7 +12,7 @@ public class MethylationDataFilter {
     public static ArrayList<MethylationData> dataRows = methylationData.getData();
 
 
-    static void filterSamples(MethylationArray methylationArray, String[] samplesFilter) {
+    static void filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
         //Retrieve data
 
         System.out.println("-------------------------------------");

@@ -125,7 +125,7 @@ class Filter implements Runnable {
         compositeMethylationArrayFilter.addFilter(new CutOffFilterCheck(cutoff, direction));
 
         if (compositeMethylationArrayFilter.pass(methylationArray)){
-            MethylationDataFilter.filterSamples(methylationArray, samples);
+            MethylationDataFilter.filterBySample(methylationArray, samples);
             MethylationDataFilter.filterByChr(methylationArray, posArguments.chr);
             MethylationDataFilter.filterByCutOff(methylationArray, cutoff, direction);
 

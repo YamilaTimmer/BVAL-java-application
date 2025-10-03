@@ -21,8 +21,8 @@ class CommandLineParserTest {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
-    //@Before   // JUnit 4
-    @BeforeEach // JUnit 5
+
+    @BeforeEach
     public void setUpStreams() {
         out.reset();
         err.reset();
@@ -31,7 +31,7 @@ class CommandLineParserTest {
 
     }
 
-    @AfterEach // JUnit 5
+    @AfterEach
     public void restoreStreams() {
         System.setOut(originalOut);
         System.setErr(originalErr);
