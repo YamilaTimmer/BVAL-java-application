@@ -4,7 +4,6 @@ import picocli.CommandLine.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
-
 import static nl.bioinf.MethylationFileReader.methylationData;
 
 // classes for options that are reused in multiple subcommands
@@ -81,7 +80,6 @@ class Filter implements Runnable {
             arity = "0..*")
     String[] samples;
 
-
     @Option(names = {"-c", "--cutoff"},
             defaultValue = "0.0",
             description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than the cutoff are kept. Default: ${DEFAULT-VALUE}")
@@ -109,26 +107,31 @@ class Filter implements Runnable {
 
         System.out.println("Data before filtering: " + methylationData);
 
-        // Build composite filter, which holds all filters
-        CompositeMethylationArrayFilter compositeMethylationArrayFilter = new CompositeMethylationArrayFilter();
         if (samples != null){
-            compositeMethylationArrayFilter.addFilter(new SampleFilterCheck(samples));
+            GeneFilterCheck geneFilterCheck = new GeneFilterCheck(samples);
+            if (geneFilterCheck.pass(methylationData)){
+                MethylationArray outputMethylationArray = MethylationDataFilter.filterBySample(methylationArray, samples);
+            }
+
         }
+
         if (posArguments != null && posArguments.chr != null ) {
-            compositeMethylationArrayFilter.addFilter(new ChrFilterCheck(posArguments.chr));
+            ChrFilterCheck chrFilterCheck = new ChrFilterCheck(posArguments.chr);
+            if (chrFilterCheck.pass(methylationData)){
+                MethylationDataFilter.filterByChr(methylationArray, posArguments.chr);
+            }
         }
-        if (posArguments != null && posArguments.genes != null ) {
-            compositeMethylationArrayFilter.addFilter(new GeneFilterCheck(posArguments.genes));
+        else if (posArguments != null && posArguments.genes != null ) {
+            GeneFilterCheck geneFilterCheck = new GeneFilterCheck(posArguments.genes);
+            if (geneFilterCheck.pass(methylationData)){
+                MethylationDataFilter.filterByGene(methylationArray, posArguments.genes);
+            }
         }
 
         // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
-        compositeMethylationArrayFilter.addFilter(new CutOffFilterCheck(cutoff, direction));
-
-        if (compositeMethylationArrayFilter.pass(methylationArray)){
-            MethylationDataFilter.filterBySample(methylationArray, samples);
-            MethylationDataFilter.filterByChr(methylationArray, posArguments.chr);
+        CutOffFilterCheck cutOffFilterCheck = new CutOffFilterCheck(cutoff, direction);
+        if (cutOffFilterCheck.pass(methylationData)){
             MethylationDataFilter.filterByCutOff(methylationArray, cutoff, direction);
-
         }
 
         System.out.println("Data after filtering on cutoff: "+ methylationArray);
