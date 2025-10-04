@@ -1,10 +1,11 @@
 package nl.bioinf;
 
+import nl.bioinf.utils.MethylationArray;
+import nl.bioinf.utils.MethylationData;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

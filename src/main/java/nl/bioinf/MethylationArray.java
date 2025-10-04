@@ -1,17 +1,31 @@
 package nl.bioinf;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MethylationArray {
-    private ArrayList<String> samples;
-    private ArrayList<MethylationData> data;
-
-    public MethylationArray() {
-        this.data = new ArrayList<>();
-    }
+    private List<String> samples= new ArrayList<>();
+    private List<MethylationData> data = new ArrayList<>();
+    private String header;
 
     public void setSamples(ArrayList<String> samples) {
         this.samples = samples;
+    }
+
+    public void setHeader(String header) {
+        String[] headerSplit = header.split(",");
+        StringBuilder headerString = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            headerString.append(headerSplit[i] + ",");
+        }
+        this.header = headerString.toString();
+    }
+
+    public String getHeader() {
+        StringBuilder headerSamplesCombined = new StringBuilder();
+        headerSamplesCombined.append(header).append(String.format("%s%n", this.samples));
+        return header;
     }
 
     public void setData(ArrayList<MethylationData> data) {
@@ -25,11 +39,11 @@ public class MethylationArray {
         data.add(new MethylationData(chromosome, gene, betaValues));
     }
 
-    public ArrayList<MethylationData> getData() {
+    public List<MethylationData> getData() {
         return new ArrayList<>(data);
     }
 
-    public ArrayList<String> getGenes() {
+    public List<String> getGenes() {
         ArrayList<String> genes = new ArrayList<>();
         for (MethylationData d : data) {
             genes.add(d.gene());
@@ -37,7 +51,7 @@ public class MethylationArray {
         return genes;
     }
 
-    public ArrayList<String> getSamples() {
+    public List<String> getSamples() {
         return new ArrayList<>(samples);
     }
 
@@ -50,4 +64,15 @@ public class MethylationArray {
     }
 }
 
-record MethylationData(String chromosome, String gene, ArrayList<Double> betaValues) {}
+record MethylationData(String chromosome, String gene, ArrayList<Double> betaValues) {
+    @Override
+    public String toString() {
+        StringBuilder stringToReturn = new StringBuilder();
+        stringToReturn.append(String.format("%s,%s,", gene, chromosome));
+        for (double value : betaValues) {
+            stringToReturn.append(String.format("%.2f,", value));
+        }
+        stringToReturn.append(String.format("%n"));
+        return stringToReturn.toString();
+    }
+}
