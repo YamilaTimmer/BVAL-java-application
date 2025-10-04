@@ -1,10 +1,12 @@
 package nl.bioinf;
 import picocli.CommandLine.*;
+import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.*;
 
 import static nl.bioinf.FileReader.methylationData;
 
@@ -169,25 +171,58 @@ class Filter implements Runnable {
         mixinStandardHelpOptions = true)
 
 class Compare implements Runnable {
-
-    @Mixin
-    FileOption fileOptions;
+    @Option(names = {"-f", "--file"},
+            description = "Path to file containing the data",
+            arity = "1",
+            required = true)
+    Path filePath;
 
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to compare",
             arity = "0..*")
     String[] samples;
 
-    @ArgGroup(exclusive = true, multiplicity = "1")
-    Filter.PosArguments posArguments;
+//    @ArgGroup(exclusive = true, multiplicity = "1")
+//    Filter.PosArguments posArguments;
+//
+//    @Option(names = {"-c", "--cutoff"},
+//            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
+//    float cutoff;
+    @Spec CommandSpec spec;
+    @Option(names = {"-m", "--methods"},
+            defaultValue = "t-test,spearman,wilcoxon-test",
+            split = ",",
+            description = "Name(s) of the different statistic methods, acceptable values: t-test spearman wilcoxon-test",
+            arity = "0..*")
+    String[] methods;
 
-    @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
-    float cutoff;
+    private void validateMethodInput() {
+        List<String> validMethods = new ArrayList<>();
+        Collections.addAll(validMethods, new String[]{"t-test", "spearman", "wilcoxon-test"});
+
+        for (String method : methods) {
+            if (!validMethods.contains(method)) {
+                throw new ParameterException(spec.commandLine(),
+                        String.format("Invalid value '%s' for option '--method'", method));
+            }
+        }
+    }
+
 
     @Override
     public void run() {
-        //To be implemented
+        validateMethodInput();
+        try {
+            FileReader.readCSV(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        MethylationArray data = FileReader.getData();
+        SampleCompareDataClass corrData = MethylationArraySampleComparer.performStatisticalMethods(data, samples, methods);
+        System.out.println(corrData);
+
+
     }
 
 }
