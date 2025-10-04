@@ -1,11 +1,10 @@
 package nl.bioinf;
 
-import java.io.IOException;
 import picocli.CommandLine;
 
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         CommandLine cmd = new CommandLine(new CommandLineParser())
                 .setColorScheme(CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.ON));

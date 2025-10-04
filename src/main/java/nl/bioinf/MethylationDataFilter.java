@@ -5,30 +5,30 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import static nl.bioinf.FileReader.methylationData;
+import static nl.bioinf.MethylationFileReader.methylationData;
 
-public class DataFilter {
+public class MethylationDataFilter {
 
     public static List<String> samples = methylationData.getSamples();
     public static List<MethylationData> dataRows = methylationData.getData();
     public static MethylationArray methylationArray= new MethylationArray();
 
 
-    static MethylationArray filterSamples(String[] samplesFilter) {
+    static MethylationArray filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
         //Retrieve data
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
 
-        // Look at which betavalues columns need to be kept, based on filter samples
+        // Look at which beta values columns need to be kept, based on filter samples
         ArrayList<Integer> columnsToKeep = new ArrayList<>();
         ArrayList<String> filteredSamples = new ArrayList<>();
 
         for (int i = 0; i < samples.size(); i++) {
             String sample = samples.get(i);
 
-            for (String samplefilter : samplesFilter) {
-                if (sample.equals(samplefilter)) {
+            for (String sampleFilter : samplesFilter) {
+                if (sample.equals(sampleFilter)) {
                     columnsToKeep.add(i); // remember the index to keep
                     filteredSamples.add(sample);
 
@@ -49,10 +49,9 @@ public class DataFilter {
 
             oldBetaValues.clear(); // Remove items from list
             oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
-            }
+        }
 
         System.out.println("Succesfully filtered on sample(s): " + filteredSamples);
-        System.out.println("");
 
         samples.clear();
         samples.addAll(filteredSamples);
@@ -63,24 +62,24 @@ public class DataFilter {
         return methylationArray;
     }
 
-    static MethylationArray filterByGene(String[] genes){
+    static MethylationArray filterByGene(MethylationArray methylationArray, String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
 
-            // Use iterator for removing rows from MethylationData, if user passed gene filter argument
-            Iterator<MethylationData> iter = dataRows.iterator();
+        // Use iterator for removing rows from MethylationData, if user passed gene filter argument
+        Iterator<MethylationData> iter = dataRows.iterator();
 
-            // As long as there is a next row
-            while (iter.hasNext()) {
-                MethylationData row = iter.next();
+        // As long as there is a next row
+        while (iter.hasNext()) {
+            MethylationData row = iter.next();
 
-                // Remove row if gene of that row is not in the genes to be filtered
-                if (!Arrays.asList(genes).contains(row.gene())) {
-                    iter.remove();
+            // Remove row if gene of that row is not in the genes to be filtered
+            if (!Arrays.asList(genes).contains(row.gene())) {
+                iter.remove();
 
-                }
             }
+        }
 
         methylationArray.setData(dataRows);
         System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
@@ -88,7 +87,7 @@ public class DataFilter {
         return methylationArray;
     }
 
-    static MethylationArray filterByChr(String[] chromosomes){
+    static MethylationArray filterByChr(MethylationArray methylationArray, String[] chromosomes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
@@ -110,9 +109,10 @@ public class DataFilter {
         methylationArray.setData(dataRows);
 
         return methylationArray;
+
     }
 
-    static MethylationArray filterByCutOff(float cutoff, String direction){
+    static MethylationArray filterByCutOff(MethylationArray methylationArray, float cutoff, String direction){
 
         List<MethylationData> dataRows = methylationData.getData();
 

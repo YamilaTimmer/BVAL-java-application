@@ -3,7 +3,7 @@ package nl.bioinf;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.bioinf.FileReader.methylationData;
+import static nl.bioinf.MethylationFileReader.methylationData;
 
 public class ChrFilter implements MethylationArrayFilter {
     public static String[] filterChr;
