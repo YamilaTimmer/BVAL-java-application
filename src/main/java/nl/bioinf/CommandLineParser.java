@@ -3,12 +3,19 @@ import picocli.CommandLine.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static nl.bioinf.FileReader.methylationData;
 
-// TODO: replace reused options like file with mixins
-// TODO: add colors for --help usage
-
+// classes for options that are reused in multiple subcommands
+class FileOption {
+    @Option(names = {"-f", "--file"},
+            description = "Path to file containing the data",
+            arity = "1",
+            required = true)
+    Path filePath;
+}
 
 // Parent class that will be called in main
 @Command(name = "BVAL",
@@ -27,24 +34,21 @@ public class CommandLineParser implements Runnable {
 }
 // Summary use-case, takes file and returns summary of file
 @Command(name = "summary",
-        description = "Takes file and provides short summary on e.g. amount of samples and avg. beta-values",
+        description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
         mixinStandardHelpOptions = true)
 
 class Summary implements Runnable {
-    @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
-            required = true,
-            arity = "1") // Makes it so that 1 file is required
-    Path filePath;
+    @Mixin
+    FileOption fileOptions;
 
 
     @Override
     public void run() {
 
         try {
-            FileReader.readCSV(filePath);
+            FileReader.readCSV(fileOptions.filePath);
         } catch (IOException e) {
-            System.err.println("Error: Could not read file: '" + filePath + "'. ");
+            System.err.println("Error: Could not read file: '" + fileOptions.filePath + "'. ");
         }
 
         MethylationArray data = FileReader.getData();
@@ -53,7 +57,6 @@ class Summary implements Runnable {
     }
 }
 
-
 // Filter use-case, takes file, allows user to filter and returns overview to user
 @Command(name = "filter",
         description = "Takes file and allows user to filter it and provides an overview afterwards",
@@ -61,19 +64,15 @@ class Summary implements Runnable {
 
 class Filter implements Runnable {
 
-    // Filter options:
-    @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
-            arity = "1",
-            required = true)
-    Path filePath;
+    @Mixin
+    FileOption fileOptions;
 
     @ArgGroup(exclusive = true, multiplicity = "0..1")
     PosArguments posArguments;
 
     static class PosArguments {
-        @Option(names = "-chr", description = "Positional argument to filter data on one or more chromosomes") String[] chr;
-        @Option(names = "-gene", description = "Positional argument to filter data on one or more genes") String[] genes;
+        @Option(names = {"-chr", "--chromosome"}, description = "Positional argument to filter data on one or more chromosomes") String[] chr;
+        @Option(names = {"-g", "--gene"}, description = "Positional argument to filter data on one or more genes") String[] genes;
     }
 
     @Option(names = {"-s", "--sample"},
@@ -82,47 +81,78 @@ class Filter implements Runnable {
     String[] samples;
 
     @Option(names = {"-c", "--cutoff"},
-            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
+            description = "Cutoff value [0.0-1.0] to filter betavalues on, by default the values higher than the cutoff are kept")
     float cutoff;
+
+    @Parameters(index = "0", arity = "0..1", description = "Filter above or below cutoff: 'hypo' = below cutoff, 'hyper' = above cutoff")
+    String direction;
+
 
     @Override
     public void run() {
 
         try {
-            FileReader.readCSV(filePath);
+            FileReader.readCSV(fileOptions.filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        MethylationArray methylationArray = new MethylationArray();
+
         System.out.println("");
-        System.out.println("Data before filtering: " + methylationData);
+        System.out.println("Data before filtering: " + methylationArray);
         System.out.println("");
 
-        if (samples != null) {
-            DataFilter.filterSamples(samples);
+
+
+        // Check before passing, otherwise NullPointerException
+        if (samples != null){
+            SampleFilter sampleFilter = new SampleFilter(samples);
+            if (sampleFilter.pass(methylationArray) == true){
+                methylationArray = DataFilter.filterSamples(samples);
+            }
+
+        }
+
+        if (posArguments != null && posArguments.chr != null ) {
+            ChrFilter chrFilter = new ChrFilter(posArguments.chr);
+
+            if (chrFilter.pass(methylationArray) == true){
+                methylationArray = DataFilter.filterByChr(posArguments.chr);
+            }
         }
 
         // Check if posArguments is not null, because user does not have to give
         // these arguments (otherwise nullpointerexception)
-        if (posArguments != null) {
-            if (posArguments.chr != null) {
-                DataFilter.filterByChr(posArguments.chr);
-            } else if (posArguments.genes != null) {
-                DataFilter.filterByGene(posArguments.genes);
+//        if (posArguments != null) {
+//            if (posArguments.chr != null) {
+//                methylationArray = DataFilter.filterByChr(posArguments.chr);
+//            } else if (posArguments.genes != null) {
+//                methylationArray = DataFilter.filterByGene(posArguments.genes);
+//            }
+//
+//        }
+//        else{
+//            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
+//            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
+//        }
+
+
+        if (cutoff <= 1 && cutoff >= 0.0){
+            if (direction == null){
+                direction = "hyper";
             }
-
+            methylationArray = DataFilter.filterByCutOff(cutoff, direction);
         }
-        else{
-            System.out.println("Use -chr [chromosome] to filter on chromosome(s)");
-            System.out.println("Use -gene [gene] to filter on gene(s)");
+        else if (cutoff > 1.0 | cutoff < 0.0){
+            System.out.println("\u001B[31mError: Please provide a cutoff value between 0.0 and 1.0 \u001B[0m");
         }
-
-        if (cutoff != 0.0){
-            DataFilter.filterByCutOff(cutoff);
+        else if(cutoff == 0.0 && direction != null){
+            System.out.println("\u001B[34mInfo:Specify a cutoff value with -c\u001B[0m");
         }
 
         System.out.println("");
-        System.out.println("Data after filtering: " + methylationData);
+        System.out.println("Data after filtering: "+ methylationArray);
 
     }
 }
@@ -133,11 +163,9 @@ class Filter implements Runnable {
         mixinStandardHelpOptions = true)
 
 class Compare implements Runnable {
-    @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
-            arity = "1",
-            required = true)
-    Path filePath;
+
+    @Mixin
+    FileOption fileOptions;
 
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to compare",

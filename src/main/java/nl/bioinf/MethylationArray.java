@@ -1,15 +1,21 @@
 package nl.bioinf;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class MethylationArray {
-    private List<String> samples= new ArrayList<>();
-    private List<MethylationData> data = new ArrayList<>();
+    private ArrayList<String> samples;
+    private ArrayList<MethylationData> data;
+
+    public MethylationArray() {
+        this.data = new ArrayList<>();
+    }
 
     public void setSamples(ArrayList<String> samples) {
         this.samples = samples;
+    }
+
+    public void setData(ArrayList<MethylationData> data) {
+        this.data = data;
     }
 
     public void addData(String chromosome, String gene, ArrayList<Double> betaValues) throws IllegalArgumentException {
@@ -19,12 +25,20 @@ public class MethylationArray {
         data.add(new MethylationData(chromosome, gene, betaValues));
     }
 
-    public List<MethylationData> getData() {
-        return Collections.unmodifiableList(data);
+    public ArrayList<MethylationData> getData() {
+        return new ArrayList<>(data);
     }
 
-    public List<String> getSamples() {
-        return Collections.unmodifiableList(samples);
+    public ArrayList<String> getGenes() {
+        ArrayList<String> genes = new ArrayList<>();
+        for (MethylationData d : data) {
+            genes.add(d.gene());
+        }
+        return genes;
+    }
+
+    public ArrayList<String> getSamples() {
+        return new ArrayList<>(samples);
     }
 
     @Override

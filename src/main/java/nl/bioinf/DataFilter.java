@@ -3,16 +3,18 @@ package nl.bioinf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 import static nl.bioinf.FileReader.methylationData;
 
 public class DataFilter {
 
-    static void filterSamples(String[] samplesFilter) {
+    public static ArrayList<String> samples = methylationData.getSamples();
+    public static ArrayList<MethylationData> dataRows = methylationData.getData();
+    public static MethylationArray methylationArray= new MethylationArray();
+
+
+    static MethylationArray filterSamples(String[] samplesFilter) {
         //Retrieve data
-        List<String> samples = methylationData.getSamples();
-        List<MethylationData> dataRows = methylationData.getData();
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
@@ -48,20 +50,22 @@ public class DataFilter {
             oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
             }
 
-        System.out.println("Succesfully filtered on sample(s): " + Arrays.toString(samplesFilter));
+        System.out.println("Succesfully filtered on sample(s): " + filteredSamples);
         System.out.println("");
 
-        // Replace samples with the remaining samples
         samples.clear();
         samples.addAll(filteredSamples);
+
+        methylationArray.setData(dataRows);
+        methylationArray.setSamples(samples);
+
+        return methylationArray;
     }
 
-    static void filterByGene(String[] genes){
+    static MethylationArray filterByGene(String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
-
-        List<MethylationData> dataRows = methylationData.getData();
 
             // Use iterator for removing rows from MethylationData, if user passed gene filter argument
             Iterator<MethylationData> iter = dataRows.iterator();
@@ -76,16 +80,17 @@ public class DataFilter {
 
                 }
             }
-            System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
 
+        methylationArray.setData(dataRows);
+        System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
+
+        return methylationArray;
     }
 
-    static void filterByChr(String[] chromosomes){
+    static MethylationArray filterByChr(String[] chromosomes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
-
-        List<MethylationData> dataRows = methylationData.getData();
 
         // Use iterator for removing rows from MethylationData, if user passed chr filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
@@ -99,22 +104,33 @@ public class DataFilter {
             }
         }
 
-        System.out.println("Succesfully filtered on chromosome(s) : " + Arrays.toString(chromosomes));
+        System.out.println("\u001B[32mSuccesfully filtered on chromosome(s) : \u001B[0m" + Arrays.toString(chromosomes));
 
+        methylationArray.setData(dataRows);
+
+        return methylationArray;
     }
-    static void filterByCutOff(float cutoff){
 
-        List<MethylationData> dataRows = methylationData.getData();
+    static MethylationArray filterByCutOff(float cutoff, String direction){
+
+        ArrayList<MethylationData> dataRows = methylationData.getData();
 
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
             ArrayList<Double> filteredBetaValues = new ArrayList<>();
 
-            // If betavalue >= cutoff, add to arraylist of filtered values
-            for(Double betavalue : oldBetaValues){
-                if (betavalue >= cutoff){
-                    filteredBetaValues.add(betavalue);
+            // Filter on cutoff, depending on hypo/hyper
+            for (Double betaValue : oldBetaValues) {
+                if (direction.equals("hypo")) {
+                    if (betaValue <= cutoff) {
+                        filteredBetaValues.add(betaValue);
+                    }
+                }
+                else {
+                    if (betaValue >= cutoff) {
+                        filteredBetaValues.add(betaValue);
+                    }
                 }
             }
 
@@ -122,5 +138,9 @@ public class DataFilter {
             oldBetaValues.clear(); //Remove items from list
             oldBetaValues.addAll(filteredBetaValues); //Replace with filtered values
         }
+
+        methylationArray.setData(dataRows);
+
+        return methylationArray;
     }
 }
