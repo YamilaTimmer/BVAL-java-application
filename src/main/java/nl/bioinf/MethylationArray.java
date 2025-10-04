@@ -9,7 +9,7 @@ public class MethylationArray {
     private List<MethylationData> data = new ArrayList<>();
     private String header;
 
-    public void setSamples(ArrayList<String> samples) {
+    public void setSamples(List<String> samples) {
         this.samples = samples;
     }
 
@@ -28,7 +28,7 @@ public class MethylationArray {
         return header;
     }
 
-    public void setData(ArrayList<MethylationData> data) {
+    public void setData(List<MethylationData> data) {
         this.data = data;
     }
 

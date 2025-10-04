@@ -1,12 +1,14 @@
 package nl.bioinf;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import static nl.bioinf.FileReader.methylationData;
 
 public class SampleFilter implements MethylationArrayFilter{
 
-    public static ArrayList<String> samples = methylationData.getSamples();
-    public static ArrayList<MethylationData> dataRows = methylationData.getData();
+    public static List<String> samples = methylationData.getSamples();
+    public static List<MethylationData> dataRows = methylationData.getData();
     public static String[] filterSamples;
 
     public SampleFilter(String[] filterSamples) {

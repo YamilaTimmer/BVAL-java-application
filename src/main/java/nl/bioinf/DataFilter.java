@@ -3,13 +3,14 @@ package nl.bioinf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import static nl.bioinf.FileReader.methylationData;
 
 public class DataFilter {
 
-    public static ArrayList<String> samples = methylationData.getSamples();
-    public static ArrayList<MethylationData> dataRows = methylationData.getData();
+    public static List<String> samples = methylationData.getSamples();
+    public static List<MethylationData> dataRows = methylationData.getData();
     public static MethylationArray methylationArray= new MethylationArray();
 
 
@@ -113,7 +114,7 @@ public class DataFilter {
 
     static MethylationArray filterByCutOff(float cutoff, String direction){
 
-        ArrayList<MethylationData> dataRows = methylationData.getData();
+        List<MethylationData> dataRows = methylationData.getData();
 
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
