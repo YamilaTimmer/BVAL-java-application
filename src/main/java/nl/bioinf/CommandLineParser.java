@@ -114,7 +114,7 @@ class Filter implements Runnable {
         if (samples != null){
             GeneFilterCheck geneFilterCheck = new GeneFilterCheck(samples);
             if (geneFilterCheck.pass(methylationData)){
-                MethylationArray outputMethylationArray = MethylationDataFilter.filterBySample(methylationArray, samples);
+                methylationArray = MethylationDataFilter.filterBySample(methylationData, samples);
             }
 
         }
@@ -145,7 +145,7 @@ class Filter implements Runnable {
 //            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
 
         try {
-            FilterFileWriter.writeData(methylationData);
+            FilterFileWriter.writeData(methylationArray);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

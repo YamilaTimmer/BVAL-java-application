@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 public class MethylationArray {
     private List<String> samples= new ArrayList<>();
     private List<MethylationData> data = new ArrayList<>();
@@ -24,8 +25,8 @@ public class MethylationArray {
 
     public String getHeader() {
         StringBuilder headerSamplesCombined = new StringBuilder();
-        headerSamplesCombined.append(header).append(String.format("%s%n", this.samples));
-        return header;
+        headerSamplesCombined.append(header).append(String.format("%s%n", String.join(",", this.samples)));
+        return headerSamplesCombined.toString();
     }
 
     public void setData(List<MethylationData> data) {
@@ -48,7 +49,7 @@ public class MethylationArray {
         for (MethylationData d : data) {
             genes.add(d.gene());
         }
-        return genes;
+        return Collections.unmodifiableList(genes);
     }
 
     public List<String> getSamples() {
@@ -72,6 +73,7 @@ record MethylationData(String chromosome, String gene, ArrayList<Double> betaVal
         for (double value : betaValues) {
             stringToReturn.append(String.format("%.2f,", value));
         }
+        stringToReturn.deleteCharAt(stringToReturn.length()-1);
         stringToReturn.append(String.format("%n"));
         return stringToReturn.toString();
     }
