@@ -210,6 +210,12 @@ class Compare implements Runnable {
         SampleCompareDataClass corrData = MethylationArraySampleComparer.performStatisticalMethods(data, samples, methods);
         System.out.println(corrData);
 
+        try {
+            ComparingFileWriter.writeData(corrData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
