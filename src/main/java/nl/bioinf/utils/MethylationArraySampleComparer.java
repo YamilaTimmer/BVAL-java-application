@@ -1,12 +1,14 @@
-package nl.bioinf;
+package nl.bioinf.utils;
 
+import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.dataClasses.MethylationData;
+import nl.bioinf.dataClasses.SampleCompareDataClass;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
 
 public class MethylationArraySampleComparer {

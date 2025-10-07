@@ -1,10 +1,11 @@
-package nl.bioinf;
+package nl.bioinf.io;
+
+import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.dataClasses.MethylationData;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FilterFileWriter{
     public static void writeData(MethylationArray data) throws IOException {

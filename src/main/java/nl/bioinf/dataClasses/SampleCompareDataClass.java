@@ -1,4 +1,4 @@
-package nl.bioinf;
+package nl.bioinf.dataClasses;
 
 import java.util.*;
 

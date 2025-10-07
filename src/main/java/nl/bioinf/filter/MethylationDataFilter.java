@@ -1,20 +1,27 @@
-package nl.bioinf;
+package nl.bioinf.filter;
+
+import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.dataClasses.MethylationData;
+import nl.bioinf.io.MethylationFileReader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import static nl.bioinf.MethylationFileReader.methylationData;
-
 public class MethylationDataFilter {
 
-    public static List<String> samples = methylationData.getSamples();
-    public static List<MethylationData> dataRows = methylationData.getData();
-    public static MethylationArray methylationArray= new MethylationArray();
+    public static List<String> samples;
+    public static List<MethylationData> dataRows;
+    public static MethylationArray methylationArray;
 
+    static {
+        samples = MethylationFileReader.getData().getSamples();
+        dataRows = MethylationFileReader.getData().getData();
+        methylationArray = new MethylationArray();
+    }
 
-    static MethylationArray filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
+    public static MethylationArray filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
         //Retrieve data
 
         System.out.println("-------------------------------------");
@@ -62,7 +69,7 @@ public class MethylationDataFilter {
         return methylationArray;
     }
 
-    static MethylationArray filterByGene(MethylationArray methylationArray, String[] genes){
+   public  static MethylationArray filterByGene(MethylationArray methylationArray, String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
@@ -87,7 +94,7 @@ public class MethylationDataFilter {
         return methylationArray;
     }
 
-    static MethylationArray filterByChr(MethylationArray methylationArray, String[] chromosomes){
+   public static MethylationArray filterByChr(MethylationArray methylationArray, String[] chromosomes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
@@ -112,9 +119,7 @@ public class MethylationDataFilter {
 
     }
 
-    static MethylationArray filterByCutOff(MethylationArray methylationArray, float cutoff, String direction){
-
-        List<MethylationData> dataRows = methylationData.getData();
+   public static MethylationArray filterByCutOff(MethylationArray methylationArray, float cutoff, String direction){
 
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {

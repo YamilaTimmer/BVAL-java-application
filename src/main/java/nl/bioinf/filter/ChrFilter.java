@@ -1,13 +1,10 @@
-package nl.bioinf;
+package nl.bioinf.filter;
 
-import java.util.ArrayList;
-import java.util.List;
+import nl.bioinf.dataClasses.MethylationArray;
 
-import static nl.bioinf.MethylationFileReader.methylationData;
 
 public class ChrFilter implements MethylationArrayFilter {
     public static String[] filterChr;
-    public static List<MethylationData> dataRows = methylationData.getData();
 
     public ChrFilter(String[] filterChr) {
         ChrFilter.filterChr = filterChr;

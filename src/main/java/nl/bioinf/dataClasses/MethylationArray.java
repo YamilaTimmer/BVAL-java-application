@@ -1,4 +1,4 @@
-package nl.bioinf;
+package nl.bioinf.dataClasses;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,9 +24,7 @@ public class MethylationArray {
     }
 
     public String getHeader() {
-        StringBuilder headerSamplesCombined = new StringBuilder();
-        headerSamplesCombined.append(header).append(String.format("%s%n", String.join(",", this.samples)));
-        return headerSamplesCombined.toString();
+        return header + String.format("%s%n", String.join(",", this.samples));
     }
 
     public void setData(List<MethylationData> data) {
@@ -65,16 +63,3 @@ public class MethylationArray {
     }
 }
 
-record MethylationData(String chromosome, String gene, ArrayList<Double> betaValues) {
-    @Override
-    public String toString() {
-        StringBuilder stringToReturn = new StringBuilder();
-        stringToReturn.append(String.format("%s,%s,", gene, chromosome));
-        for (double value : betaValues) {
-            stringToReturn.append(String.format("%.2f,", value));
-        }
-        stringToReturn.deleteCharAt(stringToReturn.length()-1);
-        stringToReturn.append(String.format("%n"));
-        return stringToReturn.toString();
-    }
-}

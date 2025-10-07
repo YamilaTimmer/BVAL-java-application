@@ -1,4 +1,6 @@
-package nl.bioinf;
+package nl.bioinf.io;
+
+import nl.bioinf.dataClasses.SampleCompareDataClass;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

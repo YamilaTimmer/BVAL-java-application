@@ -1,6 +1,9 @@
 package nl.bioinf;
 
 import jdk.jfr.Description;
+import nl.bioinf.utils.CommandLineParser;
+import nl.bioinf.utils.Filter;
+import nl.bioinf.utils.Summary;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,14 +1,20 @@
-package nl.bioinf;
+package nl.bioinf.utils;
+import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.dataClasses.SampleCompareDataClass;
+import nl.bioinf.filter.ChrFilterCheck;
+import nl.bioinf.filter.CutOffFilterCheck;
+import nl.bioinf.filter.GeneFilterCheck;
+import nl.bioinf.filter.MethylationDataFilter;
+import nl.bioinf.io.ComparingFileWriter;
+import nl.bioinf.io.FilterFileWriter;
+import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.*;
-
-import static nl.bioinf.MethylationFileReader.methylationData;
 
 // classes for options that are reused in multiple subcommands
 class FileOption {
@@ -98,9 +104,10 @@ class Filter implements Runnable {
 
     @Override
     public void run() {
-
+        MethylationArray methylationData;
         try {
             MethylationFileReader.readCSV(fileOptions.filePath);
+            methylationData = MethylationFileReader.getData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

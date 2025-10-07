@@ -1,19 +1,22 @@
-package nl.bioinf;
-
-import java.util.ArrayList;
-import static nl.bioinf.MethylationFileReader.methylationData;
+package nl.bioinf.filter;
+import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.dataClasses.MethylationData;
+import nl.bioinf.io.MethylationFileReader;
 import java.util.List;
-
-import static nl.bioinf.MethylationFileReader.methylationData;
 
 public class SampleFilterCheck implements MethylationArrayFilter{
 
-    public static List<String> samples = methylationData.getSamples();
-    public static List<MethylationData> dataRows = methylationData.getData();
-    public static String[] filterSamples;
+    private static String[] filterSamples;
+    public static List<String> samples;
+    public static List<MethylationData> dataRows;
+    public static MethylationArray methylationArray;
+    
 
     public SampleFilterCheck(String[] filterSamples) {
         SampleFilterCheck.filterSamples = filterSamples;
+        samples = MethylationFileReader.getData().getSamples();
+        dataRows = MethylationFileReader.getData().getData();
+        methylationArray = new MethylationArray();
 
     }
 

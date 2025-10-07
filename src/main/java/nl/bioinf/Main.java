@@ -1,5 +1,6 @@
 package nl.bioinf;
 
+import nl.bioinf.utils.CommandLineParser;
 import picocli.CommandLine;
 
 

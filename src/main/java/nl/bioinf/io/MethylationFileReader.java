@@ -1,4 +1,6 @@
-package nl.bioinf;
+package nl.bioinf.io;
+
+import nl.bioinf.dataClasses.MethylationArray;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +10,9 @@ import java.util.List;
 
 public class MethylationFileReader {
 
-    static List<String> data = new ArrayList<>(); // List because its resizable
-    static String headerLine;
-    static MethylationArray methylationData;
+    private static List<String> data = new ArrayList<>(); // List because its resizable
+    private static String headerLine;
+    private static MethylationArray methylationData;
 
     public static void readCSV(Path filePath) throws IOException {
 
