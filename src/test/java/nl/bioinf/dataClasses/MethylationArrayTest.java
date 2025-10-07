@@ -1,7 +1,7 @@
-package nl.bioinf;
+package nl.bioinf.dataClasses;
 
-import nl.bioinf.utils.MethylationArray;
-import nl.bioinf.utils.MethylationData;
+import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.dataClasses.MethylationData;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ class MethylationArrayTest {
         tester.addData("probe1", "tp53", values);
 
         // Assert if it returns a copy, or pointer to data
-        ArrayList<MethylationData> data = tester.getData();
+        ArrayList<MethylationData> data = (ArrayList<MethylationData>) tester.getData();
         assertNotSame(tester.getData(), data);
 
 

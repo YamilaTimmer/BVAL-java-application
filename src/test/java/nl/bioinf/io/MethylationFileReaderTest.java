@@ -1,7 +1,6 @@
-package nl.bioinf;
+package nl.bioinf.io;
 
 import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.io.MethylationFileReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
