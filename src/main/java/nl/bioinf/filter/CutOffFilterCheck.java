@@ -4,12 +4,12 @@ import nl.bioinf.dataClasses.MethylationArray;
 
 public class CutOffFilterCheck implements MethylationArrayFilter {
     public static float cutoff;
-    public static String direction;
+    public static MethylationDataFilter.CutoffType cutoffType;
 
 
-    public CutOffFilterCheck(float cutoff, String direction) {
+    public CutOffFilterCheck(float cutoff, MethylationDataFilter.CutoffType cutoffType) {
         CutOffFilterCheck.cutoff = cutoff;
-        CutOffFilterCheck.direction = direction;
+        CutOffFilterCheck.cutoffType = cutoffType;
 
     }
 
