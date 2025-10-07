@@ -11,14 +11,18 @@ import java.util.List;
 
 public class MethylationDataFilter {
 
-    public static List<String> samples;
-    public static List<MethylationData> dataRows;
-    public static MethylationArray methylationArray;
+//    public static List<String> samples;
+//    public static List<MethylationData> dataRows;
+//    public static MethylationArray methylationArray;
+//
+//    static {
+//        samples = MethylationFileReader.getData().getSamples();
+//        dataRows = MethylationFileReader.getData().getData();
+//        methylationArray = new MethylationArray();
+//    }
 
-    static {
-        samples = MethylationFileReader.getData().getSamples();
-        dataRows = MethylationFileReader.getData().getData();
-        methylationArray = new MethylationArray();
+    public enum CutoffType {
+        upper, lower
     }
 
     public static MethylationArray filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
@@ -26,6 +30,9 @@ public class MethylationDataFilter {
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
+
+        List<String> samples = methylationArray.getSamples();
+        List<MethylationData> dataRows = methylationArray.getData();
 
         // Look at which beta values columns need to be kept, based on filter samples
         ArrayList<Integer> columnsToKeep = new ArrayList<>();
@@ -74,7 +81,9 @@ public class MethylationDataFilter {
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
 
-        // Use iterator for removing rows from MethylationData, if user passed gene filter argument
+       List<MethylationData> dataRows = methylationArray.getData();
+
+       // Use iterator for removing rows from MethylationData, if user passed gene filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
 
         // As long as there is a next row
@@ -99,7 +108,9 @@ public class MethylationDataFilter {
         System.out.println("-------------------------------------");
         System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
 
-        // Use iterator for removing rows from MethylationData, if user passed chr filter argument
+       List<MethylationData> dataRows = methylationArray.getData();
+
+       // Use iterator for removing rows from MethylationData, if user passed chr filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
 
         while (iter.hasNext()) {
@@ -119,16 +130,18 @@ public class MethylationDataFilter {
 
     }
 
-   public static MethylationArray filterByCutOff(MethylationArray methylationArray, float cutoff, String direction){
+   public static MethylationArray filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType){
 
-        // Retrieve rows and make new rows for filtered values
+       List<MethylationData> dataRows = methylationArray.getData();
+
+       // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
             ArrayList<Double> filteredBetaValues = new ArrayList<>();
 
             // Filter on cutoff, depending on hypo/hyper
             for (Double betaValue : oldBetaValues) {
-                if (direction.equals("hypo")) {
+                if (cutoffType == CutoffType.lower) {
                     if (betaValue <= cutoff) {
                         filteredBetaValues.add(betaValue);
                     }
