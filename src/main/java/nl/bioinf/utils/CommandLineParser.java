@@ -8,6 +8,7 @@ import nl.bioinf.filter.MethylationDataFilter;
 import nl.bioinf.io.ComparingFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
+import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
 
@@ -50,6 +51,7 @@ public class CommandLineParser implements Runnable {
 
     @Override
     public void run() {
+        CommandLine.usage(this, System.out);
     }
 }
 
