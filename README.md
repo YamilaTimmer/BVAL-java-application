@@ -14,7 +14,12 @@ This repository contains a Java commandline tool for analyzing- and comparing of
 
 ## System requirements and installation
 ### System requirements
--
+- OS: Windows, macOS or Linux
+
+This tool was created using:
+- Java ([v.24.0.1](https://www.oracle.com/java/technologies/javase/jdk24-archive-downloads.html))
+- Gradle ([v.8.14](https://gradle.org/releases/))
+
 
 ### Clone the repository
 
@@ -87,7 +92,7 @@ $$
 In case of any bugs or needed support, please open an issue [here](https://github.com/YamilaTimmer/methylation-java-app/issues).
 
 ## License
-This project is licensed under the ... license. See the LICENSE file for details.
+This project is licensed under GNU General Public License v3.0. See the [LICENSE file](https://github.com/YamilaTimmer/methylation-java-app/blob/main/LICENSE) for details.
 
 ## Sources
 
