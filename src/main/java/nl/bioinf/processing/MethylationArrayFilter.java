@@ -1,6 +1,6 @@
-package nl.bioinf.filter;
+package nl.bioinf.processing;
 
-import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.model.MethylationArray;
 
 public interface MethylationArrayFilter {
         /**

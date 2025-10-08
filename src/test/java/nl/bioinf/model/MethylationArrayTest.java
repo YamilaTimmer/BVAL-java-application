@@ -1,7 +1,5 @@
-package nl.bioinf.dataClasses;
+package nl.bioinf.model;
 
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.dataClasses.MethylationData;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

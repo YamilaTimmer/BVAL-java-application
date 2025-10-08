@@ -1,8 +1,8 @@
-package nl.bioinf.utils;
+package nl.bioinf.processing;
 
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.dataClasses.MethylationData;
-import nl.bioinf.dataClasses.SampleCompareDataClass;
+import nl.bioinf.model.MethylationArray;
+import nl.bioinf.model.MethylationData;
+import nl.bioinf.model.SampleComparison;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
@@ -20,8 +20,8 @@ public class MethylationArraySampleComparer {
         statisticalMethods.put("wilcoxon-test", MethylationArraySampleComparer::runWilcoxonTest);
     }
 
-    public static SampleCompareDataClass performStatisticalMethods(MethylationArray data, String[] samples, String[] methods) {
-        SampleCompareDataClass statisticalData = new SampleCompareDataClass(methods);
+    public static SampleComparison performStatisticalMethods(MethylationArray data, String[] samples, String[] methods) {
+        SampleComparison statisticalData = new SampleComparison(methods);
         for (int i = 0; i < samples.length; i++) {
             for (int j = i+1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);

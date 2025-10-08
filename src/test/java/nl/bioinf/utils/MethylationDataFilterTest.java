@@ -1,9 +1,8 @@
 package nl.bioinf.utils;
 
 import jdk.jfr.Description;
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.filter.MethylationDataFilter;
-import nl.bioinf.io.MethylationFileReader;
+import nl.bioinf.model.MethylationArray;
+import nl.bioinf.processing.MethylationDataFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

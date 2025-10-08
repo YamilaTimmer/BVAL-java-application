@@ -1,4 +1,4 @@
-package nl.bioinf.dataClasses;
+package nl.bioinf.model;
 
 import java.util.ArrayList;
 

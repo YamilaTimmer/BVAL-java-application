@@ -1,10 +1,7 @@
 package nl.bioinf.utils;
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.dataClasses.SampleCompareDataClass;
-import nl.bioinf.filter.ChrFilterCheck;
-import nl.bioinf.filter.CutOffFilterCheck;
-import nl.bioinf.filter.GeneFilterCheck;
-import nl.bioinf.filter.MethylationDataFilter;
+import nl.bioinf.model.MethylationArray;
+import nl.bioinf.model.SampleComparison;
+import nl.bioinf.processing.*;
 import nl.bioinf.io.ComparingFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
@@ -73,7 +70,7 @@ class Summary implements Runnable {
             System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
         }
         MethylationArray data = MethylationFileReader.getData();
-        SummaryGenerator.summaryGenerator(data);
+        SummaryGenerator.generateSummary(data);
     }
 }
 
@@ -219,7 +216,7 @@ class Compare implements Runnable {
         }
 
         MethylationArray data = MethylationFileReader.getData();
-        SampleCompareDataClass corrData = MethylationArraySampleComparer.performStatisticalMethods(data, sampleInput.samples, methods);
+        SampleComparison corrData = MethylationArraySampleComparer.performStatisticalMethods(data, sampleInput.samples, methods);
         System.out.println(corrData);
 
         try {

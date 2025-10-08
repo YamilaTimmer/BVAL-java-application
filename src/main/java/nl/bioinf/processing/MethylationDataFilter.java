@@ -1,8 +1,7 @@
-package nl.bioinf.filter;
+package nl.bioinf.processing;
 
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.dataClasses.MethylationData;
-import nl.bioinf.io.MethylationFileReader;
+import nl.bioinf.model.MethylationArray;
+import nl.bioinf.model.MethylationData;
 
 import java.util.ArrayList;
 import java.util.Arrays;

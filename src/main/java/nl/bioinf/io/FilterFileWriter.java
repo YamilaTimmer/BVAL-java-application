@@ -1,7 +1,7 @@
 package nl.bioinf.io;
 
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.dataClasses.MethylationData;
+import nl.bioinf.model.MethylationArray;
+import nl.bioinf.model.MethylationData;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

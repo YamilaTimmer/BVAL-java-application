@@ -1,6 +1,6 @@
 package nl.bioinf.io;
 
-import nl.bioinf.dataClasses.MethylationArray;
+import nl.bioinf.model.MethylationArray;
 
 import java.io.BufferedReader;
 import java.io.IOException;

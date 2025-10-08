@@ -1,6 +1,6 @@
 package nl.bioinf.io;
 
-import nl.bioinf.dataClasses.SampleCompareDataClass;
+import nl.bioinf.model.SampleComparison;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 public class ComparingFileWriter {
-    public static void writeData(SampleCompareDataClass data) throws IOException {
+    public static void writeData(SampleComparison data) throws IOException {
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter("output.txt"))) {
             newFile.write(createHeader(data));
             newFile.write(createCompareFileBody(data));
         }
     }
 
-    private static String createHeader(SampleCompareDataClass data) {
+    private static String createHeader(SampleComparison data) {
         StringBuilder header = new StringBuilder();
         header.append("SampleVSSample");
         for (String method : data.getStatisticMethods()) {
@@ -28,7 +28,7 @@ public class ComparingFileWriter {
 
     }
 
-    private static String createCompareFileBody(SampleCompareDataClass data) {
+    private static String createCompareFileBody(SampleComparison data) {
         int sampleIndex = 0;
         Map<String, List<Double>> statisticsResults = data.getStatisticsData();
         StringBuilder newFileBody = new StringBuilder();

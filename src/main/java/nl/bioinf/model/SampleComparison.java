@@ -1,12 +1,12 @@
-package nl.bioinf.dataClasses;
+package nl.bioinf.model;
 
 import java.util.*;
 
-public class SampleCompareDataClass {
+public class SampleComparison {
     private List<String> sampleVersusSampleNames = new ArrayList<>();
     private Map<String, List<Double>> statisticsData = new HashMap<>();
 
-    public SampleCompareDataClass(String[] methods) {
+    public SampleComparison(String[] methods) {
         for (String method : methods) {
             statisticsData.put(method, new ArrayList<>());
         }

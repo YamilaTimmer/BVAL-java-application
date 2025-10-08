@@ -1,14 +1,14 @@
-package nl.bioinf.utils;
+package nl.bioinf.processing;
 
-import nl.bioinf.dataClasses.MethylationArray;
-import nl.bioinf.dataClasses.MethylationData;
+import nl.bioinf.model.MethylationArray;
+import nl.bioinf.model.MethylationData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SummaryGenerator {
 
-    public static void summaryGenerator(MethylationArray methylationData){
+    public static void generateSummary(MethylationArray methylationData){
         System.out.println("Generating summary...");
         System.out.println("---------------------");
 
