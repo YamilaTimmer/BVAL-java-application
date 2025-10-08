@@ -24,7 +24,7 @@ public class MethylationArray {
     }
 
     public String getHeader() {
-        return header + String.format("%s%n", String.join(",", this.samples));
+        return header + String.format("%s", String.join(",", this.samples));
     }
 
     public void setData(List<MethylationData> data) {

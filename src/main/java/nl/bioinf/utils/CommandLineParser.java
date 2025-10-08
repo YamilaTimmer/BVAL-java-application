@@ -196,7 +196,7 @@ class Compare implements Runnable {
 
     private void validateMethodInput() {
         List<String> validMethods = new ArrayList<>();
-        Collections.addAll(validMethods, new String[]{"t-test", "spearman", "wilcoxon-test"});
+        Collections.addAll(validMethods, "t-test", "spearman", "wilcoxon-test");
 
         for (String method : methods) {
             if (!validMethods.contains(method)) {
