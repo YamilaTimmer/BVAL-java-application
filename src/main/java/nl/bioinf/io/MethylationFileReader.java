@@ -1,6 +1,8 @@
 package nl.bioinf.io;
 
 import nl.bioinf.model.MethylationArray;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,11 +15,12 @@ public class MethylationFileReader {
     private static List<String> data = new ArrayList<>(); // List because its resizable
     private static String headerLine;
     private static MethylationArray methylationData;
+    private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
 
-    public static void readCSV(Path filePath) throws IOException {
+    public static void readCSV(Path filePath) {
 
-        BufferedReader br = Files.newBufferedReader(filePath);
-            headerLine =  br.readLine();
+        try (BufferedReader br = Files.newBufferedReader(filePath)) {
+            headerLine = br.readLine();
             String line;
             methylationData = new MethylationArray();
             if (headerLine == null) {
@@ -32,7 +35,30 @@ public class MethylationFileReader {
                 ArrayList<Double> bValues = getBValues(lineSplit);
                 methylationData.addData(lineSplit[2], lineSplit[1], bValues);
             }
+        } catch (NoSuchFileException ex) {
+            logger.error("""
+                    Failed to find the provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check whether the correct file path was given.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
 
+        } catch (AccessDeniedException ex) {
+            logger.error("""
+                     Permission denied to open the provided file: '{}'.\s
+                     Exception occurred: '{}'.\s
+                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch(IOException ex){
+            logger.error("""
+                    Unexpected IO error for provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check the provided file path""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+        }
     }
 
     private static ArrayList<String> getSamples(String header) {
@@ -44,7 +70,6 @@ public class MethylationFileReader {
         }
 
         return samples;
-
     }
 
     public static MethylationArray getData() {
@@ -60,7 +85,6 @@ public class MethylationFileReader {
 
             betaValues.add(Double.parseDouble(lineSplit[i]));
         }
-
         return betaValues;
     }
 }

@@ -75,7 +75,7 @@ public class MethylationDataFilter {
         return methylationArray;
     }
 
-   public  static MethylationArray filterByGene(MethylationArray methylationArray, String[] genes){
+   public static MethylationArray filterByGene(MethylationArray methylationArray, String[] genes){
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering on gene(s): " + Arrays.toString(genes));

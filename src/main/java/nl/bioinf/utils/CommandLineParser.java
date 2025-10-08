@@ -8,16 +8,11 @@ import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
-import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.*;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 
 // Reusable option for filepath
 class FilePathInput {
@@ -55,42 +50,15 @@ public class CommandLineParser implements Runnable {
 @Command(name = "summary",
         description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
         mixinStandardHelpOptions = true)
+
 class Summary implements Runnable {
-    private static final Logger logger = LogManager.getLogger(Summary.class.getName());
     @Mixin
     FilePathInput filePathInput;
 
     @Override
     public void run() {
 
-        try {
-            MethylationFileReader.readCSV(filePathInput.filePath);
-
-        } catch (NoSuchFileException ex) {
-            logger.error("""
-                    Failed to find the provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check whether the correct file path was given.""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-
-        } catch (AccessDeniedException ex) {
-            logger.error("""
-                     Permission denied to open the provided file: '{}'.\s
-                     Exception occurred: '{}'.\s
-                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-
-        } catch(IOException ex){
-            logger.error("""
-                    Unexpected IO error for provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check the provided file path""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-        }
-
+        MethylationFileReader.readCSV(filePathInput.filePath);
         MethylationArray data = MethylationFileReader.getData();
         SummaryGenerator.generateSummary(data);
     }
@@ -134,36 +102,9 @@ class Filter implements Runnable {
     @Override
     public void run() {
 
-        MethylationArray methylationData = null;
-        
-        try {
-            MethylationFileReader.readCSV(filePathInput.filePath);
-            methylationData = MethylationFileReader.getData();
-
-        } catch (NoSuchFileException ex) {
-            logger.error("""
-                    Failed to find the provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check whether the correct file path was given.""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-
-        } catch (AccessDeniedException ex) {
-            logger.error("""
-                     Permission denied to open the provided file: '{}'.\s
-                     Exception occurred: '{}'.\s
-                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
-                     ex.getMessage(), ex);
-            System.exit(0);
-
-        } catch(IOException ex){
-            logger.error("""
-                    Unexpected IO error for provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check the provided file path""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-        }
+        MethylationArray methylationData;
+        MethylationFileReader.readCSV(filePathInput.filePath);
+        methylationData = MethylationFileReader.getData();
     
         // Make new MethylationArray object to store filtered values in and set same samples
         MethylationArray methylationArray = new MethylationArray();
@@ -197,16 +138,7 @@ class Filter implements Runnable {
             MethylationDataFilter.filterByCutOff(methylationArray, cutoff, cutoffType);
         }
 
-        try {
-            FilterFileWriter.writeData(methylationArray);
-        } catch(IOException ex){
-            logger.error("""
-                    Unexpected IO error when writing to file: '{}'.\s
-                    Exception occurred: '{}'.
-                    """,
-                    ex.getMessage(), ex);
-            System.exit(0);
-        }
+        FilterFileWriter.writeData(methylationArray);
     }
 }
 
@@ -247,46 +179,12 @@ class Compare implements Runnable {
     public void run() {
 
         validateMethodInput();
-        try {
-            MethylationFileReader.readCSV(filePathInput.filePath);
-        } catch (NoSuchFileException ex) {
-            logger.error("""
-                    Failed to find the provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check whether the correct file path was given.""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-
-        } catch (AccessDeniedException ex) {
-            logger.error("""
-                     Permission denied to open the provided file: '{}'.\s
-                     Exception occurred: '{}'.\s
-                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-
-        } catch(IOException ex){
-            logger.error("""
-                    Unexpected IO error for provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check the provided file path""",
-                    ex.getMessage(), ex);
-            System.exit(0);
-        }
+        MethylationFileReader.readCSV(filePathInput.filePath);
 
         MethylationArray data = MethylationFileReader.getData();
         SampleComparison corrData = MethylationArraySampleComparer.performStatisticalMethods(data, sampleInput.samples, methods);
         System.out.println(corrData);
 
-        try {
-            ComparingFileWriter.writeData(corrData);
-        } catch(IOException ex){
-            logger.error("""
-                    Unexpected IO error when writing to file: '{}'.\s
-                    Exception occurred: '{}'.
-                    """,
-                    ex.getMessage(), ex);
-            System.exit(0);
-        }
+        ComparingFileWriter.writeData(corrData);
     }
 }
