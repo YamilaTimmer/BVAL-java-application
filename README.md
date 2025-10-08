@@ -1,0 +1,99 @@
+# BVAL: Beta Value Analyzer
+
+## Authors:
+- [Ramon Reilman](https://github.com/RamonReilman)
+- [Yamila Timmer](https://github.com/YamilaTimmer)
+
+## Description
+This repository contains a Java commandline tool for analyzing- and comparing of beta values as found in methylation data. With BVAL we hope to allow users to get more insight into methylation of various input samples- and regions. 
+
+### Tool features
+1. Generating a summary to get an overview of the input beta values file
+2. Generating a filtered output file, where the user can filter on samples (columns), genomic positions (chromosomes or genes) and on specific beta value ranges using a cutoff
+3. Generating a report where two or more samples are compared using one of various statistical methods ([Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test), [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient), [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test))
+
+## System requirements and installation
+### System requirements
+-
+
+### Clone the repository
+
+
+### Running the tool
+The tool contains three distinct use cases, below some examples are shown on how to use these.
+#### Generating a summary
+```bash
+summary -f <filepath> 
+```
+
+Generating a summary can be done by passing `summary` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). Below an example can be found using the [example data](https://github.com/YamilaTimmer/methylation-java-app/blob/main/data/exampledata.csv) from this repo:
+
+```bash
+summary -f data/exampledata.csv
+```
+
+Which prints the following output to the terminal:
+```
+Generating summary...
+---------------------
+Number of samples: 3
+Number of genes: 10
+Avg beta value: 0.5
+Amount of NA values: 1
+```
+
+#### Generating filtered data
+```bash
+filter -f <filename> -s <samples> [ -chr <chromosomes> OR -g <genes> ] -c <cutoff-value> -ct <cutoff-type>
+```
+
+Generating a filtered output file from the input can be done by passing `filter` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). 
+
+Possible user arguments are:
+* `-f/--file`: filepath with input, containing beta values
+* `-s/--sample`: one or more samples, specified as the corresponding column names from the input file
+* `-chr/--chromosome`: one or more chromosomes (mutually exclusive with --gene)
+* `-g/--gene`: one or more gene names (mutually exclusive with --chromosome)
+* `-c/--cutoff`: a value ≥ 0 and ≤ 1.0 that serves as a cutoff value for filtering on beta values 
+* `-ct/--cutofftype`: how to filter using the cutoff (upper/lower), by default it filters out any values below the cutoff (upper), but using lower will filter out any values higher than the cutoff
+
+Get an overview of the possible options with:
+```
+filter [-h/--help]
+```
+
+Below an example of the command, with arguments is shown. This example filters the input data in a way that only Sample1 and Sample 2 (the first two columns) are kept, with only rows containing chromosome 17. Only beta values below 0.5 are kept.
+```bash
+BVAL filter -f data/exampledata.csv -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
+```
+
+The filtered output is written to the user-specified path, if no path is given it is automatically generated as output.txt in the same directory as the tool
+#### Comparing methylation across samples/regions
+
+
+## Biological background
+More and more research is being conducted in the field of epigenetics, to investigate possible causes and/or treatment options for diseases such as cancer. It is believed that methylation of DNA plays a major role in the development of diseases. This is a process in which methyl groups are added to cytosine bases by DNA methyltransferases. The methylated form of cytosine, 5mC, represents only about 1% of all bases in the body and is mainly found in “CpG sites”, which are regions where a cytosine is followed by a guanine base. CpG sites are often heavily methylated, except in “CpG islands,” which are regions of about 1,000 base pairs with a higher CpG density than the rest of the genome, yet these islands are often unmethylated. Around 70% of all gene promoters are located within a CpG island (Moore et al., 2012).
+
+Methylation of DNA prevents transcription factors from binding to the transcription start site, resulting in a decrease of gene expression or even silencing of the gene. A well-known example of this is hypermethylation of promoter regions of tumor suppressor genes, which disables the body’s natural defense mechanism against tumor formation (Kaluscha et al., 2022). However, hypomethylation also appears to be linked to the development of diseases, although this relationship seems less clear than that of hypermethylation (Van Tongelen et al., 2017).
+
+A commonly used method for analyzing methylation within the epigenome is the “Illumina Methylation Array.” This method measures two signals for each target location in the genome: an unmethylated signal and a methylated signal (Illumina, n.d.). After further processing, beta values can be determined — these are values ranging from 0 to 1, which are interpreted as the methylation percentage of the target region, on a scale from 0 to 100%. The beta value is calculated by dividing the methylated signal by the sum of the methylated and unmethylated signals. α is a small value added to prevent negative values resulting from corrections or technical errors. A value of 0 indicates that all copies of the target region were completely unmethylated, while a value of 1 indicates that all copies were fully methylated (Du et al., 2010). Below the full formula for calculating beta values is shown.
+
+$$
+\text{Beta}_i = \frac{\max(y_{i,\text{methy}}, 0)}{\max(y_{i,\text{unmethy}}, 0) + \max(y_{i,\text{methy}}, 0) + \alpha}
+$$
+
+
+## Support
+In case of any bugs or needed support, please open an issue [here](https://github.com/YamilaTimmer/methylation-java-app/issues).
+
+## License
+This project is licensed under the ... license. See the LICENSE file for details.
+
+## Sources
+
+- Du, P., Zhang, X., Huang, C., Jafari, N., Kibbe, W. A., Hou, L., & Lin, S. M. (2010). Comparison of Beta-value and M-value methods for quantifying methylation levels by microarray analysis. BMC Bioinformatics, 11(1). Https://doi.org/10.1186/1471-2105-11-587 
+- Kaluscha, S., Domcke, S., Wirbelauer, C., Stadler, M. B., Durdu, S., Burger, L., & Schübeler, D. (2022). Evidence that direct inhibition of transcription factor binding is the prevailing mode of gene and repeat repression by DNA methylation. Nature Genetics, 54(12), 1895–1906. https://doi.org/10.1038/s41588-022-01241-6 
+- Moore, L. D., Le, T., & Fan, G. (2012). DNA Methylation and Its Basic Function. Neuropsychopharmacology, 38(1), 23–38. https://doi.org/10.1038/npp.2012.112 
+- Illumina. (z.d.). Introduction to Methylation Array Analysis. https://www.illumina.com/techniques/microarrays/methylation-arrays.html
+- Van Tongelen, A., Loriot, A., & De Smet, C. (2017). Oncogenic roles of DNA hypomethylation through the activation of cancer-germline genes. Cancer Letters, 396, 130–137. [https://doi.org/10.1016/j.canlet.2017.03.029](https://doi.org/10.1016/j.canlet.2017.03.029) 
+
