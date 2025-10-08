@@ -16,7 +16,7 @@ public class MethylationFileReader {
 
     public static void readCSV(Path filePath) throws IOException {
 
-        try (BufferedReader br = Files.newBufferedReader(filePath)) {
+        BufferedReader br = Files.newBufferedReader(filePath);
             headerLine =  br.readLine();
             String line;
             methylationData = new MethylationArray();
@@ -33,11 +33,6 @@ public class MethylationFileReader {
                 methylationData.addData(lineSplit[2], lineSplit[1], bValues);
             }
 
-        } catch (NoSuchFileException ex) {
-            throw new NoSuchFileException("File not found: '" + filePath + "'");
-        } catch (AccessDeniedException ex) {
-            throw new AccessDeniedException("Permission denied: '" + filePath + "'");
-        }
     }
 
     private static ArrayList<String> getSamples(String header) {

@@ -8,16 +8,16 @@ import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
-
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.*;
-
-// TODO: print tips for user?
-//            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
-//            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
-
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 // Reusable option for filepath
 class FilePathInput {
@@ -28,13 +28,13 @@ class FilePathInput {
     Path filePath;
 }
 
+// Reusable option for sample
 class SampleInput{
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on",
             arity = "0..*")
     String[] samples;
 }
-
 
 // Parent class that will be called in main
 @Command(name = "BVAL",
@@ -43,7 +43,6 @@ class SampleInput{
         subcommands = {Summary.class,
                 Filter.class,
                 Compare.class})
-
 public class CommandLineParser implements Runnable {
 
     @Override
@@ -56,8 +55,8 @@ public class CommandLineParser implements Runnable {
 @Command(name = "summary",
         description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
         mixinStandardHelpOptions = true)
-
 class Summary implements Runnable {
+    private static final Logger logger = LogManager.getLogger(Summary.class.getName());
     @Mixin
     FilePathInput filePathInput;
 
@@ -66,9 +65,32 @@ class Summary implements Runnable {
 
         try {
             MethylationFileReader.readCSV(filePathInput.filePath);
-        } catch (IOException e) {
-            System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
+
+        } catch (NoSuchFileException ex) {
+            logger.error("""
+                    Failed to find the provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check whether the correct file path was given.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch (AccessDeniedException ex) {
+            logger.error("""
+                     Permission denied to open the provided file: '{}'.\s
+                     Exception occurred: '{}'.\s
+                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch(IOException ex){
+            logger.error("""
+                    Unexpected IO error for provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check the provided file path""",
+                    ex.getMessage(), ex);
+            System.exit(0);
         }
+
         MethylationArray data = MethylationFileReader.getData();
         SummaryGenerator.generateSummary(data);
     }
@@ -79,6 +101,7 @@ class Summary implements Runnable {
         description = "@|bold Takes methylation beta value file and allows for filtering based on samples/chromosomes/genes/cutoff.|@",
         mixinStandardHelpOptions = true)
 class Filter implements Runnable {
+    private static final Logger logger = LogManager.getLogger(Filter.class.getName());
 
     @Mixin
     FilePathInput filePathInput;
@@ -98,7 +121,6 @@ class Filter implements Runnable {
         String[] genes;
     }
 
-
     @Option(names = {"-c", "--cutoff"},
             defaultValue = "0.0",
             description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than the cutoff are kept. Default: ${DEFAULT-VALUE}")
@@ -109,23 +131,45 @@ class Filter implements Runnable {
             description = "Select whether to filter above or below cutoff. Default: ${DEFAULT-VALUE}. Valid values: ${COMPLETION-CANDIDATES}")
     MethylationDataFilter.CutoffType cutoffType;
 
-
     @Override
     public void run() {
-        MethylationArray methylationData;
+
+        MethylationArray methylationData = null;
+        
         try {
             MethylationFileReader.readCSV(filePathInput.filePath);
             methylationData = MethylationFileReader.getData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
+        } catch (NoSuchFileException ex) {
+            logger.error("""
+                    Failed to find the provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check whether the correct file path was given.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch (AccessDeniedException ex) {
+            logger.error("""
+                     Permission denied to open the provided file: '{}'.\s
+                     Exception occurred: '{}'.\s
+                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
+                     ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch(IOException ex){
+            logger.error("""
+                    Unexpected IO error for provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check the provided file path""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+        }
+    
         // Make new MethylationArray object to store filtered values in and set same samples
         MethylationArray methylationArray = new MethylationArray();
+        assert methylationData != null;
         methylationArray.setSamples(methylationData.getSamples());
         methylationArray.setData(methylationData.getData());
-
-        System.out.println("Data before filtering: " + methylationData);
 
         if (sampleInput.samples != null){
             GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(sampleInput.samples);
@@ -153,15 +197,16 @@ class Filter implements Runnable {
             MethylationDataFilter.filterByCutOff(methylationArray, cutoff, cutoffType);
         }
 
-        System.out.println("Data after filtering on cutoff: "+ methylationArray);
-
-
         try {
             FilterFileWriter.writeData(methylationArray);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch(IOException ex){
+            logger.error("""
+                    Unexpected IO error when writing to file: '{}'.\s
+                    Exception occurred: '{}'.
+                    """,
+                    ex.getMessage(), ex);
+            System.exit(0);
         }
-
     }
 }
 
@@ -169,21 +214,14 @@ class Filter implements Runnable {
 @Command(name = "compare",
         description = "Compare two or more samples/regions",
         mixinStandardHelpOptions = true)
-
 class Compare implements Runnable {
+    private static final Logger logger = LogManager.getLogger(Compare.class.getName());
+
     @Mixin
     FilePathInput filePathInput;
 
     @Mixin
     SampleInput sampleInput;
-
-//    @ArgGroup(exclusive = true, multiplicity = "1")
-//    Filter.PosArguments posArguments;
-//
-//    @Option(names = {"-c", "--cutoff"},
-//            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
-//    float cutoff;
-
 
     @Spec CommandSpec spec;
     @Option(names = {"-m", "--methods"},
@@ -205,14 +243,35 @@ class Compare implements Runnable {
         }
     }
 
-
     @Override
     public void run() {
+
         validateMethodInput();
         try {
             MethylationFileReader.readCSV(filePathInput.filePath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchFileException ex) {
+            logger.error("""
+                    Failed to find the provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check whether the correct file path was given.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch (AccessDeniedException ex) {
+            logger.error("""
+                     Permission denied to open the provided file: '{}'.\s
+                     Exception occurred: '{}'.\s
+                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
+                    ex.getMessage(), ex);
+            System.exit(0);
+
+        } catch(IOException ex){
+            logger.error("""
+                    Unexpected IO error for provided file: '{}'.\s
+                    Exception occurred: '{}'.\s
+                    Please check the provided file path""",
+                    ex.getMessage(), ex);
+            System.exit(0);
         }
 
         MethylationArray data = MethylationFileReader.getData();
@@ -221,11 +280,13 @@ class Compare implements Runnable {
 
         try {
             ComparingFileWriter.writeData(corrData);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch(IOException ex){
+            logger.error("""
+                    Unexpected IO error when writing to file: '{}'.\s
+                    Exception occurred: '{}'.
+                    """,
+                    ex.getMessage(), ex);
+            System.exit(0);
         }
-
-
     }
-
 }
