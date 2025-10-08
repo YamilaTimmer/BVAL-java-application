@@ -2,7 +2,7 @@ package nl.bioinf.processing;
 
 import nl.bioinf.model.MethylationArray;
 
-public interface MethylationArrayFilter {
+public interface UserArgumentsCheck {
         /**
          * checks the given MethylationArray.
          */

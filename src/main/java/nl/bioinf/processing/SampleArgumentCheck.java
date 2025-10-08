@@ -4,7 +4,7 @@ import nl.bioinf.model.MethylationData;
 import nl.bioinf.io.MethylationFileReader;
 import java.util.List;
 
-public class SampleFilterCheck implements MethylationArrayFilter{
+public class SampleArgumentCheck implements UserArgumentsCheck {
 
     private static String[] filterSamples;
     public static List<String> samples;
@@ -12,8 +12,8 @@ public class SampleFilterCheck implements MethylationArrayFilter{
     public static MethylationArray methylationArray;
     
 
-    public SampleFilterCheck(String[] filterSamples) {
-        SampleFilterCheck.filterSamples = filterSamples;
+    public SampleArgumentCheck(String[] filterSamples) {
+        SampleArgumentCheck.filterSamples = filterSamples;
         samples = MethylationFileReader.getData().getSamples();
         dataRows = MethylationFileReader.getData().getData();
         methylationArray = new MethylationArray();

@@ -2,14 +2,14 @@ package nl.bioinf.processing;
 
 import nl.bioinf.model.MethylationArray;
 
-public class CutOffFilterCheck implements MethylationArrayFilter {
+public class CutOffArgumentCheck implements UserArgumentsCheck {
     public static float cutoff;
     public static MethylationDataFilter.CutoffType cutoffType;
 
 
-    public CutOffFilterCheck(float cutoff, MethylationDataFilter.CutoffType cutoffType) {
-        CutOffFilterCheck.cutoff = cutoff;
-        CutOffFilterCheck.cutoffType = cutoffType;
+    public CutOffArgumentCheck(float cutoff, MethylationDataFilter.CutoffType cutoffType) {
+        CutOffArgumentCheck.cutoff = cutoff;
+        CutOffArgumentCheck.cutoffType = cutoffType;
 
     }
 

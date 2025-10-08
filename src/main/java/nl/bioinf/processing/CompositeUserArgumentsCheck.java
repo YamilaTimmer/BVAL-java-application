@@ -6,17 +6,17 @@ import nl.bioinf.model.MethylationArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompositeMethylationArrayFilter implements MethylationArrayFilter {
-    private List<MethylationArrayFilter> filters = new ArrayList<>();
+public class CompositeUserArgumentsCheck implements UserArgumentsCheck {
+    private List<UserArgumentsCheck> filters = new ArrayList<>();
 
-    public void addFilter(MethylationArrayFilter filter) {
+    public void addFilter(UserArgumentsCheck filter) {
         filters.add(filter);
     }
 
     // Goes through all checks for all arguments
     @Override
     public boolean pass(MethylationArray methylationArray) {
-        for (MethylationArrayFilter filter : filters) {
+        for (UserArgumentsCheck filter : filters) {
             if (! filter.pass(methylationArray)) {
                 return false;
             }

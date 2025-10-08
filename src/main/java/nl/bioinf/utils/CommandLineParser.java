@@ -128,28 +128,28 @@ class Filter implements Runnable {
         System.out.println("Data before filtering: " + methylationData);
 
         if (sampleInput.samples != null){
-            GeneFilterCheck geneFilterCheck = new GeneFilterCheck(sampleInput.samples);
-            if (geneFilterCheck.pass(methylationData)){
+            GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(sampleInput.samples);
+            if (geneArgumentCheck.pass(methylationData)){
                 methylationArray = MethylationDataFilter.filterBySample(methylationData, sampleInput.samples);
             }
         }
 
         if (posArguments != null && posArguments.chr != null ) {
-            ChrFilterCheck chrFilterCheck = new ChrFilterCheck(posArguments.chr);
-            if (chrFilterCheck.pass(methylationData)){
+            ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr);
+            if (chrArgumentCheck.pass(methylationData)){
                 MethylationDataFilter.filterByChr(methylationArray, posArguments.chr);
             }
         }
         else if (posArguments != null && posArguments.genes != null ) {
-            GeneFilterCheck geneFilterCheck = new GeneFilterCheck(posArguments.genes);
-            if (geneFilterCheck.pass(methylationData)){
+            GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(posArguments.genes);
+            if (geneArgumentCheck.pass(methylationData)){
                 MethylationDataFilter.filterByGene(methylationArray, posArguments.genes);
             }
         }
 
         // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
-        CutOffFilterCheck cutOffFilterCheck = new CutOffFilterCheck(cutoff, cutoffType);
-        if (cutOffFilterCheck.pass(methylationData)){
+        CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff, cutoffType);
+        if (cutOffArgumentCheck.pass(methylationData)){
             MethylationDataFilter.filterByCutOff(methylationArray, cutoff, cutoffType);
         }
 

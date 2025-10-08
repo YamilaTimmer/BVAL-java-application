@@ -2,11 +2,11 @@ package nl.bioinf.processing;
 
 import nl.bioinf.model.MethylationArray;
 
-public class ChrFilterCheck implements MethylationArrayFilter {
+public class ChrArgumentCheck implements UserArgumentsCheck {
     public static String[] filterChr;
 
-    public ChrFilterCheck(String[] filterChr) {
-        ChrFilterCheck.filterChr = filterChr;
+    public ChrArgumentCheck(String[] filterChr) {
+        ChrArgumentCheck.filterChr = filterChr;
 
     }
 
