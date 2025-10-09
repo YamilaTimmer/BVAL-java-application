@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MethylationFileReader holds methods for reading the input file containing the betavalues and converting it to a
@@ -15,7 +14,6 @@ import java.util.List;
  */
 public class MethylationFileReader {
 
-    private static final List<String> data = new ArrayList<>(); // List because its resizable
     private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
 
     /**
@@ -41,10 +39,10 @@ public class MethylationFileReader {
                 methylationData = new MethylationArray();
 
                 methylationData.setHeader(headerLine);
+                methylationData.setHeader(headerLine);
                 methylationData.setSamples(getSamples(headerLine));
 
                 while ((line = br.readLine()) != null) {
-                    data.add(line);
                     String[] lineSplit = line.split(",");
                     ArrayList<Double> bValues = getBValues(lineSplit);
                     methylationData.addData(lineSplit[2], lineSplit[1], bValues);

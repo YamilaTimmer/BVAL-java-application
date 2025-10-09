@@ -61,6 +61,7 @@ public class MethylationDataFilter {
 
         methylationArray.setData(dataRows);
         methylationArray.setSamples(samples);
+        methylationArray.setHeader(methylationArray.getHeader());
 
         return methylationArray;
     }

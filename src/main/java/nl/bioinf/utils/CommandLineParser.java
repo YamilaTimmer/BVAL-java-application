@@ -143,6 +143,7 @@ class Filter implements Runnable {
         assert data != null;
         filteredData.setSamples(data.getSamples());
         filteredData.setData(data.getData());
+        filteredData.setHeader(data.getHeader());
 
         if (sampleInput.samples != null){
             GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(sampleInput.samples);
