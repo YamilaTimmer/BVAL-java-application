@@ -72,7 +72,6 @@ class MethylationFileReaderTest {
         Files.writeString(tempFile, "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3" + System.lineSeparator() +
                 "cg00000029,TP53,17,7565097,7565097,+,0.87,0.85,0.89");
 
-        MethylationFileReader.readCSV(tempFile);
 
         // Create MethylationArray that is expected based on input
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -80,9 +79,9 @@ class MethylationFileReaderTest {
         expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
 
         // Retrieve actual MethylationArray
-        MethylationArray actualMethylationArray = MethylationFileReader.getData();
+        MethylationArray actualMethylationArray = MethylationFileReader.readCSV(tempFile);
 
         // Assert whether expected and actual MethylationArray are equal
-        assertEquals(actualMethylationArray.toString(), expectedMethylationArray.toString());
+        assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
     }
 }

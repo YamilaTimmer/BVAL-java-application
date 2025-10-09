@@ -14,14 +14,14 @@ public class SampleArgumentCheck implements UserArgumentsCheck {
 
     public SampleArgumentCheck(String[] filterSamples) {
         SampleArgumentCheck.filterSamples = filterSamples;
-        samples = MethylationFileReader.getData().getSamples();
-        dataRows = MethylationFileReader.getData().getData();
+        samples = methylationArray.getSamples();
+        dataRows = methylationArray.getData();
         methylationArray = new MethylationArray();
 
     }
 
     @Override
-    public boolean pass(MethylationArray methylationArray) {
+    public boolean pass() {
 
         // Checks whether the user has not passed > 15 samples
         if (dataRows.size() > 15) {

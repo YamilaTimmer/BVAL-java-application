@@ -10,16 +10,6 @@ import java.util.List;
 
 public class MethylationDataFilter {
 
-//    public static List<String> samples;
-//    public static List<MethylationData> dataRows;
-//    public static MethylationArray methylationArray;
-//
-//    static {
-//        samples = MethylationFileReader.getData().getSamples();
-//        dataRows = MethylationFileReader.getData().getData();
-//        methylationArray = new MethylationArray();
-//    }
-
     public enum CutoffType {
         upper, lower
     }

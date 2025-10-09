@@ -9,18 +9,26 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MethylationFileReader holds methods for reading the input file containing the betavalues and converting it to a
+ * MethylationArray datatype.
+ */
 public class MethylationFileReader {
 
-    private static List<String> data = new ArrayList<>(); // List because its resizable
-    private static String headerLine;
-    private static MethylationArray methylationData;
+    private static final List<String> data = new ArrayList<>(); // List because its resizable
     private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
 
-    public static void readCSV(Path filePath) throws IOException {
+    /**
+     * This method tries to read the file at the user-provided file path and converts it to a MethylationArray datatype.
+     *
+     * @param filePath which refers to the path for the input file
+     */
+    public static MethylationArray readCSV(Path filePath) throws IOException {
 
+        MethylationArray methylationData;
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
 
-            headerLine = br.readLine();
+            String headerLine = br.readLine();
 
             if (headerLine == null || headerLine.isBlank()) {
                 logger.error("""
@@ -63,8 +71,15 @@ public class MethylationFileReader {
                     ex.getMessage());
             throw ex;
         }
+        return methylationData;
     }
 
+    /**
+     * This method parses the header line of the input file to retrieve what samples are present in the file
+     *
+     * @param header: contains first line of the input file, which is the header
+     * @return samples: ArrayList with samples, represented as strings
+     */
     private static ArrayList<String> getSamples(String header) {
 
         ArrayList<String> samples = new ArrayList<>();
@@ -76,10 +91,13 @@ public class MethylationFileReader {
         return samples;
     }
 
-    public static MethylationArray getData() {
-        return methylationData;
-    }
-
+    /**
+     * This method parses beta values from the lines of the input file to the format needed to make a
+     * MethylationArray object.
+     *
+     * @param lineSplit: contains the individual lines of the input file
+     * @return betaValues: Arraylist containing the betavalues per line, containing one betavalue per sample
+     */
     private static ArrayList<Double> getBValues(String[] lineSplit){
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = 6; i < lineSplit.length; i++) {
