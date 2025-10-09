@@ -3,7 +3,6 @@ package nl.bioinf.io;
 import nl.bioinf.model.MethylationArray;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MethylationFileReaderTest {
 
-
     @Test
     @DisplayName("Test incorrect file path")
     void incorrectFilePath() {
@@ -22,15 +20,14 @@ class MethylationFileReaderTest {
         String fileName = "9382jdn";
         Path path = Paths.get(fileName);
 
-        // Assert that NoSuchFileException is thrown when trying to access non-existent path
-        NoSuchFileException exception = assertThrows(NoSuchFileException.class,
+        // Assert that IOException is thrown when trying to access non-existent path
+        IOException exception = assertThrows(IOException.class,
                 () -> MethylationFileReader.readCSV(path));
 
         // Check if expected message and actual message are equal
-        String expectedMessage = "File not found: '" + path + "'";
+        String expectedMessage = "File not found: '" + path + "'. Please check the file path.";
         assertEquals(expectedMessage, exception.getMessage());
-
-    }
+            }
 
     @Test
     @DisplayName("Test path where permission is denied")
@@ -39,14 +36,13 @@ class MethylationFileReaderTest {
      // Create tempDir
      Path tempDir = Files.createTempDirectory("tempDir");
 
-        // Assert that AccessDeniedException is thrown when trying to access a dir instead of a file
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+        // Assert that IOException is thrown when trying to access a dir instead of a file
+        IOException exception = assertThrows(IOException.class,
                 () -> MethylationFileReader.readCSV(tempDir));
 
         // Check if expected message and actual message are equal
-        String expectedMessage = "Permission denied: '" + tempDir + "'";
+        String expectedMessage = "Please make sure the provided path:" + tempDir + " is not a directory and that the file has appropriate permissions.";
         assertEquals(expectedMessage, exception.getMessage());
-
     }
 
     @Test
@@ -88,7 +84,5 @@ class MethylationFileReaderTest {
 
         // Assert whether expected and actual MethylationArray are equal
         assertEquals(actualMethylationArray.toString(), expectedMethylationArray.toString());
-
     }
-
 }

@@ -1,4 +1,5 @@
 package nl.bioinf.utils;
+
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.processing.*;
@@ -8,6 +9,7 @@ import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.*;
@@ -58,7 +60,14 @@ class Summary implements Runnable {
     @Override
     public void run() {
 
-        MethylationFileReader.readCSV(filePathInput.filePath);
+        try {
+            MethylationFileReader.readCSV(filePathInput.filePath);
+        } catch (IOException ex) {
+            // User-friendly output only
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
         MethylationArray data = MethylationFileReader.getData();
         SummaryGenerator.generateSummary(data);
     }
@@ -102,8 +111,15 @@ class Filter implements Runnable {
     @Override
     public void run() {
 
+        try {
+            MethylationFileReader.readCSV(filePathInput.filePath);
+        } catch (IOException ex) {
+            // User-friendly output only
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
         MethylationArray methylationData;
-        MethylationFileReader.readCSV(filePathInput.filePath);
         methylationData = MethylationFileReader.getData();
     
         // Make new MethylationArray object to store filtered values in and set same samples
@@ -179,7 +195,14 @@ class Compare implements Runnable {
     public void run() {
 
         validateMethodInput();
-        MethylationFileReader.readCSV(filePathInput.filePath);
+
+        try {
+            MethylationFileReader.readCSV(filePathInput.filePath);
+        } catch (IOException ex) {
+            // User-friendly output only
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
         MethylationArray data = MethylationFileReader.getData();
         SampleComparison corrData = MethylationArraySampleComparer.performStatisticalMethods(data, sampleInput.samples, methods);

@@ -3,7 +3,6 @@ package nl.bioinf.io;
 import nl.bioinf.model.MethylationArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
@@ -17,47 +16,52 @@ public class MethylationFileReader {
     private static MethylationArray methylationData;
     private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
 
-    public static void readCSV(Path filePath) {
+    public static void readCSV(Path filePath) throws IOException {
 
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
-            headerLine = br.readLine();
-            String line;
-            methylationData = new MethylationArray();
-            if (headerLine == null) {
-                throw new IOException("File is empty: '" + filePath + "'"); //Error handling: Empty file
-            }
-            methylationData.setHeader(headerLine);
-            methylationData.setSamples(getSamples(headerLine));
 
-            while ((line = br.readLine()) != null) {
-                data.add(line);
-                String[] lineSplit = line.split(",");
-                ArrayList<Double> bValues = getBValues(lineSplit);
-                methylationData.addData(lineSplit[2], lineSplit[1], bValues);
+            headerLine = br.readLine();
+
+            if (headerLine == null || headerLine.isBlank()) {
+                logger.error("""
+                 Provided file: '{}' is empty, please provide a file with beta values, gene/chr regions and samples.
+                 """, filePath);
+                throw new IOException ("File is empty: '" + filePath + "'"); //Error handling: Empty file
             }
+
+                String line;
+                methylationData = new MethylationArray();
+
+                methylationData.setHeader(headerLine);
+                methylationData.setSamples(getSamples(headerLine));
+
+                while ((line = br.readLine()) != null) {
+                    data.add(line);
+                    String[] lineSplit = line.split(",");
+                    ArrayList<Double> bValues = getBValues(lineSplit);
+                    methylationData.addData(lineSplit[2], lineSplit[1], bValues);
+                }
+
         } catch (NoSuchFileException ex) {
             logger.error("""
                     Failed to find the provided file: '{}'.\s
                     Exception occurred: '{}'.\s
-                    Please check whether the correct file path was given.""",
+                    """,
                     ex.getMessage(), ex);
-            System.exit(0);
+            throw new IOException("File not found: '" + filePath + "'. Please check the file path.");
 
         } catch (AccessDeniedException ex) {
             logger.error("""
                      Permission denied to open the provided file: '{}'.\s
                      Exception occurred: '{}'.\s
-                     Please make sure the provided path is not a directory and that the file has appropriate permissions.""",
+                     """,
                     ex.getMessage(), ex);
-            System.exit(0);
+            throw new IOException("Please make sure the provided path:" + filePath + " is not a directory and that the file has appropriate permissions.");
 
         } catch(IOException ex){
-            logger.error("""
-                    Unexpected IO error for provided file: '{}'.\s
-                    Exception occurred: '{}'.\s
-                    Please check the provided file path""",
-                    ex.getMessage(), ex);
-            System.exit(0);
+            logger.error("Unexpected IO error for provided file: '{}'. Please check the provided file path.",
+                    ex.getMessage());
+            throw ex;
         }
     }
 
