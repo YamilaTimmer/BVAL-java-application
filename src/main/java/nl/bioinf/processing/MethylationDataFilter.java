@@ -24,8 +24,7 @@ public class MethylationDataFilter {
 
     public static void filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
 
-        System.out.println("-------------------------------------");
-        System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
+        logger.debug("Filtering sample(s) {}.", Arrays.toString(samplesFilter));
 
         //Retrieve data
         List<String> samples = methylationArray.getSamples();
@@ -62,7 +61,7 @@ public class MethylationDataFilter {
             oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
         }
 
-        System.out.println("Successfully filtered on sample(s): " + filteredSamples);
+        logger.debug("Successfully filtered on sample(s): {}.", filteredSamples);
 
         samples.clear();
         samples.addAll(filteredSamples);
@@ -71,12 +70,14 @@ public class MethylationDataFilter {
         methylationArray.setSamples(samples);
         methylationArray.setHeader(methylationArray.getHeader());
 
+        logger.debug("Saved filtered sample data.");
+
+
     }
 
     public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter){
 
-        System.out.println("-------------------------------------");
-        System.out.println("Filtering on: " + posFilterType + Arrays.toString(posFilter));
+        logger.debug("Filtering on: {}{}.", posFilterType, Arrays.toString(posFilter));
 
         List<MethylationData> dataRows = methylationArray.getData();
 
@@ -99,36 +100,24 @@ public class MethylationDataFilter {
             }
         }
 
+        logger.debug("Successfully filtered on: {}{}.", posFilterType, Arrays.toString(posFilter));
+
         methylationArray.setData(dataRows);
-        System.out.println("Successfully filtered on: " + posFilterType + Arrays.toString(posFilter));
+
+        logger.debug("Saved filtered positional data.");
 
     }
 
     public static void filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType){
 
-        System.out.println("-------------------------------------");
-        System.out.println("Filtering on cutoff/cutoff type: " + cutoff + " " + cutoffType);
+        logger.debug("Filtering on cutoff/cutoff type: {} {}", cutoff, cutoffType);
 
         List<MethylationData> dataRows = methylationArray.getData();
 
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
-            ArrayList<Double> filteredBetaValues = new ArrayList<>();
-
-            // Filter on cutoff, depending on hypo/hyper
-            for (Double betaValue : oldBetaValues) {
-                if (cutoffType == CutoffType.lower) {
-                    if (betaValue <= cutoff) {
-                        filteredBetaValues.add(betaValue);
-                    }
-                }
-                else {
-                    if (betaValue >= cutoff) {
-                        filteredBetaValues.add(betaValue);
-                    }
-                }
-            }
+            ArrayList<Double> filteredBetaValues = getDoubles(cutoff, cutoffType, oldBetaValues);
 
             // Initiate new list of beta values, with only those that are >= to cutoff
             oldBetaValues.clear(); //Remove items from list
@@ -137,7 +126,25 @@ public class MethylationDataFilter {
 
         methylationArray.setData(dataRows);
 
-        System.out.println("Successfully filtered on cutoff/cutoff type: " + cutoff + " " +  cutoffType);
+        logger.debug("Successfully filtered on cutoff/cutoff type: {} {}", cutoff, cutoffType);
+    }
 
+    private static ArrayList<Double> getDoubles(float cutoff, CutoffType cutoffType, ArrayList<Double> oldBetaValues) {
+        ArrayList<Double> filteredBetaValues = new ArrayList<>();
+
+        // Filter on cutoff, depending on hypo/hyper
+        for (Double betaValue : oldBetaValues) {
+            if (cutoffType == CutoffType.lower) {
+                if (betaValue <= cutoff) {
+                    filteredBetaValues.add(betaValue);
+                }
+            }
+            else {
+                if (betaValue >= cutoff) {
+                    filteredBetaValues.add(betaValue);
+                }
+            }
+        }
+        return filteredBetaValues;
     }
 }

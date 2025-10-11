@@ -13,7 +13,7 @@ import java.nio.file.Path;
 public class FilterFileWriter{
     private static final Logger logger = LogManager.getLogger(FilterFileWriter.class.getName());
 
-    public static void writeData(MethylationArray data, Path outputPath) {
+    public static void writeData(MethylationArray data, Path outputPath) throws IOException {
         File filePath = new File(outputPath.toUri());
 
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(filePath))) {
@@ -23,7 +23,7 @@ public class FilterFileWriter{
                 newFile.write(lineData.toString());
             }
 
-            logger.debug("Output successfully written to{}", filePath);
+            logger.debug("Output successfully written to: {}.", filePath);
             System.out.println("Output file generated at: '" + filePath + "'");
 
 
@@ -33,7 +33,7 @@ public class FilterFileWriter{
                             Exception occurred: '{}'.
                             """,
                     ex.getMessage(), ex);
-            System.exit(0);
+            throw ex;
         }
     }
 }

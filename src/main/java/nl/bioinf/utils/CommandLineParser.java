@@ -86,7 +86,13 @@ class Summary implements Runnable {
     @Override
     public void run() {
         VerbosityLevel verbosityLevel = new VerbosityLevel();
-        verbosityLevel.applyVerbosity(verbosity.verbose);
+        try {
+            verbosityLevel.applyVerbosity(verbosity.verbose);
+        }
+        catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
         MethylationArray data = new MethylationArray();
 
@@ -152,7 +158,13 @@ class Filter implements Runnable {
     public void run() {
 
         VerbosityLevel verbosityLevel = new VerbosityLevel();
-        verbosityLevel.applyVerbosity(verbosity.verbose);
+        try {
+            verbosityLevel.applyVerbosity(verbosity.verbose);
+        }
+        catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
         MethylationArray data = new MethylationArray();
 
@@ -276,7 +288,14 @@ class Compare implements Runnable {
     public void run() {
 
         VerbosityLevel verbosityLevel = new VerbosityLevel();
-        verbosityLevel.applyVerbosity(verbosity.verbose);
+
+        try {
+            verbosityLevel.applyVerbosity(verbosity.verbose);
+        }
+        catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
         validateMethodInput();
 
