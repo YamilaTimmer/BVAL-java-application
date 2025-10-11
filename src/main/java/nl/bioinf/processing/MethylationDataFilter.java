@@ -2,6 +2,8 @@ package nl.bioinf.processing;
 
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,16 +12,22 @@ import java.util.List;
 
 public class MethylationDataFilter {
 
+    private static final Logger logger = LogManager.getLogger(MethylationDataFilter.class.getName());
+
     public enum CutoffType {
         upper, lower
     }
 
-    public static MethylationArray filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
-        //Retrieve data
+    public enum PosFilterType {
+        GENE, CHROMOSOME
+    }
+
+    public static void filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
 
         System.out.println("-------------------------------------");
         System.out.println("Filtering sample(s) " + Arrays.toString(samplesFilter));
 
+        //Retrieve data
         List<String> samples = methylationArray.getSamples();
         List<MethylationData> dataRows = methylationArray.getData();
 
@@ -54,7 +62,7 @@ public class MethylationDataFilter {
             oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
         }
 
-        System.out.println("Succesfully filtered on sample(s): " + filteredSamples);
+        System.out.println("Successfully filtered on sample(s): " + filteredSamples);
 
         samples.clear();
         samples.addAll(filteredSamples);
@@ -63,68 +71,47 @@ public class MethylationDataFilter {
         methylationArray.setSamples(samples);
         methylationArray.setHeader(methylationArray.getHeader());
 
-        return methylationArray;
     }
 
-   public static MethylationArray filterByGene(MethylationArray methylationArray, String[] genes){
+    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter){
 
         System.out.println("-------------------------------------");
-        System.out.println("Filtering on gene(s): " + Arrays.toString(genes));
+        System.out.println("Filtering on: " + posFilterType + Arrays.toString(posFilter));
 
-       List<MethylationData> dataRows = methylationArray.getData();
+        List<MethylationData> dataRows = methylationArray.getData();
 
-       // Use iterator for removing rows from MethylationData, if user passed gene filter argument
+        // Use iterator for removing rows from MethylationData, if user passed gene filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
+        String valueToCheck;
 
         // As long as there is a next row
         while (iter.hasNext()) {
             MethylationData row = iter.next();
 
-            // Remove row if gene of that row is not in the genes to be filtered
-            if (!Arrays.asList(genes).contains(row.gene())) {
-                iter.remove();
+            if (posFilterType == PosFilterType.GENE) {
+                valueToCheck = row.gene();
+            } else {
+                valueToCheck = row.chromosome();
+            }
 
+            if (!Arrays.asList(posFilter).contains(valueToCheck)) {
+                iter.remove();
             }
         }
 
         methylationArray.setData(dataRows);
-        System.out.println("Succesfully filtered on gene(s): " + Arrays.toString(genes));
+        System.out.println("Successfully filtered on: " + posFilterType + Arrays.toString(posFilter));
 
-        return methylationArray;
     }
 
-   public static MethylationArray filterByChr(MethylationArray methylationArray, String[] chromosomes){
+    public static void filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType){
 
         System.out.println("-------------------------------------");
-        System.out.println("Filtering on chromosome(s): " + Arrays.toString(chromosomes));
+        System.out.println("Filtering on cutoff/cutoff type: " + cutoff + " " + cutoffType);
 
-       List<MethylationData> dataRows = methylationArray.getData();
+        List<MethylationData> dataRows = methylationArray.getData();
 
-       // Use iterator for removing rows from MethylationData, if user passed chr filter argument
-        Iterator<MethylationData> iter = dataRows.iterator();
-
-        while (iter.hasNext()) {
-            MethylationData row = iter.next();
-
-            // Remove row if gene of that row is not in the chromosome(s) to be filtered
-            if (!Arrays.asList(chromosomes).contains(row.chromosome())) {
-                iter.remove();
-            }
-        }
-
-        System.out.println("\u001B[32mSuccesfully filtered on chromosome(s) : \u001B[0m" + Arrays.toString(chromosomes));
-
-        methylationArray.setData(dataRows);
-
-        return methylationArray;
-
-    }
-
-   public static MethylationArray filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType){
-
-       List<MethylationData> dataRows = methylationArray.getData();
-
-       // Retrieve rows and make new rows for filtered values
+        // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
             ArrayList<Double> filteredBetaValues = new ArrayList<>();
@@ -150,6 +137,7 @@ public class MethylationDataFilter {
 
         methylationArray.setData(dataRows);
 
-        return methylationArray;
+        System.out.println("Successfully filtered on cutoff/cutoff type: " + cutoff + " " +  cutoffType);
+
     }
 }
