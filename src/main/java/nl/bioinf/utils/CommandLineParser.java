@@ -6,6 +6,8 @@ import nl.bioinf.processing.*;
 import nl.bioinf.io.ComparingFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
@@ -17,6 +19,7 @@ import java.util.*;
 /**
  *
  */
+
 
 // Reusable option for filepath
 class FilePathInput {
@@ -43,6 +46,15 @@ class OutputPath{
     Path outputPath = Path.of("output.txt");
 }
 
+class Verbosity{
+    @Option(names = "--verbose",
+            description = "Verbosity level. Default: ${DEFAULT-VALUE}",
+            arity = "0..1")
+    int verbose = 0;
+}
+
+
+
 // Parent class that will be called in main
 @Command(name = "BVAL",
         version = "0.1",
@@ -50,10 +62,11 @@ class OutputPath{
         subcommands = {Summary.class,
                 Filter.class,
                 Compare.class})
-public class CommandLineParser implements Runnable {
+public class  CommandLineParser implements Runnable {
 
     @Override
     public void run() {
+
         CommandLine.usage(this, System.out);
     }
 }
@@ -67,8 +80,13 @@ class Summary implements Runnable {
     @Mixin
     FilePathInput filePathInput;
 
+    @Mixin
+    Verbosity verbosity;
+
     @Override
     public void run() {
+        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        verbosityLevel.applyVerbosity(verbosity.verbose);
 
         MethylationArray data = new MethylationArray();
 
@@ -91,6 +109,8 @@ class Summary implements Runnable {
         mixinStandardHelpOptions = true)
 class Filter implements Runnable {
 
+    private static final Logger logger = LogManager.getLogger(Filter.class.getName());
+
     @Mixin
     FilePathInput filePathInput;
 
@@ -100,9 +120,11 @@ class Filter implements Runnable {
     @Mixin
     OutputPath outputFilePath;
 
+    @Mixin
+    Verbosity verbosity;
+
     @ArgGroup()
     PosArguments posArguments;
-
 
     static class PosArguments {
         @Option(names = {"-chr", "--chromosome"},
@@ -129,6 +151,9 @@ class Filter implements Runnable {
     @Override
     public void run() {
 
+        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        verbosityLevel.applyVerbosity(verbosity.verbose);
+
         MethylationArray data = new MethylationArray();
 
         try {
@@ -154,7 +179,6 @@ class Filter implements Runnable {
         try {
 
             if (sampleInput.samples != null) {
-                System.out.println(Arrays.toString(sampleInput.samples));
                 SampleArgumentCheck sampleArgumentCheck = new SampleArgumentCheck(sampleInput.samples, data);
                 checker.addFilter(sampleArgumentCheck);
 
@@ -196,14 +220,20 @@ class Filter implements Runnable {
                     filter.run();
                 }
             }
-
-            FilterFileWriter.writeData(filteredData, outputFilePath.outputPath);
-
-
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
         }
+
+        // Try writing to output
+        try {
+            FilterFileWriter.writeData(filteredData, outputFilePath.outputPath);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
+
     }
 }
 
@@ -218,6 +248,9 @@ class Compare implements Runnable {
 
     @Mixin
     SampleInput sampleInput;
+
+    @Mixin
+    Verbosity verbosity;
 
     @Spec CommandSpec spec;
     @Option(names = {"-m", "--methods"},
@@ -241,6 +274,9 @@ class Compare implements Runnable {
 
     @Override
     public void run() {
+
+        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        verbosityLevel.applyVerbosity(verbosity.verbose);
 
         validateMethodInput();
 
