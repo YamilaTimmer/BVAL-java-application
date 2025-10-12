@@ -40,9 +40,8 @@ public class GeneArgumentCheck implements UserArgumentsCheck {
             logger.debug("Validity check for user provided gene '{}'", gene);
 
             if (!genes.contains(gene)) {
-                logger.error("""
-                        The following gene is not present in the data: '{}'. Please only pass genes that are present in the input file."
-                        """, gene);
+                logger.error("The following gene is not present in the data: '{}'. Please only pass genes that " +
+                        "are present in the input file.", gene);
                 throw new IllegalArgumentException("\u001B[31mError: Given gene was not found in input file. \u001B[0m");
             }
         }

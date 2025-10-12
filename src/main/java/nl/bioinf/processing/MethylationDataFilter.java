@@ -23,7 +23,7 @@ public class MethylationDataFilter {
     }
 
     /**
-     * Enum for cutoff type, determined by whether user wants to filter betavalues above or below the specified cutoff
+     * Enum for cutoff type, determined by whether user wants to filter beta values above or below the specified cutoff
      */
     public enum CutoffType {
         upper, lower
@@ -48,10 +48,10 @@ public class MethylationDataFilter {
         ArrayList<Integer> columnsToKeep = new ArrayList<>();
         ArrayList<String> filteredSamples = new ArrayList<>();
 
+        logger.debug("Determining what sample columns to keep...");
         for (int i = 0; i < samples.size(); i++) {
             String sample = samples.get(i);
 
-            logger.debug("Determining what sample columns to keep...");
             for (String sampleFilter : samplesFilter) {
                 if (sample.equals(sampleFilter)) {
                     columnsToKeep.add(i); // remember the index to keep
@@ -96,7 +96,7 @@ public class MethylationDataFilter {
      * @param posFilter String array that user has provided, containing either chromosome- or gene names
      */
     public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter){
-        logger.info("Starting filtering on {}", posFilterType);
+        logger.info("Starting filtering on {}(s)", posFilterType);
         logger.debug("Filtering on: {} {}.", posFilterType, Arrays.toString(posFilter));
 
         List<MethylationData> dataRows = methylationArray.getData();
@@ -105,13 +105,14 @@ public class MethylationDataFilter {
         Iterator<MethylationData> iter = dataRows.iterator();
         String valueToCheck;
 
-        logger.debug("Removing rows that dont contain given {} arguments", posFilterType);
+        logger.debug("Removing rows that don't contain given {} arguments", posFilterType);
         while (iter.hasNext()) { // As long as there is a next row
             MethylationData row = iter.next();
 
             // Determine positional variable to filter on, either GENE or CHROMOSOME
             if (posFilterType == PosFilterType.GENE) {
                 valueToCheck = row.gene();
+
             } else {
                 valueToCheck = row.chromosome();
             }
@@ -129,7 +130,7 @@ public class MethylationDataFilter {
     }
 
     /**
-     * Filter data based on user passed argument(s) for cutoff/cutofftype, removing all individual beta values that
+     * Filter data based on user passed argument(s) for cutoff/cutoff type, removing all individual beta values that
      * do not pass the filter
      *
      * @param methylationArray contains parsed data from input file, including present genes
@@ -138,11 +139,11 @@ public class MethylationDataFilter {
      *                   beta values, based on the cutoff
      */
     public static void filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType){
-        logger.info("Starting filtering on cutoff");
-        logger.debug("Filtering on cutoff/cutoff type: {} {}", cutoff, cutoffType);
+        logger.info("Starting filtering on cutoff/cutoff type: {} {}", cutoff, cutoffType);
 
         List<MethylationData> dataRows = methylationArray.getData();
 
+        logger.debug("Iterating through rows to filter on [{} {}]", cutoff, cutoffType);
         // Retrieve rows and make new rows for filtered values
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
@@ -170,8 +171,6 @@ public class MethylationDataFilter {
      */
     private static ArrayList<Double> getDoubles(float cutoff, CutoffType cutoffType, ArrayList<Double> oldBetaValues) {
         ArrayList<Double> filteredBetaValues = new ArrayList<>();
-
-        logger.debug("Iterating through rows to filter on {} {}", cutoff, cutoffType);
 
         // Filter on cutoff, depending on hypo/hyper
         for (Double betaValue : oldBetaValues) {

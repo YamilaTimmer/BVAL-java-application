@@ -6,8 +6,6 @@ import nl.bioinf.processing.*;
 import nl.bioinf.io.ComparingFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
@@ -52,8 +50,6 @@ class Verbosity{
             arity = "0..1")
     int verbose = 0;
 }
-
-
 
 // Parent class that will be called in main
 @Command(name = "BVAL",
@@ -114,8 +110,6 @@ class Summary implements Runnable {
                 "chromosomes or genes and a cutoff.|@",
         mixinStandardHelpOptions = true)
 class Filter implements Runnable {
-
-    private static final Logger logger = LogManager.getLogger(Filter.class.getName());
 
     @Mixin
     FilePathInput filePathInput;
@@ -210,16 +204,22 @@ class Filter implements Runnable {
 
             } else if (posArguments != null && posArguments.genes != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
-                GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(posArguments.genes, data);
+
+                // Convert to uppercase, so that gene is still recognized if user passes it in lowercase
+                String[] genes = Arrays.stream(posArguments.genes)
+                        .map(String::toUpperCase)
+                        .toArray(String[]::new);
+
+                GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
                 checker.addFilter(geneArgumentCheck);
 
                 // Lambda for adding filter method to be run after all checks are done
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.genes));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes));
 
             }
 
             // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
-            CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff, cutoffType);
+            CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff);
             checker.addFilter(cutOffArgumentCheck);
 
             // Lambda for adding filter method to be run after all checks are done
