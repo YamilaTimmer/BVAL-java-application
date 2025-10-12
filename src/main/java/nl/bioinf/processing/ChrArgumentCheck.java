@@ -28,12 +28,13 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
     @Override
     public boolean pass() throws IllegalArgumentException{
         logger.info("Starting validity check for chromosome filter...");
+
         for (String chr : filterChr){
             logger.debug("Validity check for user provided chromosome: '{}'", chr);
 
             // Accept 'X' and 'Y' as argument, as they are valid input for chromosomes
             if (chr.equalsIgnoreCase("X") || chr.equalsIgnoreCase("Y")){
-                return true;
+                continue;
             }
 
             // If not 'X' or 'Y', try to parse to int to determine whether it lies in the range of [1-23]
