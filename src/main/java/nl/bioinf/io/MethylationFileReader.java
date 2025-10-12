@@ -30,7 +30,8 @@ public class MethylationFileReader {
                 data.add(line);
                 String[] lineSplit = line.split(",");
                 ArrayList<Double> bValues = getBValues(lineSplit);
-                methylationData.addData(lineSplit[2], lineSplit[1], bValues);
+
+                methylationData.addData(buildMethylationLocation(lineSplit), bValues);
             }
 
         } catch (NoSuchFileException ex) {
@@ -67,5 +68,13 @@ public class MethylationFileReader {
         }
 
         return betaValues;
+    }
+
+    private static String buildMethylationLocation(String[] lineSplit) {
+        StringBuilder methylationLocation = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            methylationLocation.append(lineSplit[i]).append(",");
+        }
+        return methylationLocation.toString();
     }
 }

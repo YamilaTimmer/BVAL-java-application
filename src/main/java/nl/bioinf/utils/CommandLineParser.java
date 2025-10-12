@@ -122,6 +122,7 @@ class Filter implements Runnable {
 
         // Make new MethylationArray object to store filtered values in and set same samples
         MethylationArray methylationArray = new MethylationArray();
+        methylationArray.setHeader(methylationData.getHeader());
         methylationArray.setSamples(methylationData.getSamples());
         methylationArray.setData(methylationData.getData());
 

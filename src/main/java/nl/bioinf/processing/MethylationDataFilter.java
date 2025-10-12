@@ -90,7 +90,7 @@ public class MethylationDataFilter {
             MethylationData row = iter.next();
 
             // Remove row if gene of that row is not in the genes to be filtered
-            if (!Arrays.asList(genes).contains(row.gene())) {
+            if (!Arrays.asList(genes).contains(row.getGene())) {
                 iter.remove();
 
             }
@@ -116,7 +116,7 @@ public class MethylationDataFilter {
             MethylationData row = iter.next();
 
             // Remove row if gene of that row is not in the chromosome(s) to be filtered
-            if (!Arrays.asList(chromosomes).contains(row.chromosome())) {
+            if (!Arrays.asList(chromosomes).contains(row.getChromosome())) {
                 iter.remove();
             }
         }
