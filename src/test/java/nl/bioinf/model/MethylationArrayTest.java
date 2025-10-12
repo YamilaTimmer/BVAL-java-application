@@ -16,8 +16,10 @@ class MethylationArrayTest {
     public void testMethylationArrayInitFaultyData() {
         ClassLoader classloader = getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classloader.getResource("faultyData.csv")).getFile());
+
+        MethylationFileReader methylationFileReader = new MethylationFileReader();
         Exception exception= assertThrows(IllegalArgumentException.class, () -> {
-            MethylationFileReader.readCSV(Path.of(file.getPath()));
+            methylationFileReader.readCSV(Path.of(file.getPath()));
         });
     }
 
@@ -35,7 +37,6 @@ class MethylationArrayTest {
         // Assert if it returns a copy, or pointer to data
         ArrayList<MethylationData> data = (ArrayList<MethylationData>) tester.getData();
         assertNotSame(tester.getData(), data);
-
 
     }
 

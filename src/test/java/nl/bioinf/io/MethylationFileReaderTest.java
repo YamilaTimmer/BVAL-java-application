@@ -20,9 +20,10 @@ class MethylationFileReaderTest {
         String fileName = "9382jdn";
         Path path = Paths.get(fileName);
 
+        MethylationFileReader methylationFileReader = new MethylationFileReader();
         // Assert that IOException is thrown when trying to access non-existent path
         IOException exception = assertThrows(IOException.class,
-                () -> MethylationFileReader.readCSV(path));
+                () -> methylationFileReader.readCSV(path));
 
         // Check if expected message and actual message are equal
         String expectedMessage = "File not found: '" + path + "'. Please check the file path.";
@@ -36,9 +37,11 @@ class MethylationFileReaderTest {
      // Create tempDir
      Path tempDir = Files.createTempDirectory("tempDir");
 
+        MethylationFileReader methylationFileReader = new MethylationFileReader();
+
         // Assert that IOException is thrown when trying to access a dir instead of a file
         IOException exception = assertThrows(IOException.class,
-                () -> MethylationFileReader.readCSV(tempDir));
+                () -> methylationFileReader.readCSV(tempDir));
 
         // Check if expected message and actual message are equal
         String expectedMessage = "Please make sure the provided path:" + tempDir + " is not a directory and that the file has appropriate permissions.";
@@ -53,9 +56,12 @@ class MethylationFileReaderTest {
         Path tempFile = Files.createTempFile("exampledata", ".csv");
         Files.writeString(tempFile, "");
 
+        MethylationFileReader methylationFileReader = new MethylationFileReader();
+
+
         // Assert that IOException is thrown with empty file
         IOException exception = assertThrows(IOException.class,
-                () -> MethylationFileReader.readCSV(tempFile));
+                () -> methylationFileReader.readCSV(tempFile));
         String expectedMessage = "File is empty: '" + tempFile + "'";
 
         // Check if expected message and actual message are equal
@@ -76,10 +82,14 @@ class MethylationFileReaderTest {
         // Create MethylationArray that is expected based on input
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+,", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+
+        MethylationFileReader methylationFileReader = new MethylationFileReader();
+        methylationFileReader.readCSV(tempFile);
 
         // Retrieve actual MethylationArray
-        MethylationArray actualMethylationArray = MethylationFileReader.readCSV(tempFile);
+        MethylationArray actualMethylationArray = methylationFileReader.getData();
+
 
         // Assert whether expected and actual MethylationArray are equal
         assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
