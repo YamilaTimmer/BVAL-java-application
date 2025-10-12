@@ -21,8 +21,7 @@ This tool was created using:
 - Gradle ([v.8.14](https://gradle.org/releases/))
 
 ### Installation (for users)
-The newest release of BVAL can be downloaded here. This release includes the application and all its dependencies.
-
+Download the newest release of BVAL ([v0.0.1](https://github.com/YamilaTimmer/methylation-java-app/releases/tag/v0.0.1)). This release includes the application and all its dependencies.
 
 ### Clone the repository (for developers)
 For further developing and/or testing we recommend cloning the repository, this can be done using:
