@@ -112,10 +112,11 @@ public class MethylationDataFilter {
 
             // Determine positional variable to filter on, either GENE or CHROMOSOME
             if (posFilterType == PosFilterType.GENE) {
-                valueToCheck = row.getGene();
+                valueToCheck = row.getGene(methylationArray.getIndexInformation());
+
 
             } else {
-                valueToCheck = row.getChromosome();
+                valueToCheck = row.getChromosome(methylationArray.getIndexInformation());
             }
 
             // remove rows that don't contain the positional variable

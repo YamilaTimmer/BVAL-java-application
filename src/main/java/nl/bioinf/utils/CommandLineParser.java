@@ -180,6 +180,7 @@ class Filter implements Runnable {
         filteredData.setHeader(data.getHeader());
         filteredData.setSamples(data.getSamples());
         filteredData.setData(data.getData());
+        filteredData.setIndexInformation(data.getIndexInformation());
 
         // List to hold methods to be run based on user arguments
         List<Runnable> filtersToRun = new ArrayList<>();

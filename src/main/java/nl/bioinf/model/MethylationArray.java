@@ -12,6 +12,7 @@ public class MethylationArray {
     private List<String> samples = new ArrayList<>();
     private List<MethylationData> data = new ArrayList<>();
     private String header;
+    private DataIndexLocation indexInformation = null;
 
     public void setSamples(List<String> samples) {
         this.samples = samples;
@@ -57,11 +58,18 @@ public class MethylationArray {
     public List<String> getGenes() {
         ArrayList<String> genes = new ArrayList<>();
         for (MethylationData d : data) {
-            genes.add(d.getGene().toUpperCase());
+            genes.add(d.getGene(indexInformation).toUpperCase());
         }
         return Collections.unmodifiableList(genes);
     }
 
+    public DataIndexLocation getIndexInformation() {
+        return indexInformation;
+    }
+
+    public void setIndexInformation(DataIndexLocation indexInformation) {
+        this.indexInformation = indexInformation;
+    }
 
     @Override
     public String toString() {

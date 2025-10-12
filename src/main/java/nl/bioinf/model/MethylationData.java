@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public record MethylationData(String methylationLocation, ArrayList<Double> betaValues) {
 
-    public String getGene() {
+    public String getGene(DataIndexLocation location) {
         String[] split = methylationLocation.split(",");
-        return split[1];
+        return split[location.getGeneIndex()];
     }
 
-    public String getChromosome() {
+    public String getChromosome(DataIndexLocation location) {
         String[] split = methylationLocation.split(",");
-        return split[2];
+        return split[location.getChrIndex()];
     }
 
     @Override

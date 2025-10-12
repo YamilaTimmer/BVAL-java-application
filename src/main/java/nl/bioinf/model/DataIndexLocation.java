@@ -25,7 +25,7 @@ public class DataIndexLocation {
         int index = listHeader.indexOf("chr");
         if (index == -1) {
             logger.error("'chr' not found in header, invalid header");
-            throw new IllegalArgumentException();
+            System.exit(-1);
         }
         return index;
     }
@@ -35,7 +35,7 @@ public class DataIndexLocation {
         int index = listHeader.indexOf("gene");
         if (index == -1) {
             logger.error("'gene' not found in header, invalid header");
-            throw new IllegalArgumentException();
+            System.exit(-1);
         }
         return index;
     }
@@ -46,5 +46,13 @@ public class DataIndexLocation {
 
     public int getGeneIndex() {
         return geneIndex;
+    }
+
+    @Override
+    public String toString() {
+        return "DataIndexLocation{" +
+                "chrIndex=" + chrIndex +
+                ", geneIndex=" + geneIndex +
+                '}';
     }
 }
