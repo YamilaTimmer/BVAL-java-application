@@ -281,15 +281,38 @@ class Compare implements Runnable {
             description = "Name(s) of the different statistic methods, default values: ${DEFAULT-VALUE}",
             arity = "0..*")
     String[] methods;
+    enum ValidMethods{
+        TTEST("t-test"),
+        SPEARMAN("spearman"),
+        WILCOXONTEST("wilcoxon-test");
 
+        private final String name;
+
+        ValidMethods(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static boolean isValid(String value) {
+            return Arrays.stream(values()).anyMatch(v -> v.name.equals(value));
+        }
+
+        public static List<String> validNames() {
+            return Arrays.stream(values())
+                    .map(ValidMethods::getName)
+                    .toList();
+        }
+    }
     private void validateMethodInput() {
-        List<String> validMethods = new ArrayList<>();
-        Collections.addAll(validMethods, "t-test", "spearman", "wilcoxon-test");
 
         for (String method : methods) {
-            if (!validMethods.contains(method)) {
+            if (!ValidMethods.isValid(method)) {
                 throw new ParameterException(spec.commandLine(),
-                        String.format("Invalid value '%s' for option '--method'", method));
+                        String.format("Invalid value '%s' for option '--methods'. Valid values: %s",
+                                method, String.join(", ", ValidMethods.validNames())));
             }
         }
     }
