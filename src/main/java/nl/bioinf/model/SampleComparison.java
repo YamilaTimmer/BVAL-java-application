@@ -13,7 +13,9 @@ public class SampleComparison {
 
     }
 
-    public Set<String> getStatisticMethods() {return Collections.unmodifiableSet(statisticsData.keySet());}
+    public Set<String> getStatisticMethods() {
+        return Collections.unmodifiableSet(statisticsData.keySet());
+    }
 
     public void addNewSampleVsSample(String sample) {
         sampleVersusSampleNames.add(sample);

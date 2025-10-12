@@ -24,7 +24,7 @@ public class CutOffArgumentCheck implements UserArgumentsCheck {
      *
      * @return boolean true, if the check passes
      * @throws IllegalArgumentException if the check fails, meaning the passed cutoff value does not lie within
-     * valid input range
+     *                                  valid input range
      */
     @Override
     public boolean pass() throws IllegalArgumentException {

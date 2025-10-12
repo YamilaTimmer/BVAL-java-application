@@ -18,7 +18,7 @@ public class SummaryGenerator {
     /**
      * @param methylationData parsed data from input file, including samples, chromosomes/genes and betavalues
      */
-    public static void generateSummary(MethylationArray methylationData){
+    public static void generateSummary(MethylationArray methylationData) {
         logger.info("Generating summary...");
 
         // Get methylation data/sample data
@@ -48,7 +48,7 @@ public class SummaryGenerator {
         System.out.println("Summary for input file:");
         System.out.println("Number of samples: " + samples.size());
         System.out.println("Number of genes: " + dataRows.size());
-        System.out.println("Avg beta value: " + Math.round(avgBetaVal* 100.0) / 100.0); //2 decimals
+        System.out.println("Avg beta value: " + Math.round(avgBetaVal * 100.0) / 100.0); //2 decimals
         System.out.println("Amount of NA values: " + amountNAValues);
 
         logger.debug("Summary generated successfully.");

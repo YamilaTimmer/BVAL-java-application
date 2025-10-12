@@ -10,7 +10,7 @@ public class VerbosityLevel {
 
     private static final Logger logger = LogManager.getLogger(VerbosityLevel.class);
 
-    public void applyVerbosity(int verbose) throws IllegalArgumentException{
+    public void applyVerbosity(int verbose) throws IllegalArgumentException {
 
         if (verbose < 0 || verbose > 2) {
             throw new IllegalArgumentException("Invalid verbosity level: " + verbose + ". Use 0 [error/warnings], 1 [info], " +

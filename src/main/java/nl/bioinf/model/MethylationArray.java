@@ -9,7 +9,7 @@ import java.util.List;
  * genes and chromosomes
  */
 public class MethylationArray {
-    private List<String> samples= new ArrayList<>();
+    private List<String> samples = new ArrayList<>();
     private List<MethylationData> data = new ArrayList<>();
     private String header;
 
@@ -57,7 +57,7 @@ public class MethylationArray {
     public List<String> getGenes() {
         ArrayList<String> genes = new ArrayList<>();
         for (MethylationData d : data) {
-            genes.add(d.gene().toUpperCase());
+            genes.add(d.getGene().toUpperCase());
         }
         return Collections.unmodifiableList(genes);
     }

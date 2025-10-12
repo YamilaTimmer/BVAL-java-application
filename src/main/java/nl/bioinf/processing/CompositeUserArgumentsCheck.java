@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Checks validity of all filter user arguments, using all ArgumentCheckers
  */
-public class CompositeUserArgumentsCheck implements UserArgumentsCheck{
+public class CompositeUserArgumentsCheck implements UserArgumentsCheck {
     private final List<UserArgumentsCheck> filters = new ArrayList<>();
     private static final Logger logger = LogManager.getLogger(CompositeUserArgumentsCheck.class.getName());
 
@@ -33,10 +33,10 @@ public class CompositeUserArgumentsCheck implements UserArgumentsCheck{
                 // For each filter, get the name of the class, so the output is readable for the user
                 filters.stream()
                         .map(f -> f.getClass().getSimpleName())
-                        .toList());;
+                        .toList());
 
         for (UserArgumentsCheck filter : filters) {
-            if (! filter.pass()) {
+            if (!filter.pass()) {
                 return false;
             }
         }

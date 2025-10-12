@@ -14,27 +14,27 @@ import java.util.Map;
 public class ComparingFileWriter {
 
     private static final Logger logger = LogManager.getLogger(ComparingFileWriter.class.getName());
-     SampleComparison data;
+    SampleComparison data;
     Path pathFileOutput;
-  
-      public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
+
+    public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
         this.data = data;
         pathFileOutput = filePathOutput;
     }
-  
-  
+
+
     public void writeData() throws IOException {
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(pathFileOutput.toString()))) {
 
             newFile.write(createHeader());
             newFile.write(createCompareFileBody());
-        } catch (IOException e) {
-          logger.error("""
+        } catch (IOException ex) {
+            logger.error("""
                             Unexpected IO error when writing to file: '{}'.\s
                             Exception occurred: '{}'.
                             """,
                     ex.getMessage(), ex);
-            throw new IOException(e);
+            throw new IOException(ex);
         }
     }
 
@@ -56,7 +56,7 @@ public class ComparingFileWriter {
         for (String sample : data.getSampleVersusSampleNames()) {
             newFileBody.append(sample);
             for (String method : data.getStatisticMethods()) {
-                newFileBody.append(","+statisticsResults.get(method).get(sampleIndex));
+                newFileBody.append("," + statisticsResults.get(method).get(sampleIndex));
             }
             newFileBody.append(String.format("%n"));
             sampleIndex++;

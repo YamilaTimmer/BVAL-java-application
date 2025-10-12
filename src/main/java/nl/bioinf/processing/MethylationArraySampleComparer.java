@@ -27,7 +27,7 @@ public class MethylationArraySampleComparer {
     public SampleComparison performStatisticalMethods(String[] samples, String[] methods) {
         SampleComparison statisticalData = new SampleComparison(methods);
         for (int i = 0; i < samples.length; i++) {
-            for (int j = i+1; j < samples.length; j++) {
+            for (int j = i + 1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
                 try {
@@ -66,9 +66,11 @@ public class MethylationArraySampleComparer {
     private static double runSpearman(double[] sample1, double[] sample2) {
         return new SpearmansCorrelation().correlation(sample1, sample2);
     }
+
     private static double runTTest(double[] sample1, double[] sample2) {
         return new TTest().pairedTTest(sample1, sample2);
     }
+
     private static double runWilcoxonTest(double[] sample1, double[] sample2) {
         return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
     }

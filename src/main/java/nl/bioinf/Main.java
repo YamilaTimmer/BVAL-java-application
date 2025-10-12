@@ -13,7 +13,7 @@ public class Main {
         int exitCode = cmd.execute(args);
         System.exit(exitCode);
 
-        }
+    }
 }
 
 

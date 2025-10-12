@@ -4,23 +4,24 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 /**
  * Checks validity of sample argument(s) passed by user
  */
-public class SampleArgumentCheck implements UserArgumentsCheck{
+public class SampleArgumentCheck implements UserArgumentsCheck {
     private static String[] filterSamples;
     public static List<String> samples;
     public static List<MethylationData> dataRows;
-      public static MethylationArray methylationArray;
+    public static MethylationArray methylationArray;
 
     private static final Logger logger = LogManager.getLogger(SampleArgumentCheck.class.getName());
 
     /**
      * Sets passed sample filter argument(s) and all samples present in dataset as class variable
      *
-     * @param filterSamples String array user argument, that should contain one or more sample
+     * @param filterSamples    String array user argument, that should contain one or more sample
      * @param methylationArray contains parsed data from input file, including present samples
      */
     public SampleArgumentCheck(String[] filterSamples, MethylationArray methylationArray) {
@@ -36,7 +37,7 @@ public class SampleArgumentCheck implements UserArgumentsCheck{
      *
      * @return boolean true, if the check passes
      * @throws IllegalArgumentException if the check fails (meaning (one of) the passed argument(s) does not exist in
-     * the input data
+     *                                  the input data
      */
     public boolean pass() throws IllegalArgumentException {
         logger.info("Starting validity check for sample filter...");

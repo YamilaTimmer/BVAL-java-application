@@ -26,14 +26,14 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
      * @throws IllegalArgumentException if the check fails (meaning (one of) the passed argument(s) is not a chromosome
      */
     @Override
-    public boolean pass() throws IllegalArgumentException{
+    public boolean pass() throws IllegalArgumentException {
         logger.info("Starting validity check for chromosome filter...");
 
-        for (String chr : filterChr){
+        for (String chr : filterChr) {
             logger.debug("Validity check for user provided chromosome: '{}'", chr);
 
             // Accept 'X' and 'Y' as argument, as they are valid input for chromosomes
-            if (chr.equalsIgnoreCase("X") || chr.equalsIgnoreCase("Y")){
+            if (chr.equalsIgnoreCase("X") || chr.equalsIgnoreCase("Y")) {
                 continue;
             }
 
@@ -47,8 +47,8 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
                     throw new IllegalArgumentException("Invalid chromosome: " + chr + ". Must be 1-23 or X/Y.");
                 }
 
-            // Throw NumberFormatException if chr could not be parsed to int
-            }catch (NumberFormatException ex){
+                // Throw NumberFormatException if chr could not be parsed to int
+            } catch (NumberFormatException ex) {
                 logger.error("Invalid input: '{}', unknown character please provide a number between 1-23 or " +
                         "X/Y for chromosome input.", chr);
                 throw ex;

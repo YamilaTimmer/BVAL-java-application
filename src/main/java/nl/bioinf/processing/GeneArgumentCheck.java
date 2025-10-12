@@ -3,6 +3,7 @@ package nl.bioinf.processing;
 import nl.bioinf.model.MethylationArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class GeneArgumentCheck implements UserArgumentsCheck {
     /**
      * Sets passed gene argument(s) and all genes in the dataset as class variable
      *
-     * @param filterGenes String array user argument, that should contain one or more gene
+     * @param filterGenes      String array user argument, that should contain one or more gene
      * @param methylationArray contains parsed data from input file, including present genes
      */
     public GeneArgumentCheck(String[] filterGenes, MethylationArray methylationArray) {
@@ -29,7 +30,7 @@ public class GeneArgumentCheck implements UserArgumentsCheck {
      *
      * @return boolean true, if the check passes
      * @throws IllegalArgumentException if the check fails (meaning (one of) the passed argument(s) does not exist in
-     * the input data
+     *                                  the input data
      */
     @Override
     public boolean pass() {

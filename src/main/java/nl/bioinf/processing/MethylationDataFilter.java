@@ -4,6 +4,7 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -33,8 +34,8 @@ public class MethylationDataFilter {
      * Filter data based on user passed argument(s) for samples, removing all columns that do not pass the filter
      *
      * @param methylationArray contains parsed data from input file, including present genes
-     * @param samplesFilter String array that user has provided, containing sample names that correspond with
-     *                      columns in the data
+     * @param samplesFilter    String array that user has provided, containing sample names that correspond with
+     *                         columns in the data
      */
     public static void filterBySample(MethylationArray methylationArray, String[] samplesFilter) {
         logger.info("Starting filtering on sample(s)");
@@ -83,7 +84,7 @@ public class MethylationDataFilter {
 
         methylationArray.setData(dataRows);
         methylationArray.setSamples(samples);
-        methylationArray.setHeader(methylationArray.getHeader());
+        //methylationArray.setHeader(methylationArray.getHeader());
 
         logger.info("Successfully filtered on sample(s)");
     }
@@ -92,10 +93,10 @@ public class MethylationDataFilter {
      * Filter data based on user passed argument(s) for genes OR chromosomes, removing all rows that do not pass the filter
      *
      * @param methylationArray contains parsed data from input file, including present genes
-     * @param posFilterType enum, either CHROMOSOME or GENE
-     * @param posFilter String array that user has provided, containing either chromosome- or gene names
+     * @param posFilterType    enum, either CHROMOSOME or GENE
+     * @param posFilter        String array that user has provided, containing either chromosome- or gene names
      */
-    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter){
+    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter) {
         logger.info("Starting filtering on {}(s)", posFilterType);
         logger.debug("Filtering on: {} {}.", posFilterType, Arrays.toString(posFilter));
 
@@ -111,10 +112,10 @@ public class MethylationDataFilter {
 
             // Determine positional variable to filter on, either GENE or CHROMOSOME
             if (posFilterType == PosFilterType.GENE) {
-                valueToCheck = row.gene();
+                valueToCheck = row.getGene();
 
             } else {
-                valueToCheck = row.chromosome();
+                valueToCheck = row.getChromosome();
             }
 
             // remove rows that don't contain the positional variable
@@ -134,11 +135,11 @@ public class MethylationDataFilter {
      * do not pass the filter
      *
      * @param methylationArray contains parsed data from input file, including present genes
-     * @param cutoff a float that sets a cutoff point on how to filter beta values
-     * @param cutoffType enum, either upper or lower, determined by what direction the user wants to filter
-     *                   beta values, based on the cutoff
+     * @param cutoff           a float that sets a cutoff point on how to filter beta values
+     * @param cutoffType       enum, either upper or lower, determined by what direction the user wants to filter
+     *                         beta values, based on the cutoff
      */
-    public static void filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType){
+    public static void filterByCutOff(MethylationArray methylationArray, float cutoff, CutoffType cutoffType) {
         logger.info("Starting filtering on cutoff/cutoff type: {} {}", cutoff, cutoffType);
 
         List<MethylationData> dataRows = methylationArray.getData();
@@ -163,9 +164,9 @@ public class MethylationDataFilter {
     /**
      * Filtering logic as used in filterByCutOff
      *
-     * @param cutoff a float that sets a cutoff point on how to filter beta values
-     * @param cutoffType enum, either upper or lower, determined by what direction the user wants to filter
-     *      *                   beta values, based on the cutoff
+     * @param cutoff        a float that sets a cutoff point on how to filter beta values
+     * @param cutoffType    enum, either upper or lower, determined by what direction the user wants to filter
+     *                      *                   beta values, based on the cutoff
      * @param oldBetaValues ArrayList containing all doubles of the MethylationArray before filtering
      * @return filteredBetaValues, ArrayList of doubles containing only the beta values that pass the filter
      */
@@ -178,8 +179,7 @@ public class MethylationDataFilter {
                 if (betaValue <= cutoff) {
                     filteredBetaValues.add(betaValue);
                 }
-            }
-            else { // if CutoffType = 'upper'
+            } else { // if CutoffType = 'upper'
                 if (betaValue >= cutoff) {
                     filteredBetaValues.add(betaValue);
                 }
