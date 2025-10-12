@@ -12,10 +12,10 @@ public class SampleArgumentCheck implements UserArgumentsCheck {
     public static MethylationArray methylationArray;
     
 
-    public SampleArgumentCheck(String[] filterSamples) {
+    public SampleArgumentCheck(String[] filterSamples, MethylationArray data) {
         SampleArgumentCheck.filterSamples = filterSamples;
-        samples = MethylationFileReader.getData().getSamples();
-        dataRows = MethylationFileReader.getData().getData();
+        samples = data.getSamples();
+        dataRows = data.getData();
         methylationArray = new MethylationArray();
 
     }

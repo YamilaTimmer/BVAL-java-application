@@ -17,8 +17,11 @@ public class ComparingFileWriter {
 
     public void writeData() throws IOException {
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter("output.txt"))) {
+
             newFile.write(createHeader());
             newFile.write(createCompareFileBody());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
