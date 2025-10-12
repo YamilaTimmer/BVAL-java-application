@@ -1,6 +1,8 @@
 package nl.bioinf.io;
 
 import nl.bioinf.model.SampleComparison;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,20 +12,28 @@ import java.util.List;
 import java.util.Map;
 
 public class ComparingFileWriter {
-    SampleComparison data;
-    Path pathFileOutput;
 
-    public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
+    private static final Logger logger = LogManager.getLogger(ComparingFileWriter.class.getName());
+     SampleComparison data;
+    Path pathFileOutput;
+  
+      public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
         this.data = data;
         pathFileOutput = filePathOutput;
     }
-
+  
+  
     public void writeData() throws IOException {
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(pathFileOutput.toString()))) {
 
             newFile.write(createHeader());
             newFile.write(createCompareFileBody());
         } catch (IOException e) {
+          logger.error("""
+                            Unexpected IO error when writing to file: '{}'.\s
+                            Exception occurred: '{}'.
+                            """,
+                    ex.getMessage(), ex);
             throw new IOException(e);
         }
     }
@@ -37,7 +47,6 @@ public class ComparingFileWriter {
         header.append(String.format("%n"));
 
         return header.toString();
-
     }
 
     private String createCompareFileBody() {

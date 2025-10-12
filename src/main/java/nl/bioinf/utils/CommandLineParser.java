@@ -1,4 +1,5 @@
 package nl.bioinf.utils;
+
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.processing.*;
@@ -8,21 +9,21 @@ import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.*;
 
-// TODO: print tips for user?
-//            System.out.println("\u001B[34mInfo: Use -chr [chromosome] to filter on chromosome(s) \u001B[0m");
-//            System.out.println("\u001B[34mInfo: Use -g [gene] to filter on gene(s)\u001B[0m");
+/**
+ *
+ */
 
 
 // Reusable option for filepath
 class FilePathInput {
     @Option(names = {"-f", "--file"},
-            description = "Path to file containing the data",
+            description = "Path to file containing the input methylation data file containing beta values, genes, " +
+                    "chromosomes and one or more samples",
             arity = "1",
             required = true)
     Path filePath;
@@ -30,11 +31,9 @@ class FilePathInput {
 
 class FilePathOutput {
     @Option(names = {"-o", "--output"},
-            defaultValue = "output.txt",
             description = "Path to where output will be written to, DEFAULT: ${DEFAULT-VALUE}",
-            arity = "1")
-    Path outputFilePath;
-
+            arity = "0..1")
+    Path outputFilePath = Path.of("output.txt");
 }
 
 class SampleInput{
@@ -44,6 +43,12 @@ class SampleInput{
     String[] samples;
 }
 
+class Verbosity{
+    @Option(names = "--verbose",
+            description = "Verbosity level. Default: ${DEFAULT-VALUE}",
+            arity = "0..1")
+    int verbose = 0;
+}
 
 // Parent class that will be called in main
 @Command(name = "BVAL",
@@ -52,11 +57,11 @@ class SampleInput{
         subcommands = {Summary.class,
                 Filter.class,
                 Compare.class})
-
-public class CommandLineParser implements Runnable {
+public class  CommandLineParser implements Runnable {
 
     @Override
     public void run() {
+
         CommandLine.usage(this, System.out);
     }
 }
@@ -70,24 +75,43 @@ class Summary implements Runnable {
     @Mixin
     FilePathInput filePathInput;
 
+    @Mixin
+    Verbosity verbosity;
+
     @Override
     public void run() {
-
-        MethylationFileReader fileReader = null;
+        VerbosityLevel verbosityLevel = new VerbosityLevel();
         try {
-            fileReader = new MethylationFileReader();
-            fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException e) {
-            System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
+            verbosityLevel.applyVerbosity(verbosity.verbose);
         }
+        catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
+        MethylationArray data = new MethylationArray();
+      
+        fileReader = new MethylationFileReader();
+      
+        try {
+
+            fileReader.readCSV(filePathInput.filePath);
+        } catch (IOException ex) {
+            // User-friendly output only
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+      
         MethylationArray data = fileReader.getData();
+
         SummaryGenerator.generateSummary(data);
     }
 }
 
 // Filter use-case, takes file, allows user to filter and returns overview to user
 @Command(name = "filter",
-        description = "@|bold Takes methylation beta value file and allows for filtering based on samples/chromosomes/genes/cutoff.|@",
+        description = "@|bold Takes input file containing beta values and allows for filtering based on samples, " +
+                "chromosomes or genes and a cutoff.|@",
         mixinStandardHelpOptions = true)
 class Filter implements Runnable {
 
@@ -98,6 +122,9 @@ class Filter implements Runnable {
     SampleInput sampleInput;
 
     @Mixin
+    Verbosity verbosity;
+
+    @Mixin
     FilePathOutput filePathOutput;
 
     @ArgGroup()
@@ -105,79 +132,128 @@ class Filter implements Runnable {
 
     static class PosArguments {
         @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes")
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "0..*")
         String[] chr;
         @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ genes")
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "0..*")
         String[] genes;
     }
 
-
     @Option(names = {"-c", "--cutoff"},
-            defaultValue = "0.0",
-            description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than the cutoff are kept. Default: ${DEFAULT-VALUE}")
-    float cutoff;
+            description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than " +
+                    "the cutoff are kept. Default: ${DEFAULT-VALUE}")
+    float cutoff = 0.0f;
 
     @Option(names = {"-ct", "--cutofftype"},
-            defaultValue = "upper",
-            description = "Select whether to filter above or below cutoff. Default: ${DEFAULT-VALUE}. Valid values: ${COMPLETION-CANDIDATES}")
-    MethylationDataFilter.CutoffType cutoffType;
+            description = "Select whether to filter above or below cutoff. Default: ${DEFAULT-VALUE}. " +
+                    "Valid values: ${COMPLETION-CANDIDATES}")
+    MethylationDataFilter.CutoffType cutoffType = MethylationDataFilter.CutoffType.upper;
 
 
     @Override
     public void run() {
-        MethylationArray methylationData;
-        MethylationFileReader fileReader = null;
+
+        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        try {
+            verbosityLevel.applyVerbosity(verbosity.verbose);
+        }
+        catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+
+        }
+     
+
         try {
             fileReader = new MethylationFileReader();
             fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException e) {
-            System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
+        } catch (IOException ex) {
+
+            System.out.println(ex.getMessage());
+            System.exit(1);
         }
-        methylationData = fileReader.getData();
+      
+      MethylationArray data = fileReader.getData();
 
-        // Make new MethylationArray object to store filtered values in and set same samples
-        MethylationArray methylationArray = new MethylationArray();
-        methylationArray.setHeader(methylationData.getHeader());
-        methylationArray.setSamples(methylationData.getSamples());
-        methylationArray.setData(methylationData.getData());
 
-        System.out.println("Data before filtering: " + methylationData);
+        // Make new MethylationArray object (copy of MethylationArray generated by MethylationFileReader),
+        // to store filtered values
+        MethylationArray filteredData = new MethylationArray();
+        assert data != null;
+        filteredData.setSamples(data.getSamples());
+        filteredData.setData(data.getData());
+        filteredData.setHeader(data.getHeader());
 
-        if (sampleInput.samples != null){
-            GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(sampleInput.samples);
-            if (geneArgumentCheck.pass(methylationData)){
-                methylationArray = MethylationDataFilter.filterBySample(methylationData, sampleInput.samples);
-            }
-        }
-
-        if (posArguments != null && posArguments.chr != null ) {
-            ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr);
-            if (chrArgumentCheck.pass(methylationData)){
-                MethylationDataFilter.filterByChr(methylationArray, posArguments.chr);
-            }
-        }
-        else if (posArguments != null && posArguments.genes != null ) {
-            GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(posArguments.genes);
-            if (geneArgumentCheck.pass(methylationData)){
-                MethylationDataFilter.filterByGene(methylationArray, posArguments.genes);
-            }
-        }
-
-        // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
-        CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff, cutoffType);
-        if (cutOffArgumentCheck.pass(methylationData)){
-            MethylationDataFilter.filterByCutOff(methylationArray, cutoff, cutoffType);
-        }
-
-        System.out.println("Data after filtering on cutoff: "+ methylationArray);
+        List<Runnable> filtersToRun = new ArrayList<>();
+        CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
 
 
         try {
-            FilterFileWriter.writeData(methylationArray, filePathOutput.outputFilePath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            if (sampleInput.samples != null) {
+                SampleArgumentCheck sampleArgumentCheck = new SampleArgumentCheck(sampleInput.samples, data);
+                checker.addFilter(sampleArgumentCheck);
+
+                // Lambda for adding filter method to run after all checks are done
+                filtersToRun.add(() -> MethylationDataFilter.filterBySample(filteredData, sampleInput.samples));
+
+            }
+
+            if (posArguments != null && posArguments.chr != null) {
+                MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
+
+                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr);
+                checker.addFilter(chrArgumentCheck);
+
+                // Lambda for adding filter method to be run after all checks are done
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr));
+
+            } else if (posArguments != null && posArguments.genes != null) {
+                MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
+
+                // Convert to uppercase, so that gene is still recognized if user passes it in lowercase
+                String[] genes = Arrays.stream(posArguments.genes)
+                        .map(String::toUpperCase)
+                        .toArray(String[]::new);
+
+                GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
+                checker.addFilter(geneArgumentCheck);
+
+                // Lambda for adding filter method to be run after all checks are done
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes));
+
+            }
+
+            // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
+            CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff);
+            checker.addFilter(cutOffArgumentCheck);
+
+            // Lambda for adding filter method to be run after all checks are done
+            filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
+
+            // Check all arguments using the ArgumentChecks, to see if passed arguments are valid
+            if (checker.pass()){
+                // Run all filters for which the user has passed arguments
+                for (Runnable filter : filtersToRun) {
+                    filter.run();
+                }
+            }
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
         }
+
+        // Try writing to output
+        try {
+            FilterFileWriter.writeData(filteredData, filePathOutput.outputPath);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+
+        }
+
 
     }
 }
@@ -186,8 +262,8 @@ class Filter implements Runnable {
 @Command(name = "compare",
         description = "Compare two or more samples/regions",
         mixinStandardHelpOptions = true)
-
 class Compare implements Runnable {
+
     @Mixin
     FilePathInput filePathInput;
 
@@ -195,15 +271,10 @@ class Compare implements Runnable {
     SampleInput sampleInput;
 
     @Mixin
+    Verbosity verbosity;
+  
+    @Mixin
     FilePathOutput filePathOutput;
-
-//    @ArgGroup(exclusive = true, multiplicity = "1")
-//    Filter.PosArguments posArguments;
-//
-//    @Option(names = {"-c", "--cutoff"},
-//            description = "Cutoff value to filter betavalues on, by default the values higher than the cutoff are kept")
-//    float cutoff;
-
 
     @Spec CommandSpec spec;
     @Option(names = {"-m", "--methods"},
@@ -225,29 +296,45 @@ class Compare implements Runnable {
         }
     }
 
-
     @Override
     public void run() {
-        validateMethodInput();
+
+        VerbosityLevel verbosityLevel = new VerbosityLevel();
+
+        try {
+            verbosityLevel.applyVerbosity(verbosity.verbose);
+        }
+        catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
+      validateMethodInput();
         MethylationFileReader fileReader = null;
+      
+        MethylationArray data = new MethylationArray();
+
         try {
             fileReader = new MethylationFileReader();
             fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException e) {
-            System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
-            System.exit(-1);
-        }
-
-        MethylationArray data = fileReader.getData();
+        } catch (IOException ex) {
+            // User-friendly output only
+            System.out.println(ex.getMessage());
+            System.exit(1);
+          
+      MethylationArray data = fileReader.getData();
+          
+                  MethylationArray data = fileReader.getData();
         SampleComparison corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(sampleInput.samples, methods);
 
         try {
             new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException e) {
             throw new RuntimeException(e);
+
         }
 
 
+        ComparingFileWriter.writeData(corrData);
     }
-
 }

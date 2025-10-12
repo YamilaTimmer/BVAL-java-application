@@ -1,11 +1,10 @@
 package nl.bioinf.processing;
 
-import nl.bioinf.model.MethylationArray;
 
 public interface UserArgumentsCheck {
         /**
-         * checks the given MethylationArray.
+         * Checks the user passed arguments.
          */
-        boolean pass(MethylationArray methylationArray);
+        boolean pass() throws IllegalArgumentException;
 
 }
