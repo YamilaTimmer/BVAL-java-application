@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public record MethylationData(String methylationLocation, ArrayList<Double> betaValues) {
 
+
     public String getGene() {
         String[] split = methylationLocation.split(",");
         String gene = split[1];

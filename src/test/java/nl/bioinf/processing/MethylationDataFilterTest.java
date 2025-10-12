@@ -21,9 +21,9 @@ class MethylationDataFilterTest {
         methylationData = new MethylationArray();
 
         methylationData.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        methylationData.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
-        methylationData.addData("16", "CDH5", new ArrayList<>(List.of(0.1, 0.0, 0.4)));
-        methylationData.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
+        methylationData.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+        methylationData.addData("cg00000236,CDH5,16,53468160,53468160,+", new ArrayList<>(List.of(0.1, 0.0, 0.4)));
+        methylationData.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
     }
 
 
@@ -39,9 +39,9 @@ class MethylationDataFilterTest {
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2")));
-        expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85)));
-        expectedMethylationArray.addData("16", "CDH5", new ArrayList<>(List.of(0.1, 0.0)));
-        expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0)));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85)));
+        expectedMethylationArray.addData("cg00000236,CDH5,16,53468160,53468160,+", new ArrayList<>(List.of(0.1, 0.0)));
+        expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0)));
 
         // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
@@ -60,8 +60,8 @@ class MethylationDataFilterTest {
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
-        expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+        expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
 
         // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
@@ -81,8 +81,8 @@ class MethylationDataFilterTest {
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
-        expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+        expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
 
         // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
