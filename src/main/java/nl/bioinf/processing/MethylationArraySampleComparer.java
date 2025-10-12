@@ -30,10 +30,14 @@ public class MethylationArraySampleComparer {
             for (int j = i+1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
-
-                if (sample1 == -1 || sample2 == -1) {
-                    throw new IndexOutOfBoundsException(String.format("Sample not found in the data. Compared samples: %s vs %s%n",
-                                                                        samples[i], samples[j]));
+                try {
+                    if (sample1 == -1 || sample2 == -1) {
+                        throw new IndexOutOfBoundsException(String.format("Sample not found in the data. Did not compare following samples: %s vs %s%n",
+                                samples[i], samples[j]));
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    System.err.printf(e.getMessage());
+                    continue;
                 }
 
                 double[] sample1BetaValues = getBetaValues(sample1);

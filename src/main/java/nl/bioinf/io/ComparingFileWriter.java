@@ -5,23 +5,26 @@ import nl.bioinf.model.SampleComparison;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 public class ComparingFileWriter {
     SampleComparison data;
+    Path pathFileOutput;
 
-    public ComparingFileWriter(SampleComparison data) {
+    public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
         this.data = data;
+        pathFileOutput = filePathOutput;
     }
 
     public void writeData() throws IOException {
-        try (BufferedWriter newFile = new BufferedWriter(new FileWriter("output.txt"))) {
+        try (BufferedWriter newFile = new BufferedWriter(new FileWriter(pathFileOutput.toString()))) {
 
             newFile.write(createHeader());
             newFile.write(createCompareFileBody());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 

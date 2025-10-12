@@ -28,6 +28,15 @@ class FilePathInput {
     Path filePath;
 }
 
+class FilePathOutput {
+    @Option(names = {"-o", "--output"},
+            defaultValue = "output.txt",
+            description = "Path to where output will be written to, DEFAULT: ${DEFAULT-VALUE}",
+            arity = "1")
+    Path outputFilePath;
+
+}
+
 class SampleInput{
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on",
@@ -87,6 +96,9 @@ class Filter implements Runnable {
 
     @Mixin
     SampleInput sampleInput;
+
+    @Mixin
+    FilePathOutput filePathOutput;
 
     @ArgGroup()
     PosArguments posArguments;
@@ -162,7 +174,7 @@ class Filter implements Runnable {
 
 
         try {
-            FilterFileWriter.writeData(methylationArray);
+            FilterFileWriter.writeData(methylationArray, filePathOutput.outputFilePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -182,6 +194,9 @@ class Compare implements Runnable {
     @Mixin
     SampleInput sampleInput;
 
+    @Mixin
+    FilePathOutput filePathOutput;
+
 //    @ArgGroup(exclusive = true, multiplicity = "1")
 //    Filter.PosArguments posArguments;
 //
@@ -194,7 +209,7 @@ class Compare implements Runnable {
     @Option(names = {"-m", "--methods"},
             defaultValue = "t-test,spearman,wilcoxon-test",
             split = ",",
-            description = "Name(s) of the different statistic methods, acceptable values: t-test spearman wilcoxon-test",
+            description = "Name(s) of the different statistic methods, default values: ${DEFAULT-VALUE}",
             arity = "0..*")
     String[] methods;
 
@@ -220,13 +235,14 @@ class Compare implements Runnable {
             fileReader.readCSV(filePathInput.filePath);
         } catch (IOException e) {
             System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
+            System.exit(-1);
         }
 
         MethylationArray data = fileReader.getData();
         SampleComparison corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(sampleInput.samples, methods);
 
         try {
-            new ComparingFileWriter(corrData).writeData();
+            new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
