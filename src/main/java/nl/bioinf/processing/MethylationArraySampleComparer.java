@@ -7,33 +7,47 @@ import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
-    private static Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
+    private Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
+    private MethylationArray data;
 
-    static {
+    public MethylationArraySampleComparer(MethylationArray data) {
+        this.data = data;
         statisticalMethods.put("spearman", MethylationArraySampleComparer::runSpearman);
         statisticalMethods.put("t-test", MethylationArraySampleComparer::runTTest);
         statisticalMethods.put("wilcoxon-test", MethylationArraySampleComparer::runWilcoxonTest);
     }
 
-    public static SampleComparison performStatisticalMethods(MethylationArray data, String[] samples, String[] methods) {
+    public SampleComparison performStatisticalMethods(String[] samples, String[] methods) {
         SampleComparison statisticalData = new SampleComparison(methods);
         for (int i = 0; i < samples.length; i++) {
             for (int j = i+1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
-
-                if (sample1 == -1 || sample2 == -1) {
-                    throw new IndexOutOfBoundsException(String.format("Sample not found in the data. Compared samples: %s vs %s%n",
-                                                                        samples[i], samples[j]));
+                try {
+                    if (sample1 == -1 || sample2 == -1) {
+                        throw new IndexOutOfBoundsException(String.format("Sample not found in the data. Did not compare following samples: %s vs %s%n",
+                                samples[i], samples[j]));
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    System.err.printf(e.getMessage());
+                    continue;
                 }
 
-                double[] sample1BetaValues = getBetaValues(data, sample1);
-                double[] sample2BetaValues = getBetaValues(data, sample2);
+                double[] sample1BetaValues = getBetaValues(sample1);
+                double[] sample2BetaValues = getBetaValues(sample2);
+                if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == -1) ||
+                        DoubleStream.of(sample2BetaValues).anyMatch(x -> x == -1)) {
+                    System.out.println(String.format("found invalid values in 1 of the samples: (-1 / NA) %s vs %s.",
+                            samples[i], samples[j]));
+                    continue;
+                }
                 String sampleNames = String.format("%s vs %s", samples[i], samples[j]);
                 statisticalData.addNewSampleVsSample(sampleNames);
 
@@ -59,7 +73,7 @@ public class MethylationArraySampleComparer {
         return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
     }
 
-    private static double[] getBetaValues(MethylationArray data, int sample) {
+    private double[] getBetaValues(int sample) {
         double[] betaValues = new double[data.getData().size()];
         int index = 0;
         for (MethylationData lineData : data.getData()) {

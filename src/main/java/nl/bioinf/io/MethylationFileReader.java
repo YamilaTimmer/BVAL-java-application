@@ -14,8 +14,18 @@ import java.util.ArrayList;
  */
 public class MethylationFileReader {
 
-    private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
 
+    private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
+      private List<String> data = new ArrayList<>(); // List because its resizable
+    private String headerLine;
+    private MethylationArray methylationData;
+
+    public MethylationFileReader() {
+        methylationData = new MethylationArray();
+
+    }
+
+  
     /**
      * This method tries to read the file at the user-provided file path and converts it to a MethylationArray datatype.
      *
@@ -23,8 +33,10 @@ public class MethylationFileReader {
      */
     public static MethylationArray readCSV(Path filePath) throws IOException {
 
+
         MethylationArray methylationData;
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
+
 
             String headerLine = br.readLine();
 
@@ -87,6 +99,11 @@ public class MethylationFileReader {
         }
 
         return samples;
+      
+          public MethylationArray getData() {
+        return methylationData;
+    }
+
     }
 
     /**
@@ -97,6 +114,7 @@ public class MethylationFileReader {
      * @return betaValues: Arraylist containing the betavalues per line, containing one betavalue per sample
      */
     private static ArrayList<Double> getBValues(String[] lineSplit){
+
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = 6; i < lineSplit.length; i++) {
             if (lineSplit[i].equalsIgnoreCase("na")) {
@@ -106,5 +124,13 @@ public class MethylationFileReader {
             betaValues.add(Double.parseDouble(lineSplit[i]));
         }
         return betaValues;
+    }
+
+    private String buildMethylationLocation(String[] lineSplit) {
+        StringBuilder methylationLocation = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            methylationLocation.append(lineSplit[i]).append(",");
+        }
+        return methylationLocation.toString();
     }
 }

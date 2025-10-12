@@ -13,6 +13,8 @@ public class SampleArgumentCheck implements UserArgumentsCheck{
     private static String[] filterSamples;
     public static List<String> samples;
     public static List<MethylationData> dataRows;
+      public static MethylationArray methylationArray;
+
     private static final Logger logger = LogManager.getLogger(SampleArgumentCheck.class.getName());
 
     /**
@@ -25,6 +27,8 @@ public class SampleArgumentCheck implements UserArgumentsCheck{
         SampleArgumentCheck.filterSamples = filterSamples;
         samples = methylationArray.getSamples();
         dataRows = methylationArray.getData();
+        methylationArray = new MethylationArray();
+
     }
 
     /**

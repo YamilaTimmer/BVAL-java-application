@@ -7,27 +7,38 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 public class ComparingFileWriter {
-    private static final Logger logger = LogManager.getLogger(ComparingFileWriter.class.getName());
 
-    public static void writeData(SampleComparison data) {
-        try (BufferedWriter newFile = new BufferedWriter(new FileWriter("output.txt"))) {
-            newFile.write(createHeader(data));
-            newFile.write(createCompareFileBody(data));
-        } catch(IOException ex) {
-            logger.error("""
+    private static final Logger logger = LogManager.getLogger(ComparingFileWriter.class.getName());
+     SampleComparison data;
+    Path pathFileOutput;
+  
+      public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
+        this.data = data;
+        pathFileOutput = filePathOutput;
+    }
+  
+  
+    public void writeData() throws IOException {
+        try (BufferedWriter newFile = new BufferedWriter(new FileWriter(pathFileOutput.toString()))) {
+
+            newFile.write(createHeader());
+            newFile.write(createCompareFileBody());
+        } catch (IOException e) {
+          logger.error("""
                             Unexpected IO error when writing to file: '{}'.\s
                             Exception occurred: '{}'.
                             """,
                     ex.getMessage(), ex);
-            System.exit(0);
+            throw new IOException(e);
         }
     }
 
-    private static String createHeader(SampleComparison data) {
+    private String createHeader() {
         StringBuilder header = new StringBuilder();
         header.append("SampleVSSample");
         for (String method : data.getStatisticMethods()) {
@@ -38,7 +49,7 @@ public class ComparingFileWriter {
         return header.toString();
     }
 
-    private static String createCompareFileBody(SampleComparison data) {
+    private String createCompareFileBody() {
         int sampleIndex = 0;
         Map<String, List<Double>> statisticsResults = data.getStatisticsData();
         StringBuilder newFileBody = new StringBuilder();

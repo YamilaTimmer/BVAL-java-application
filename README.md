@@ -20,15 +20,23 @@ This tool was created using:
 - Java ([v.24.0.1](https://www.oracle.com/java/technologies/javase/jdk24-archive-downloads.html))
 - Gradle ([v.8.14](https://gradle.org/releases/))
 
+### Installation (for users)
+The newest release of BVAL can be downloaded here. This release includes the application and all its dependencies.
 
-### Clone the repository
 
+### Clone the repository (for developers)
+For further developing and/or testing we recommend cloning the repository, this can be done using:
+```bash
+git clone https://github.com/YamilaTimmer/methylation-java-app
+```
 
 ### Running the tool
 The tool contains three distinct use cases, below some examples are shown on how to use these.
 #### Generating a summary
+The `summary` subcommand generates a small overview with some statistics of the input file, including how many samples/genes the input file contains, what the avg. beta-value is and the amount of NA-values.
+
 ```bash
-summary -f <filepath> 
+summary -f <file-path> 
 ```
 
 Generating a summary can be done by passing `summary` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). Below an example can be found using the [example data](https://github.com/YamilaTimmer/methylation-java-app/blob/main/data/exampledata.csv) from this repo:
@@ -48,24 +56,22 @@ Amount of NA values: 1
 ```
 
 #### Generating filtered data
+The `filter` subcommand allows the user to make a filtered subset based on the input file. The user can filter on samples, chromosomes, (or) genes and on beta-values using a cutoff.
+
 ```bash
-filter -f <filename> -s <samples> [ -chr <chromosomes> OR -g <genes> ] -c <cutoff-value> -ct <cutoff-type>
+filter -f <file-path> -s <samples> [ -chr <chromosomes> OR -g <genes> ] -c <cutoff-value> -ct <cutoff-type> -o <output-file>
 ```
 
 Generating a filtered output file from the input can be done by passing `filter` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). 
 
-Possible user arguments are:
-* `-f/--file`: filepath with input, containing beta values
+**Possible user arguments are**:
+* `-f/--file`: file path with input, containing beta values
 * `-s/--sample`: one or more samples, specified as the corresponding column names from the input file
 * `-chr/--chromosome`: one or more chromosomes (mutually exclusive with --gene)
 * `-g/--gene`: one or more gene names (mutually exclusive with --chromosome)
 * `-c/--cutoff`: a value ≥ 0 and ≤ 1.0 that serves as a cutoff value for filtering on beta values 
 * `-ct/--cutofftype`: how to filter using the cutoff (upper/lower), by default it filters out any values below the cutoff (upper), but using lower will filter out any values higher than the cutoff
-
-Get an overview of the possible options with:
-```
-filter [-h/--help]
-```
+* `-o/--output`: allows user to give path to where the output file should be saved
 
 Below an example of the command, with arguments is shown. This example filters the input data in a way that only Sample1 and Sample 2 (the first two columns) are kept, with only rows containing chromosome 17. Only beta values below 0.5 are kept.
 ```bash
@@ -74,7 +80,38 @@ BVAL filter -f data/exampledata.csv -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
 
 The filtered output is written to the user-specified path, if no path is given it is automatically generated as output.txt in the same directory as the tool
 #### Comparing methylation across samples/regions
+The `compare` subcommand allows the user to perform statistical analyses on a (sub)set of samples and thus compare methylation across samples.
 
+```bash
+compare -f <file-path> -s <samples> -m <comparison-method>
+```
+
+**Possible user arguments are**:
+* `-f/--file`: file path with input, containing beta values
+* `-s/--sample`: one or more samples to compare to each other, specified as the corresponding column names from the input file
+* `-m/--methods`: statistical method(s) on which the samples should be compared, possible methods are [Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test) [t-test], [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient)[spearman], [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test)[wilcoxon-test])
+
+#### Information on verbosity
+As user you can specify how much output you would like to receive in the terminal, this can be set using `--verbose`, followed by either `0`, `1` or `2`. 
+- 0 [WARNING]: default setting, only shows errors and warnings
+- 1 [INFO]: outputs errors/warning plus additional information
+- 2 [DEBUG]: outputs all of above plus extra information that is useful for debugging purposes
+
+#### Additional help
+For each subcommand you can get a help menu using:
+
+Get an overview of the possible options with:
+```bash
+[summary/filter/compare] [-h/--help]
+```
+
+This will show a menu with all possible options and their usage.
+
+To check the current version of the application use:
+
+```bash
+BVAL  [-V/--version]
+```
 
 ## Biological background
 More and more research is being conducted in the field of epigenetics, to investigate possible causes and/or treatment options for diseases such as cancer. It is believed that methylation of DNA plays a major role in the development of diseases. This is a process in which methyl groups are added to cytosine bases by DNA methyltransferases. The methylated form of cytosine, 5mC, represents only about 1% of all bases in the body and is mainly found in “CpG sites”, which are regions where a cytosine is followed by a guanine base. CpG sites are often heavily methylated, except in “CpG islands,” which are regions of about 1,000 base pairs with a higher CpG density than the rest of the genome, yet these islands are often unmethylated. Around 70% of all gene promoters are located within a CpG island (Moore et al., 2012).
@@ -101,4 +138,3 @@ This project is licensed under GNU General Public License v3.0. See the [LICENSE
 - Moore, L. D., Le, T., & Fan, G. (2012). DNA Methylation and Its Basic Function. Neuropsychopharmacology, 38(1), 23–38. https://doi.org/10.1038/npp.2012.112 
 - Illumina. (z.d.). Introduction to Methylation Array Analysis. https://www.illumina.com/techniques/microarrays/methylation-arrays.html
 - Van Tongelen, A., Loriot, A., & De Smet, C. (2017). Oncogenic roles of DNA hypomethylation through the activation of cancer-germline genes. Cancer Letters, 396, 130–137. [https://doi.org/10.1016/j.canlet.2017.03.029](https://doi.org/10.1016/j.canlet.2017.03.029) 
-

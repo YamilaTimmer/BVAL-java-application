@@ -38,11 +38,11 @@ public class MethylationArray {
         this.data = data;
     }
 
-    public void addData(String chromosome, String gene, ArrayList<Double> betaValues) throws IllegalArgumentException {
+    public void addData(String methylationLocation, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
             throw new IllegalArgumentException(("Number of beta values does not match number of samples."));
         }
-        data.add(new MethylationData(chromosome, gene, betaValues));
+        data.add(new MethylationData(methylationLocation, betaValues));
     }
 
     public List<MethylationData> getData() {

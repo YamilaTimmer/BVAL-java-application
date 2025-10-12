@@ -13,7 +13,7 @@ import java.nio.file.Path;
 public class FilterFileWriter{
     private static final Logger logger = LogManager.getLogger(FilterFileWriter.class.getName());
 
-    public static void writeData(MethylationArray data, Path outputPath) throws IOException {
+    public static void writeData(MethylationArray data, Path outputFilePath) throws IOException {
         File filePath = new File(outputPath.toUri());
 
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(filePath))) {
