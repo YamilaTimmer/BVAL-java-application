@@ -9,6 +9,7 @@ import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -261,13 +262,15 @@ class Compare implements Runnable {
     FilePathInput filePathInput;
 
     @Mixin
-    SampleInput sampleInput;
-
-    @Mixin
     Verbosity verbosity;
 
     @Mixin
     FilePathOutput filePathOutput;
+
+    @Option(names = {"-s", "--sample"},
+            description = "Name(s) of the sample(s) to compare with eachother",
+            arity = "2..*")
+    String[] samples;
 
     @Spec
     CommandSpec spec;
@@ -316,7 +319,13 @@ class Compare implements Runnable {
 
         MethylationArray data = fileReader.getData();
 
-        SampleComparison corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(sampleInput.samples, methods);
+        SampleComparison corrData = null;
+        try {
+            corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(samples, methods);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
         try {
             new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();

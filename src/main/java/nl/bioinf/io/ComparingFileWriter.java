@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -22,12 +23,14 @@ public class ComparingFileWriter {
         pathFileOutput = filePathOutput;
     }
 
-
     public void writeData() throws IOException {
-        try (BufferedWriter newFile = new BufferedWriter(new FileWriter(pathFileOutput.toString()))) {
+        File filePath = new File(pathFileOutput.toUri());
+
+        try (BufferedWriter newFile = new BufferedWriter(new FileWriter(filePath))) {
 
             newFile.write(createHeader());
             newFile.write(createCompareFileBody());
+
         } catch (IOException ex) {
             logger.error("""
                             Unexpected IO error when writing to file: '{}'.\s
@@ -36,6 +39,9 @@ public class ComparingFileWriter {
                     ex.getMessage(), ex);
             throw new IOException(ex);
         }
+        logger.debug("Output successfully written to: {}.", filePath);
+        System.out.println("Output successfully written to: " + filePath);
+
     }
 
     private String createHeader() {

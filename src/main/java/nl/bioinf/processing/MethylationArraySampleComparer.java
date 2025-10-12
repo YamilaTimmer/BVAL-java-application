@@ -6,14 +6,15 @@ import nl.bioinf.model.SampleComparison;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
-
-import java.util.Arrays;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
+    private static final Logger logger = LogManager.getLogger(MethylationArraySampleComparer.class.getName());
     private Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
     private MethylationArray data;
 
@@ -24,7 +25,7 @@ public class MethylationArraySampleComparer {
         statisticalMethods.put("wilcoxon-test", MethylationArraySampleComparer::runWilcoxonTest);
     }
 
-    public SampleComparison performStatisticalMethods(String[] samples, String[] methods) {
+    public SampleComparison performStatisticalMethods(String[] samples, String[] methods) throws IllegalArgumentException {
         SampleComparison statisticalData = new SampleComparison(methods);
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
@@ -44,9 +45,9 @@ public class MethylationArraySampleComparer {
                 double[] sample2BetaValues = getBetaValues(sample2);
                 if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == -1) ||
                         DoubleStream.of(sample2BetaValues).anyMatch(x -> x == -1)) {
-                    System.out.println(String.format("found invalid values in 1 of the samples: (-1 / NA) %s vs %s.",
-                            samples[i], samples[j]));
-                    continue;
+                    logger.error("Found invalid values in 1 of the samples: (-1 / NA) {} vs {}, please compare " +
+                            "samples without -1 or NA values", samples[i], samples[j]);
+                    throw new IllegalArgumentException("Invalid values in 1 of the samples: (-1 / NA)");
                 }
                 String sampleNames = String.format("%s vs %s", samples[i], samples[j]);
                 statisticalData.addNewSampleVsSample(sampleNames);
