@@ -32,9 +32,10 @@ class MethylationDataFilterTest {
     void filterBySample() {
 
         String[] samples = {"Sample1", "Sample2"};
+        methylationData.setHeader("id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3");
 
         // Call method filterBySample
-        MethylationArray actualMethylationArray = MethylationDataFilter.filterBySample(methylationData, samples);
+        MethylationDataFilter.filterBySample(methylationData, samples);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -44,7 +45,7 @@ class MethylationDataFilterTest {
         expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0)));
 
         // Assert if expected equals actual result
-        assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
+        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
 
     }
 
@@ -54,8 +55,9 @@ class MethylationDataFilterTest {
 
         String[] genes = {"TP53", "BRCA1"};
 
+
         // Call method filterByGene
-        MethylationArray actualMethylationArray = MethylationDataFilter.filterByGene(methylationData, genes);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -64,7 +66,7 @@ class MethylationDataFilterTest {
         expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
 
         // Assert if expected equals actual result
-        assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
+        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
 
 
     }
@@ -76,7 +78,7 @@ class MethylationDataFilterTest {
         String[] chr = {"17", "X"};
 
         // Call method filterByChr
-        MethylationArray actualMethylationArray = MethylationDataFilter.filterByChr(methylationData, chr);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -85,7 +87,7 @@ class MethylationDataFilterTest {
         expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
 
         // Assert if expected equals actual result
-        assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
+        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
     }
 }
 
