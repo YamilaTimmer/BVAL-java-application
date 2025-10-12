@@ -224,7 +224,6 @@ class Compare implements Runnable {
 
         MethylationArray data = fileReader.getData();
         SampleComparison corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(sampleInput.samples, methods);
-        System.out.println(corrData);
 
         try {
             new ComparingFileWriter(corrData).writeData();
