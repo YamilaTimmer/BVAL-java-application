@@ -81,7 +81,7 @@ class MethylationFileReaderTest {
         // Create MethylationArray that is expected based on input
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
 
         // Retrieve actual MethylationArray
         MethylationArray actualMethylationArray = MethylationFileReader.getData();

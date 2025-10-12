@@ -5,18 +5,30 @@ import nl.bioinf.model.SampleComparison;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 public class ComparingFileWriter {
-    public static void writeData(SampleComparison data) throws IOException {
-        try (BufferedWriter newFile = new BufferedWriter(new FileWriter("output.txt"))) {
-            newFile.write(createHeader(data));
-            newFile.write(createCompareFileBody(data));
+    SampleComparison data;
+    Path pathFileOutput;
+
+    public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
+        this.data = data;
+        pathFileOutput = filePathOutput;
+    }
+
+    public void writeData() throws IOException {
+        try (BufferedWriter newFile = new BufferedWriter(new FileWriter(pathFileOutput.toString()))) {
+
+            newFile.write(createHeader());
+            newFile.write(createCompareFileBody());
+        } catch (IOException e) {
+            throw new IOException(e);
         }
     }
 
-    private static String createHeader(SampleComparison data) {
+    private String createHeader() {
         StringBuilder header = new StringBuilder();
         header.append("SampleVSSample");
         for (String method : data.getStatisticMethods()) {
@@ -28,7 +40,7 @@ public class ComparingFileWriter {
 
     }
 
-    private static String createCompareFileBody(SampleComparison data) {
+    private String createCompareFileBody() {
         int sampleIndex = 0;
         Map<String, List<Double>> statisticsResults = data.getStatisticsData();
         StringBuilder newFileBody = new StringBuilder();

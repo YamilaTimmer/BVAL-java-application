@@ -10,16 +10,20 @@ import java.util.List;
 
 public class MethylationFileReader {
 
-    private static List<String> data = new ArrayList<>(); // List because its resizable
-    private static String headerLine;
-    private static MethylationArray methylationData;
+    private List<String> data = new ArrayList<>(); // List because its resizable
+    private String headerLine;
+    private MethylationArray methylationData;
 
-    public static void readCSV(Path filePath) throws IOException {
+    public MethylationFileReader() {
+        methylationData = new MethylationArray();
+
+    }
+
+    public void readCSV(Path filePath) throws IOException {
 
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
             headerLine =  br.readLine();
             String line;
-            methylationData = new MethylationArray();
             if (headerLine == null) {
                 throw new IOException("File is empty: '" + filePath + "'"); //Error handling: Empty file
             }
@@ -30,7 +34,8 @@ public class MethylationFileReader {
                 data.add(line);
                 String[] lineSplit = line.split(",");
                 ArrayList<Double> bValues = getBValues(lineSplit);
-                methylationData.addData(lineSplit[2], lineSplit[1], bValues);
+
+                methylationData.addData(buildMethylationLocation(lineSplit), bValues);
             }
 
         } catch (NoSuchFileException ex) {
@@ -40,7 +45,7 @@ public class MethylationFileReader {
         }
     }
 
-    private static ArrayList<String> getSamples(String header) {
+    private ArrayList<String> getSamples(String header) {
 
         ArrayList<String> samples = new ArrayList<>();
         String[] headerSplit = header.split(",");
@@ -52,11 +57,11 @@ public class MethylationFileReader {
 
     }
 
-    public static MethylationArray getData() {
+    public MethylationArray getData() {
         return methylationData;
     }
 
-    private static ArrayList<Double> getBValues(String[] lineSplit){
+    private ArrayList<Double> getBValues(String[] lineSplit){
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = 6; i < lineSplit.length; i++) {
             if (lineSplit[i].equalsIgnoreCase("na")) {
@@ -67,5 +72,13 @@ public class MethylationFileReader {
         }
 
         return betaValues;
+    }
+
+    private String buildMethylationLocation(String[] lineSplit) {
+        StringBuilder methylationLocation = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            methylationLocation.append(lineSplit[i]).append(",");
+        }
+        return methylationLocation.toString();
     }
 }

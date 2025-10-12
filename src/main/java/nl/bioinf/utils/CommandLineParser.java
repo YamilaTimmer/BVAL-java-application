@@ -28,6 +28,15 @@ class FilePathInput {
     Path filePath;
 }
 
+class FilePathOutput {
+    @Option(names = {"-o", "--output"},
+            defaultValue = "output.txt",
+            description = "Path to where output will be written to, DEFAULT: ${DEFAULT-VALUE}",
+            arity = "1")
+    Path outputFilePath;
+
+}
+
 class SampleInput{
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on",
@@ -64,12 +73,14 @@ class Summary implements Runnable {
     @Override
     public void run() {
 
+        MethylationFileReader fileReader = null;
         try {
-            MethylationFileReader.readCSV(filePathInput.filePath);
+            fileReader = new MethylationFileReader();
+            fileReader.readCSV(filePathInput.filePath);
         } catch (IOException e) {
             System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
         }
-        MethylationArray data = MethylationFileReader.getData();
+        MethylationArray data = fileReader.getData();
         SummaryGenerator.generateSummary(data);
     }
 }
@@ -85,6 +96,9 @@ class Filter implements Runnable {
 
     @Mixin
     SampleInput sampleInput;
+
+    @Mixin
+    FilePathOutput filePathOutput;
 
     @ArgGroup()
     PosArguments posArguments;
@@ -113,15 +127,18 @@ class Filter implements Runnable {
     @Override
     public void run() {
         MethylationArray methylationData;
+        MethylationFileReader fileReader = null;
         try {
-            MethylationFileReader.readCSV(filePathInput.filePath);
-            methylationData = MethylationFileReader.getData();
+            fileReader = new MethylationFileReader();
+            fileReader.readCSV(filePathInput.filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
         }
+        methylationData = fileReader.getData();
 
         // Make new MethylationArray object to store filtered values in and set same samples
         MethylationArray methylationArray = new MethylationArray();
+        methylationArray.setHeader(methylationData.getHeader());
         methylationArray.setSamples(methylationData.getSamples());
         methylationArray.setData(methylationData.getData());
 
@@ -157,7 +174,7 @@ class Filter implements Runnable {
 
 
         try {
-            FilterFileWriter.writeData(methylationArray);
+            FilterFileWriter.writeData(methylationArray, filePathOutput.outputFilePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -177,6 +194,9 @@ class Compare implements Runnable {
     @Mixin
     SampleInput sampleInput;
 
+    @Mixin
+    FilePathOutput filePathOutput;
+
 //    @ArgGroup(exclusive = true, multiplicity = "1")
 //    Filter.PosArguments posArguments;
 //
@@ -189,7 +209,7 @@ class Compare implements Runnable {
     @Option(names = {"-m", "--methods"},
             defaultValue = "t-test,spearman,wilcoxon-test",
             split = ",",
-            description = "Name(s) of the different statistic methods, acceptable values: t-test spearman wilcoxon-test",
+            description = "Name(s) of the different statistic methods, default values: ${DEFAULT-VALUE}",
             arity = "0..*")
     String[] methods;
 
@@ -209,18 +229,20 @@ class Compare implements Runnable {
     @Override
     public void run() {
         validateMethodInput();
+        MethylationFileReader fileReader = null;
         try {
-            MethylationFileReader.readCSV(filePathInput.filePath);
+            fileReader = new MethylationFileReader();
+            fileReader.readCSV(filePathInput.filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error: Could not read file: '" + filePathInput.filePath + "'. ");
+            System.exit(-1);
         }
 
-        MethylationArray data = MethylationFileReader.getData();
-        SampleComparison corrData = MethylationArraySampleComparer.performStatisticalMethods(data, sampleInput.samples, methods);
-        System.out.println(corrData);
+        MethylationArray data = fileReader.getData();
+        SampleComparison corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(sampleInput.samples, methods);
 
         try {
-            ComparingFileWriter.writeData(corrData);
+            new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
