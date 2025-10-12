@@ -220,7 +220,7 @@ class Compare implements Runnable {
         System.out.println(corrData);
 
         try {
-            ComparingFileWriter.writeData(corrData);
+            new ComparingFileWriter(corrData).writeData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
