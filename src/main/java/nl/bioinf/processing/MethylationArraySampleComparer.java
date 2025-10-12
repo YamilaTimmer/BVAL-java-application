@@ -45,9 +45,9 @@ public class MethylationArraySampleComparer {
                 double[] sample2BetaValues = getBetaValues(sample2);
                 if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == -1) ||
                         DoubleStream.of(sample2BetaValues).anyMatch(x -> x == -1)) {
-                    logger.error("Found invalid values in 1 of the samples: (-1 / NA) {} vs {}, please compare " +
+                    logger.warn("Found invalid values in 1 of the samples: (-1 / NA) {} vs {}, please compare " +
                             "samples without -1 or NA values", samples[i], samples[j]);
-                    throw new IllegalArgumentException("Invalid values in 1 of the samples: (-1 / NA)");
+                    continue;
                 }
                 String sampleNames = String.format("%s vs %s", samples[i], samples[j]);
                 statisticalData.addNewSampleVsSample(sampleNames);
