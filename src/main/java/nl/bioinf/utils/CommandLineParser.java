@@ -269,7 +269,7 @@ class Compare implements Runnable {
     FilePathOutput filePathOutput;
 
     @Option(names = {"-s", "--sample"},
-            description = "Name(s) of the sample(s) to compare with eachother",
+            description = "Name(s) of the sample(s) to compare with eachother. default value: all samples in the file",
             arity = "2..*")
     String[] samples;
 
@@ -343,6 +343,10 @@ class Compare implements Runnable {
 
         MethylationArray data = fileReader.getData();
 
+        if (samples == null) {
+            samples = data.getSamples().toArray(String[]::new);
+        }
+
         SampleComparison corrData = null;
         try {
             corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(samples, methods);
@@ -353,8 +357,9 @@ class Compare implements Runnable {
 
         try {
             new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
 
         }
     }
