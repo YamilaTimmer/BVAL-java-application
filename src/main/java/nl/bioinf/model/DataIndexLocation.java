@@ -4,55 +4,49 @@ import nl.bioinf.processing.MethylationArraySampleComparer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.List;
+import java.util.*;
 
+/**
+ * Model to hold index locations of different important values like:
+ * chr, gene, etc
+ * This will be used to adapt to different possible orders in the header
+ */
 public class DataIndexLocation {
     private static final Logger logger = LogManager.getLogger(DataIndexLocation.class.getName());
-    private int chrIndex;
-    private int geneIndex;
-    private String header;
+    Map<String, Integer> indexes;
+    private final String header;
 
     public DataIndexLocation(String header) {
         this.header = header;
-        chrIndex = findChrIndex();
-        geneIndex = findGeneIndex();
+        indexes = new HashMap<>();
+        findIndexes();
     }
 
-    private int findChrIndex() {
+    private void findIndexes() {
+        String[] indexesToFind = new String[] {"chr", "gene"};
         List<String> listHeader = Arrays.asList(header.split(","));
-        int index = listHeader.indexOf("chr");
-        if (index == -1) {
-            logger.error("'chr' not found in header, invalid header");
-            System.exit(-1);
+        for (String indexToFind : indexesToFind) {
+            int index = listHeader.indexOf(indexToFind);
+            if (index == -1) {
+                logger.error("'{}' not found in header, invalid header", indexToFind);
+                System.exit(-1);
+            }
+            indexes.put(indexToFind, index);
         }
-        return index;
-    }
-
-    private int findGeneIndex() {
-        List<String> listHeader = Arrays.asList(header.split(","));
-        int index = listHeader.indexOf("gene");
-        if (index == -1) {
-            logger.error("'gene' not found in header, invalid header");
-            System.exit(-1);
-        }
-        return index;
     }
 
     public int getChrIndex() {
-        return chrIndex;
+        return indexes.get("chr");
     }
 
     public int getGeneIndex() {
-        return geneIndex;
+        return indexes.get("gene");
     }
 
     @Override
     public String toString() {
         return "DataIndexLocation{" +
-                "chrIndex=" + chrIndex +
-                ", geneIndex=" + geneIndex +
+                "indexes=" + indexes +
                 '}';
     }
 }

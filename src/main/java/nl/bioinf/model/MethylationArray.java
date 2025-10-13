@@ -22,6 +22,10 @@ public class MethylationArray {
         return new ArrayList<>(samples);
     }
 
+    /**
+     * Stores the file's header, without samples, in this class
+     * @param header
+     */
     public void setHeader(String header) {
         String[] headerSplit = header.split(",");
         StringBuilder headerString = new StringBuilder();
