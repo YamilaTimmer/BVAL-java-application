@@ -10,9 +10,9 @@ import java.util.List;
  * Checks validity of gene argument(s) passed by user
  */
 public class GeneArgumentCheck implements UserArgumentsCheck {
-    public static String[] filterGenes;
-    public static List<String> genes;
-    private static final Logger logger = LogManager.getLogger(GeneArgumentCheck.class.getName());
+    private final String[] filterGenes;
+    private final List<String> genes;
+    private final Logger logger = LogManager.getLogger(GeneArgumentCheck.class.getName());
 
     /**
      * Sets passed gene argument(s) and all genes in the dataset as class variable
@@ -21,8 +21,8 @@ public class GeneArgumentCheck implements UserArgumentsCheck {
      * @param methylationArray contains parsed data from input file, including present genes
      */
     public GeneArgumentCheck(String[] filterGenes, MethylationArray methylationArray) {
-        GeneArgumentCheck.filterGenes = filterGenes;
-        GeneArgumentCheck.genes = methylationArray.getGenes();
+        this.filterGenes = filterGenes;
+        this.genes = methylationArray.getGenes();
     }
 
     /**

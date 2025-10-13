@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
  * Checks validity of cutoff argument passed by user
  */
 public class CutOffArgumentCheck implements UserArgumentsCheck {
-    public static float cutoff;
-    private static final Logger logger = LogManager.getLogger(CutOffArgumentCheck.class.getName());
+    private final float cutoff;
+    private final Logger logger = LogManager.getLogger(CutOffArgumentCheck.class.getName());
 
     /**
      * Sets passed cutoff argument as class variable.
@@ -16,7 +16,7 @@ public class CutOffArgumentCheck implements UserArgumentsCheck {
      * @param cutoff: a float that sets a cutoff point on how to filter beta values
      */
     public CutOffArgumentCheck(float cutoff) {
-        CutOffArgumentCheck.cutoff = cutoff;
+        this.cutoff = cutoff;
     }
 
     /**

@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
  * Checks validity of chromosome argument(s) passed by user
  */
 public class ChrArgumentCheck implements UserArgumentsCheck {
-    public static String[] filterChr;
-    private static final Logger logger = LogManager.getLogger(ChrArgumentCheck.class.getName());
+    private final String[] filterChr;
+    private final Logger logger = LogManager.getLogger(ChrArgumentCheck.class.getName());
 
     /**
      * Sets passed chromosome arguments as class variable.
@@ -16,7 +16,7 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
      * @param filterChr String array user argument, that should contain one or more chromosome
      */
     public ChrArgumentCheck(String[] filterChr) {
-        ChrArgumentCheck.filterChr = filterChr;
+        this.filterChr = filterChr;
     }
 
     /**

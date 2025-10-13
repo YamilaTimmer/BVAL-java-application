@@ -11,12 +11,9 @@ import java.util.List;
  * Checks validity of sample argument(s) passed by user
  */
 public class SampleArgumentCheck implements UserArgumentsCheck {
-    private static String[] filterSamples;
-    public static List<String> samples;
-    public static List<MethylationData> dataRows;
-    public static MethylationArray methylationArray;
-
-    private static final Logger logger = LogManager.getLogger(SampleArgumentCheck.class.getName());
+    private final String[] filterSamples;
+    private final List<String> samples;
+    private final Logger logger = LogManager.getLogger(SampleArgumentCheck.class.getName());
 
     /**
      * Sets passed sample filter argument(s) and all samples present in dataset as class variable
@@ -25,10 +22,8 @@ public class SampleArgumentCheck implements UserArgumentsCheck {
      * @param methylationArray contains parsed data from input file, including present samples
      */
     public SampleArgumentCheck(String[] filterSamples, MethylationArray methylationArray) {
-        SampleArgumentCheck.filterSamples = filterSamples;
+        this.filterSamples = filterSamples;
         samples = methylationArray.getSamples();
-        dataRows = methylationArray.getData();
-        methylationArray = new MethylationArray();
 
     }
 

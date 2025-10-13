@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class CompositeUserArgumentsCheck implements UserArgumentsCheck {
     private final List<UserArgumentsCheck> filters = new ArrayList<>();
-    private static final Logger logger = LogManager.getLogger(CompositeUserArgumentsCheck.class.getName());
+    private final Logger logger = LogManager.getLogger(CompositeUserArgumentsCheck.class.getName());
 
 
     /**
