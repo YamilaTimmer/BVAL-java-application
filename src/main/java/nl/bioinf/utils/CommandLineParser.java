@@ -45,7 +45,7 @@ class SampleInput {
 }
 
 class Verbosity {
-    @Option(names = "--verbose",
+    @Option(names = {"-v", "--verbose"},
             description = "Verbosity level. Default: ${DEFAULT-VALUE}",
             arity = "0..1")
     int verbose = 0;
@@ -53,7 +53,7 @@ class Verbosity {
 
 // Parent class that will be called in main
 @Command(name = "BVAL",
-        version = "0.1",
+        version = "Current version of BVAL: 0.0.1",
         mixinStandardHelpOptions = true,
         subcommands = {Summary.class,
                 Filter.class,
@@ -69,6 +69,7 @@ public class CommandLineParser implements Runnable {
 
 // Summary use-case, takes file and returns summary of file
 @Command(name = "summary",
+        version = "Current version of BVAL: 0.0.1",
         description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
         mixinStandardHelpOptions = true)
 class Summary implements Runnable {
@@ -109,6 +110,7 @@ class Summary implements Runnable {
 @Command(name = "filter",
         description = "@|bold Takes input file containing beta values and allows for filtering based on samples, " +
                 "chromosomes or genes and a cutoff.|@",
+        version = "Current version of BVAL: 0.0.1",
         mixinStandardHelpOptions = true)
 class Filter implements Runnable {
 
@@ -256,6 +258,7 @@ class Filter implements Runnable {
 // Compare use-case, compares 2 or more samples/regions
 @Command(name = "compare",
         description = "Compare two or more samples/regions",
+        version = "Current version of BVAL: 0.0.1",
         mixinStandardHelpOptions = true)
 class Compare implements Runnable {
 
