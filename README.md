@@ -23,11 +23,12 @@ This tool was created using:
 ### Installation (for users)
 Download the newest release of BVAL ([v0.0.1](https://github.com/YamilaTimmer/methylation-java-app/releases/tag/v0.0.1)). This release includes the application and all its dependencies.
 
-Run the app:
+After downloading, run the app using:
 ```bash
-java -jar bval-app-0.0.1.jar [sumnary/filter/compare]
+java -jar bval-app-0.0.1.jar 
 ```
 
+The example above runs the app with no arguments and will print the help function, showing information on the different commands of BVAL, read more about how to use the different commands in the chapter '[Use cases of BVAL](#use-cases-of-bval)'.
 ### Clone the repository (for developers)
 For further developing and/or testing we recommend cloning the repository, this can be done using:
 ```bash
@@ -35,8 +36,23 @@ git clone https://github.com/YamilaTimmer/methylation-java-app
 ```
 
 ### Running the tool
+#### Information about required data
+This app uses methylation data as input, specifically beta values (see more information [here](#biological-background)), in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format. There are **some columns that are required**, below these are briefly described:
+- `gene`: a column containing the gene for each row
+- `chr`: a column containing the chromosome for each row
+- `sample`: one or more columns, containing the beta value per sample per row
+
+Also see the [example data](https://github.com/YamilaTimmer/BVAL-java-application/blob/main/data/exampledata.csv) to get an idea of what the input data could look like
+
+> [!NOTE]  
+> The filtering usecase as described [here](#generating-filtered-data), uses the mandatory columns to filter, however any other columns containing other data are also permitted, they cannot be filtered on but they will be present in the final output.
+
+> [!IMPORTANT]  
+> There is no strict column order, as the app relies on checking on column names instead. Make sure to name the gene column `gene` and the chromosome column `chr`! Samples columns can have any name.
+
+#### Use cases of BVAL
 The tool contains three distinct use cases, below some examples are shown on how to use these.
-#### Generating a summary
+##### Generating a summary
 The `summary` subcommand generates a small overview with some statistics of the input file, including how many samples/genes the input file contains, what the avg. beta-value is and the amount of NA-values.
 
 ```bash
@@ -59,7 +75,7 @@ Avg beta value: 0.5
 Amount of NA values: 1
 ```
 
-#### Generating filtered data
+##### Generating filtered data
 The `filter` subcommand allows the user to make a filtered subset based on the input file. The user can filter on samples, chromosomes, (or) genes and on beta-values using a cutoff.
 
 ```bash
@@ -83,7 +99,7 @@ BVAL filter -f data/exampledata.csv -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
 ```
 
 The filtered output is written to the user-specified path, if no path is given it is automatically generated as output.txt in the same directory as the tool
-#### Comparing methylation across samples/regions
+##### Comparing methylation across samples/regions
 The `compare` subcommand allows the user to perform statistical analyses on a (sub)set of samples and thus compare methylation across samples.
 
 ```bash
