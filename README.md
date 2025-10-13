@@ -23,6 +23,11 @@ This tool was created using:
 ### Installation (for users)
 Download the newest release of BVAL ([v0.0.1](https://github.com/YamilaTimmer/methylation-java-app/releases/tag/v0.0.1)). This release includes the application and all its dependencies.
 
+Run the app:
+```bash
+java -jar bval-app-0.0.1.jar [sumnary/filter/compare]
+```
+
 ### Clone the repository (for developers)
 For further developing and/or testing we recommend cloning the repository, this can be done using:
 ```bash
