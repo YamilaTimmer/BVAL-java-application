@@ -17,13 +17,12 @@ public class VerbosityLevel {
                     "or 2 [debug].");
         } else if (verbose == 2) {
             Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
-            logger.debug("Verbosity level changed to DEBUG");
+            logger.debug("Verbosity level set to DEBUG");
         } else if (verbose == 1) {
             Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.INFO);
             logger.info("Verbosity level set to INFO");
         } else {
             Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.WARN);
-            logger.warn("Verbosity level set to WARN");
         }
     }
 

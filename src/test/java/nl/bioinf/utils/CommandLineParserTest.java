@@ -69,8 +69,7 @@ class CommandLineParserTest {
 
         String expectedOutput =
                 """
-                Generating summary...
-                ---------------------
+                Summary for input file:
                 Number of samples: 3
                 Number of genes: 1
                 Avg beta value: 0.87
