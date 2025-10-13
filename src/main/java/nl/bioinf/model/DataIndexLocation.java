@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class DataIndexLocation {
     private static final Logger logger = LogManager.getLogger(DataIndexLocation.class.getName());
-    Map<String, Integer> indexes;
+    private final Map<String, Integer> indexes;
     private final String header;
 
     public DataIndexLocation(String header) {
