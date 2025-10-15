@@ -1,6 +1,9 @@
 package nl.bioinf.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,6 +16,8 @@ public class MethylationArray {
     private List<MethylationData> data = new ArrayList<>();
     private String header;
     private DataIndexLocation indexInformation = null;
+    private int sampleIndex = 0;
+    private static final Logger logger = LogManager.getLogger(MethylationArray.class.getName());
 
     public void setSamples(List<String> samples) {
         this.samples = samples;
@@ -24,17 +29,23 @@ public class MethylationArray {
 
     /**
      * Stores the file's header, without samples, in this class
-     * @param header
+     * @param header string containing entire first line of input file
      */
     public void setHeader(String header) {
         String[] headerSplit = header.split(",");
         StringBuilder headerString = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < this.sampleIndex; i++) {
             headerString.append(headerSplit[i]).append(",");
         }
         this.header = headerString.toString();
+
+        logger.debug("Header is set to: {}", this.header);
     }
 
+    /**
+     * Returns the full header, including the samples, used for writing to output
+     * @return full header line
+     */
     public String getHeader() {
         return header + String.format("%s", String.join(",", this.samples));
     }
@@ -74,6 +85,10 @@ public class MethylationArray {
     public void setIndexInformation(DataIndexLocation indexInformation) {
         this.indexInformation = indexInformation;
     }
+
+    public void setSampleIndex(int sampleIndex){this.sampleIndex = sampleIndex;}
+
+    public int getSampleIndex(){return this.sampleIndex;}
 
     @Override
     public String toString() {
