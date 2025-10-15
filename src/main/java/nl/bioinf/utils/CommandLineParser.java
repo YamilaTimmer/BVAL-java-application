@@ -33,21 +33,21 @@ class FilePathInput {
 class FilePathOutput {
     @Option(names = {"-o", "--output"},
             description = "Path to where output will be written to, DEFAULT: ${DEFAULT-VALUE}",
-            arity = "0..1")
+            arity = "1")
     Path outputFilePath = Path.of("output.txt");
 }
 
 class SampleInput {
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on",
-            arity = "0..*")
+            arity = "1..*")
     String[] samples;
 }
 
 class Verbosity {
     @Option(names = {"-v", "--verbose"},
             description = "Verbosity level. Default: ${DEFAULT-VALUE}",
-            arity = "0..1")
+            arity = "1")
     int verbose = 0;
 }
 
@@ -132,11 +132,11 @@ class Filter implements Runnable {
     static class PosArguments {
         @Option(names = {"-chr", "--chromosome"},
                 description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
-                arity = "0..*")
+                arity = "1..*")
         String[] chr;
         @Option(names = {"-g", "--gene"},
                 description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
-                arity = "0..*")
+                arity = "1..*")
         String[] genes;
     }
 
@@ -147,7 +147,8 @@ class Filter implements Runnable {
 
     @Option(names = {"-ct", "--cutofftype"},
             description = "Select whether to filter above or below cutoff. Default: ${DEFAULT-VALUE}. " +
-                    "Valid values: ${COMPLETION-CANDIDATES}")
+                    "Valid values: ${COMPLETION-CANDIDATES}",
+            arity = "1")
     MethylationDataFilter.CutoffType cutoffType = MethylationDataFilter.CutoffType.upper;
 
 
@@ -282,9 +283,10 @@ class Compare implements Runnable {
             defaultValue = "t-test,spearman,wilcoxon-test",
             split = ",",
             description = "Name(s) of the different statistic methods, default values: ${DEFAULT-VALUE}",
-            arity = "0..*")
+            arity = "1..*")
     String[] methods;
-    enum ValidMethods{
+
+    enum ValidMethods {
         TTEST("t-test"),
         SPEARMAN("spearman"),
         WILCOXONTEST("wilcoxon-test");
@@ -309,6 +311,7 @@ class Compare implements Runnable {
                     .toList();
         }
     }
+
     private void validateMethodInput() {
 
         for (String method : methods) {
