@@ -25,6 +25,7 @@ public class ComparingFileWriter {
 
     public void writeData() throws IOException {
         File filePath = new File(pathFileOutput.toUri());
+        logger.info("Writing data to file: {}.", filePath);
 
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(filePath))) {
 
@@ -39,8 +40,7 @@ public class ComparingFileWriter {
                     ex.getMessage(), ex);
             throw new IOException(ex);
         }
-        logger.debug("Output successfully written to: {}.", filePath);
-        System.out.println("Output successfully written to: " + filePath);
+        System.out.println("Output generated at: " + filePath);
 
     }
 
@@ -48,7 +48,7 @@ public class ComparingFileWriter {
         StringBuilder header = new StringBuilder();
         header.append("SampleVSSample");
         for (String method : data.getStatisticMethods()) {
-            header.append("," + method);
+            header.append(",").append(method);
         }
         header.append(String.format("%n"));
 
@@ -62,7 +62,7 @@ public class ComparingFileWriter {
         for (String sample : data.getSampleVersusSampleNames()) {
             newFileBody.append(sample);
             for (String method : data.getStatisticMethods()) {
-                newFileBody.append("," + statisticsResults.get(method).get(sampleIndex));
+                newFileBody.append(",").append(statisticsResults.get(method).get(sampleIndex));
             }
             newFileBody.append(String.format("%n"));
             sampleIndex++;
