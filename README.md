@@ -63,7 +63,7 @@ summary -f <file-path> <sample-index>
 Generating a summary can be done by passing `summary` and `-f`, followed by a file path. As well as an argument containing the index for the first sample column (`-si`). The input file should contain input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format), read more about the expected input file [here](#information-about-required-data). Below an example can be found using the [example data](https://github.com/YamilaTimmer/methylation-java-app/blob/main/data/exampledata.csv) from this repo:
 
 ```bash
-summary -f data/exampledata.csv
+summary -f data/exampledata.csv -si 7
 ```
 
 Which prints the following output to the terminal:
@@ -101,7 +101,7 @@ Generating a filtered output file from the input can be done by passing `filter`
 
 Below an example of the command, with arguments is shown. This example filters the input data in a way that only Sample1 and Sample 2 (the first two columns) are kept, with only rows containing chromosome 17. Only beta values below 0.5 are kept.
 ```bash
-BVAL filter -f data/exampledata.csv -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
+BVAL filter -f data/exampledata.csv -si 7 -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
 ```
 
 The filtered output is written to the user-specified path, if no path is given it is automatically generated as output.txt in the same directory as the tool
