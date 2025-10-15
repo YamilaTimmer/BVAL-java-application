@@ -114,13 +114,12 @@ public class MethylationDataFilter {
             if (posFilterType == PosFilterType.GENE) {
                 valueToCheck = row.getGene(methylationArray.getIndexInformation());
 
-
             } else {
                 valueToCheck = row.getChromosome(methylationArray.getIndexInformation());
             }
 
             // remove rows that don't contain the positional variable
-            if (!Arrays.asList(posFilter).contains(valueToCheck)) {
+            if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
                 iter.remove();
             }
         }
