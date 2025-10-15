@@ -10,11 +10,11 @@ This repository contains a Java commandline tool for analyzing- and comparing of
 ### Tool features
 1. Generating a summary to get an overview of the input beta values file
 2. Generating a filtered output file, where the user can filter on samples (columns), genomic positions (chromosomes or genes) and on specific beta value ranges using a cutoff
-3. Generating a report where two or more samples are compared using one of various statistical methods ([Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test), [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient), [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test))
+3. Generating a report where two or more samples are compared using one of various statistical methods: [Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test), [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient), [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test)
 
 ## System requirements and installation
 ### System requirements
-- OS: Windows, macOS or Linux
+- **OS**: Windows, macOS or Linux
 
 This tool was created using:
 - Java ([v.24.0.1](https://www.oracle.com/java/technologies/javase/jdk24-archive-downloads.html))
@@ -29,6 +29,7 @@ java -jar bval-app-0.0.1.jar
 ```
 
 The example above runs the app with no arguments and will print the help function, showing information on the different commands of BVAL, read more about how to use the different commands in the chapter '[Use cases of BVAL](#use-cases-of-bval)'.
+
 ### Clone the repository (for developers)
 For further developing and/or testing we recommend cloning the repository, this can be done using:
 ```bash
@@ -42,13 +43,13 @@ This app uses methylation data as input, specifically beta values (see more info
 - `chr`: a column containing the chromosome for each row
 - `sample`: one or more columns, containing the beta value per sample per row
 
-Also see the [example data](https://github.com/YamilaTimmer/BVAL-java-application/blob/main/data/exampledata.csv) to get an idea of what the input data could look like
+Also see the [example data](https://github.com/YamilaTimmer/BVAL-java-application/blob/main/data/exampledata.csv) to get an idea of what the input data could look like.
 
 > [!NOTE]  
 > The filtering usecase as described [here](#generating-filtered-data), uses the mandatory columns to filter, however any other columns containing other data are also permitted, they cannot be filtered on but they will be present in the final output.
 
 > [!IMPORTANT]  
-> There is no strict column order, as the app relies on checking on column names instead. Make sure to name the gene column `gene` and the chromosome column `chr`! Samples columns can have any name.
+> There is no strict column order, as the app relies on checking on column names instead. Make sure to name the gene column `gene` and the chromosome column `chr`! Samples columns can have any name, but the index of the first sample column has to be specified, this index uses normal counting, so the first column of the file is index 1, etc. **All other samples have to be after the first sample column and no other columns should be behind or within the sample columns.**
 
 #### Use cases of BVAL
 The tool contains three distinct use cases, below some examples are shown on how to use these.
@@ -56,10 +57,10 @@ The tool contains three distinct use cases, below some examples are shown on how
 The `summary` subcommand generates a small overview with some statistics of the input file, including how many samples/genes the input file contains, what the avg. beta-value is and the amount of NA-values.
 
 ```bash
-summary -f <file-path> 
+summary -f <file-path> <sample-index>
 ```
 
-Generating a summary can be done by passing `summary` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). Below an example can be found using the [example data](https://github.com/YamilaTimmer/methylation-java-app/blob/main/data/exampledata.csv) from this repo:
+Generating a summary can be done by passing `summary` and `-f`, followed by a file path. As well as an argument containing the index for the first sample column (`-si`). The input file should contain input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format), read more about the expected input file [here](#information-about-required-data). Below an example can be found using the [example data](https://github.com/YamilaTimmer/methylation-java-app/blob/main/data/exampledata.csv) from this repo:
 
 ```bash
 summary -f data/exampledata.csv
@@ -79,13 +80,16 @@ Amount of NA values: 1
 The `filter` subcommand allows the user to make a filtered subset based on the input file. The user can filter on samples, chromosomes, (or) genes and on beta-values using a cutoff.
 
 ```bash
-filter -f <file-path> -s <samples> [ -chr <chromosomes> OR -g <genes> ] -c <cutoff-value> -ct <cutoff-type> -o <output-file>
+filter -f <file-path> -sl <sample-index> -s <samples> [ -chr <chromosomes> OR -g <genes> ] -c <cutoff-value> -ct <cutoff-type> -o <output-file>
 ```
 
 Generating a filtered output file from the input can be done by passing `filter` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). 
 
-**Possible user arguments are**:
+**Below, all possible user arguments are described for the filter use case:**
+**Mandatory arguments**:
 * `-f/--file`: file path with input, containing beta values
+* `-si/--sample-index`: should be the index of the first sample column
+**Optional arguments**:
 * `-s/--sample`: one or more samples, specified as the corresponding column names from the input file
 * `-chr/--chromosome`: one or more chromosomes (mutually exclusive with --gene)
 * `-g/--gene`: one or more gene names (mutually exclusive with --chromosome)
@@ -106,16 +110,24 @@ The `compare` subcommand allows the user to perform statistical analyses on a (s
 compare -f <file-path> -s <samples> -m <comparison-method>
 ```
 
-**Possible user arguments are**:
+**Below, all possible user arguments are described for the compare use case**:
+**Mandatory arguments**:
 * `-f/--file`: file path with input, containing beta values
-* `-s/--sample`: one or more samples to compare to each other, specified as the corresponding column names from the input file
-* `-m/--methods`: statistical method(s) on which the samples should be compared, possible methods are [Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test) [t-test], [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient)[spearman], [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test)[wilcoxon-test])
+* `-si/--sampleindex`: should be the index of the first sample column
+**Optional arguments**:
+* `-s/--sample`: one or more samples to compare to each other, specified as the corresponding column names from the input file. If no sample is specified, all samples in the file will be compared to eachother.
+* `-m/--methods`: statistical method(s) on which the samples should be compared, possible methods are:
+	- [Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test) [t-test], 
+	- [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient) [spearman], 
+	- [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test) [wilcoxon-test])
+  If no methods are specified, all methods are ran.
+* `-o/--output`: allows user to give path to where the output file should be saved
 
 #### Information on verbosity
 As user you can specify how much output you would like to receive in the terminal, this can be set using `--verbose`, followed by either `0`, `1` or `2`. 
-- 0 [WARNING]: default setting, only shows errors and warnings
-- 1 [INFO]: outputs errors/warning plus additional information
-- 2 [DEBUG]: outputs all of above plus extra information that is useful for debugging purposes
+- `0` [WARNING]: default setting, only shows errors and warnings
+- `1` [INFO]: outputs errors/warning plus additional information
+- `2` [DEBUG]: outputs all of above plus extra information that is useful for debugging purposes
 
 #### Additional help
 For each subcommand you can get a help menu using:
