@@ -33,7 +33,7 @@ public class SummaryGenerator {
         for (MethylationData row : dataRows) {
             ArrayList<Double> betas = row.betaValues();
             for (double beta : betas) {
-                if (beta > 0) {
+                if (beta >= 0) {
                     betaVal += beta;
                     continue;
                 }

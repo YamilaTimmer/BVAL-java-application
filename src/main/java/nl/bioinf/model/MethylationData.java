@@ -6,12 +6,12 @@ public record MethylationData(String methylationLocation, ArrayList<Double> beta
 
     public String getGene(DataIndexLocation location) {
         String[] split = methylationLocation.split(",");
-        return split[location.getGeneIndex()];
+        return split[location.getGeneIndex()].trim();
     }
 
     public String getChromosome(DataIndexLocation location) {
         String[] split = methylationLocation.split(",");
-        return split[location.getChrIndex()];
+        return split[location.getChrIndex()].trim();
     }
 
     @Override
