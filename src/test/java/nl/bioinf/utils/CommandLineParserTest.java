@@ -61,8 +61,7 @@ class CommandLineParserTest {
         Files.writeString(tempFile, "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3" + System.lineSeparator() +
                 "cg00000029,TP53,17,7565097,7565097,+,0.87,0.85,0.89");
 
-        // Run with --file option + temp file
-        int exitCode = cmd.execute("-f", tempFile.toString());
+        int exitCode = cmd.execute("-f", tempFile.toString(), "-si", "7");
         String output = out.toString();
 
         assertEquals(CommandLine.ExitCode.OK, exitCode); // ExitCode should be OK (0)
