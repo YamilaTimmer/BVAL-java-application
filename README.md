@@ -86,9 +86,11 @@ filter -f <file-path> -sl <sample-index> -s <samples> [ -chr <chromosomes> OR -g
 Generating a filtered output file from the input can be done by passing `filter` and `-f`, followed by a file path containing input methylation data containing beta values (in [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) format). 
 
 **Below, all possible user arguments are described for the filter use case:**
+
 **Mandatory arguments**:
 * `-f/--file`: file path with input, containing beta values
 * `-si/--sample-index`: should be the index of the first sample column
+  
 **Optional arguments**:
 * `-s/--sample`: one or more samples, specified as the corresponding column names from the input file
 * `-chr/--chromosome`: one or more chromosomes (mutually exclusive with --gene)
@@ -111,9 +113,11 @@ compare -f <file-path> -s <samples> -m <comparison-method>
 ```
 
 **Below, all possible user arguments are described for the compare use case**:
+
 **Mandatory arguments**:
 * `-f/--file`: file path with input, containing beta values
 * `-si/--sampleindex`: should be the index of the first sample column
+  
 **Optional arguments**:
 * `-s/--sample`: one or more samples to compare to each other, specified as the corresponding column names from the input file. If no sample is specified, all samples in the file will be compared to eachother.
 * `-m/--methods`: statistical method(s) on which the samples should be compared, possible methods are:
