@@ -230,7 +230,10 @@ class Filter implements Runnable {
             checker.addFilter(cutOffArgumentCheck);
 
             // Lambda for adding filter method to be run after all checks are done
-            filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
+            if (cutoff != 0.0) {
+                filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
+            }
+
 
             // Check all arguments using the ArgumentChecks, to see if passed arguments are valid
             if (checker.pass()) {
