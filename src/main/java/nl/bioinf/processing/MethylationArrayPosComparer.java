@@ -3,6 +3,7 @@ package nl.bioinf.processing;
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,7 @@ public class MethylationArrayPosComparer {
     }
 
     public SampleComparison performStatisticalMethods() {
+        logger.info("Starting comparing on {}", posFilterType.getName());
         for (int i = 0; i < posArguments.length-1; i++) {
             for (int j = i+1; j < posArguments.length; j++) {
                 double[] betaValues1 = data.getPosBetaValues(posArguments[i], posFilterType);
@@ -45,16 +47,21 @@ public class MethylationArrayPosComparer {
                 statisticalData.addNewSampleVsSample(compareName);
 
                 for (String method : methods) {
+                    try {
+                        BiFunction<double[], double[], Double> func = statisticalMethods.getStatisticalMethods().get(method);
+                        double methodOutput = func.apply(betaValues1, betaValues2);
+                        statisticalData.addToData(method, methodOutput);
+                    } catch (NumberIsTooSmallException e) {
 
-                    BiFunction<double[], double[], Double> func = statisticalMethods.getStatisticalMethods().get(method);
-                    double methodOutput = func.apply(betaValues1, betaValues2);
-                    statisticalData.addToData(method, methodOutput);
+                        logger.error("Invalid {} found: {} or {}. Exiting application!",
+                                posFilterType.getName(), posArguments[1], posArguments[j]);
+                        System.exit(-1);
+                    }
                 }
 
             }
-
-
         }
+        logger.info("Succesfully compared the different {}s", posFilterType.getName());
         return statisticalData;
     }
 
