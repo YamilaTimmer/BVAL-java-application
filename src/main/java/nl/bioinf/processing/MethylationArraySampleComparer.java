@@ -3,6 +3,7 @@ package nl.bioinf.processing;
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.StatisticalMethods;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
@@ -15,18 +16,21 @@ import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
     private static final Logger logger = LogManager.getLogger(MethylationArraySampleComparer.class.getName());
-    private Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
-    private MethylationArray data;
+    private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new StatisticalMethods().getStatisticalMethods();
+    private final MethylationArray data;
+    private final String[] samples;
+    private final String[] methods;
+    SampleComparison statisticalData;
 
-    public MethylationArraySampleComparer(MethylationArray data) {
+    public MethylationArraySampleComparer(MethylationArray data, String[] samples, String[] methods) {
+        this.samples = samples;
+        this.methods = methods;
+        statisticalData = new SampleComparison(methods);
         this.data = data;
-        statisticalMethods.put("spearman", MethylationArraySampleComparer::runSpearman);
-        statisticalMethods.put("t-test", MethylationArraySampleComparer::runTTest);
-        statisticalMethods.put("wilcoxon-test", MethylationArraySampleComparer::runWilcoxonTest);
     }
 
-    public SampleComparison performStatisticalMethods(String[] samples, String[] methods) throws IllegalArgumentException {
-        SampleComparison statisticalData = new SampleComparison(methods);
+
+    public SampleComparison performSampleStatisticalMethods() throws IllegalArgumentException {
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);
@@ -61,18 +65,6 @@ public class MethylationArraySampleComparer {
             }
         }
         return statisticalData;
-    }
-
-    private static double runSpearman(double[] sample1, double[] sample2) {
-        return new SpearmansCorrelation().correlation(sample1, sample2);
-    }
-
-    private static double runTTest(double[] sample1, double[] sample2) {
-        return new TTest().pairedTTest(sample1, sample2);
-    }
-
-    private static double runWilcoxonTest(double[] sample1, double[] sample2) {
-        return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
     }
 
     private double[] getBetaValues(int sample) {
