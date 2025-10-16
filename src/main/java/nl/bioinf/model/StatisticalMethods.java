@@ -5,6 +5,7 @@ import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class StatisticalMethods {
         statisticalMethods.put("spearman", StatisticalMethods::runSpearman);
         statisticalMethods.put("t-test", StatisticalMethods::runTTest);
         statisticalMethods.put("wilcoxon-test", StatisticalMethods::runWilcoxonTest);
+        statisticalMethods.put("welch-test", StatisticalMethods::runWelchTest);
     }
 
     private static double runSpearman(double[] sample1, double[] sample2) {
@@ -29,6 +31,10 @@ public class StatisticalMethods {
 
     private static double runWilcoxonTest(double[] sample1, double[] sample2) {
         return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
+    }
+
+    private static double runWelchTest(double[] sample1, double[] sample2) {
+        return new TTest().tTest(sample1, sample2);
     }
 
     public Map<String, BiFunction<double[], double[], Double>> getStatisticalMethods() {

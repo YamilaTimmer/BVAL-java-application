@@ -30,7 +30,7 @@ public class MethylationArraySampleComparer {
     }
 
 
-    public SampleComparison performSampleStatisticalMethods() throws IllegalArgumentException {
+    public SampleComparison performStatisticalMethods() throws IllegalArgumentException {
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);
@@ -52,7 +52,7 @@ public class MethylationArraySampleComparer {
                             "samples without -1 or NA values", samples[i], samples[j]);
                     continue;
                 }
-                String sampleNames = String.format("%s vs %s", samples[i], samples[j]);
+                String sampleNames = String.format("%s,%s", samples[i], samples[j]);
                 statisticalData.addNewSampleVsSample(sampleNames);
 
                 for (String statisticalMethod : methods) {

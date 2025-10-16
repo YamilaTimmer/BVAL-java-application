@@ -287,6 +287,13 @@ class Compare implements Runnable {
                 description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
                 arity = "2..*")
         String[] genes;
+
+        public String[] getPosarguments() {
+            if (genes != null) {
+                return genes;
+            }
+            else return chr;
+        }
     }
 
     @Option(names = {"-s", "--sample"},
@@ -297,7 +304,7 @@ class Compare implements Runnable {
     @Spec
     CommandSpec spec;
     @Option(names = {"-m", "--methods"},
-            defaultValue = "t-test,spearman,wilcoxon-test",
+            defaultValue = "t-test,spearman,wilcoxon-test,welch-test",
             split = ",",
             description = "Name(s) of the different statistic methods, default values: ${DEFAULT-VALUE}",
             arity = "1..*")
@@ -306,7 +313,8 @@ class Compare implements Runnable {
     enum ValidMethods {
         TTEST("t-test"),
         SPEARMAN("spearman"),
-        WILCOXONTEST("wilcoxon-test");
+        WILCOXONTEST("wilcoxon-test"),
+        WELCH("welch-test");
 
         private final String name;
 
@@ -369,7 +377,7 @@ class Compare implements Runnable {
         if (samples == null) {
             samples = data.getSamples().toArray(String[]::new);
         }
-
+        SampleComparison corrData = null;
         MethylationArray filteredData = new MethylationArray();
         if (posArguments != null) {
             filteredData = new MethylationArray();
@@ -377,26 +385,31 @@ class Compare implements Runnable {
             filteredData.setSamples(data.getSamples());
             filteredData.setData(data.getData());
             filteredData.setIndexInformation(data.getIndexInformation());
+            MethylationDataFilter.PosFilterType posFilterType = null;
 
             if (posArguments.chr != null) {
-                MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
+                posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
                 MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr);
             }
 
             if (posArguments.genes != null) {
-                MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
+                posFilterType = MethylationDataFilter.PosFilterType.GENE;
                 MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.genes);
 
             }
+            MethylationDataFilter.filterBySample(filteredData, samples);
+            corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType, posArguments.getPosarguments()).performStatisticalMethods();
+
         }
 
 
-        SampleComparison corrData = null;
-        try {
-            corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(samples, methods);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
-            System.exit(1);
+        else {
+            try {
+                corrData = new MethylationArraySampleComparer(data, samples, methods).performStatisticalMethods();
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+                System.exit(1);
+            }
         }
 
         try {

@@ -1,5 +1,7 @@
 package nl.bioinf.model;
 
+import nl.bioinf.processing.MethylationDataFilter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +50,17 @@ public class MethylationArray {
             throw new IllegalArgumentException(("Number of beta values does not match number of samples."));
         }
         data.add(new MethylationData(methylationLocation, betaValues));
+    }
+
+    public double[] getPosBetaValues(String posArg, MethylationDataFilter.PosFilterType posType) {
+        List<Double> betaValues = new ArrayList<>();
+
+        for (MethylationData row : data) {
+            if (row.methylationLocation().contains(posArg)) {
+                betaValues.addAll(row.betaValues());
+            }
+        }
+    return betaValues.stream().mapToDouble(Double::doubleValue).toArray();
     }
 
     public List<MethylationData> getData() {
