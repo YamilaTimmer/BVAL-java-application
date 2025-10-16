@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+/**
+ * Model that holds the different statistic tests, and provides a way to run said tests
+ */
 public class StatisticalMethods {
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
 
@@ -37,6 +40,10 @@ public class StatisticalMethods {
         return new TTest().tTest(sample1, sample2);
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, BiFunction<double[], double[], Double>> getStatisticalMethods() {
         return Collections.unmodifiableMap(statisticalMethods);
     }

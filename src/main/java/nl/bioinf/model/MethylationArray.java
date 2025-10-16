@@ -52,7 +52,7 @@ public class MethylationArray {
         data.add(new MethylationData(methylationLocation, betaValues));
     }
 
-    public double[] getPosBetaValues(String posArg, MethylationDataFilter.PosFilterType posType) {
+    public double[] getPosBetaValues(String posArg) {
         List<Double> betaValues = new ArrayList<>();
 
         for (MethylationData row : data) {
