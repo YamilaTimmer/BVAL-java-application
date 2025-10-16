@@ -275,6 +275,20 @@ class Compare implements Runnable {
     @Mixin
     FilePathOutput filePathOutput;
 
+    @ArgGroup()
+    PosArguments posArguments;
+
+    static class PosArguments {
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "2..*")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "2..*")
+        String[] genes;
+    }
+
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to compare with eachother. default value: all samples in the file",
             arity = "2..*")
@@ -341,6 +355,7 @@ class Compare implements Runnable {
         validateMethodInput();
         MethylationFileReader fileReader = null;
 
+
         try {
             fileReader = new MethylationFileReader();
             fileReader.readCSV(filePathInput.filePath);
@@ -351,10 +366,30 @@ class Compare implements Runnable {
         }
 
         MethylationArray data = fileReader.getData();
-
         if (samples == null) {
             samples = data.getSamples().toArray(String[]::new);
         }
+
+        MethylationArray filteredData = new MethylationArray();
+        if (posArguments != null) {
+            filteredData = new MethylationArray();
+            filteredData.setHeader(data.getHeader());
+            filteredData.setSamples(data.getSamples());
+            filteredData.setData(data.getData());
+            filteredData.setIndexInformation(data.getIndexInformation());
+
+            if (posArguments.chr != null) {
+                MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
+                MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr);
+            }
+
+            if (posArguments.genes != null) {
+                MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
+                MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.genes);
+
+            }
+        }
+
 
         SampleComparison corrData = null;
         try {
