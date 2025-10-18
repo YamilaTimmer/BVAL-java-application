@@ -9,6 +9,8 @@ import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -56,7 +58,6 @@ public class MethylationArraySampleComparer {
                 statisticalData.addNewSampleVsSample(sampleNames);
 
                 for (String statisticalMethod : methods) {
-
                     BiFunction<double[], double[], Double> func = statisticalMethods.get(statisticalMethod);
                     double methodOutput = func.apply(sample1BetaValues, sample2BetaValues);
                     statisticalData.addToData(statisticalMethod, methodOutput);
@@ -64,6 +65,8 @@ public class MethylationArraySampleComparer {
                 }
             }
         }
+
+        logger.info("Successfully performed statistical-methods.");
         return statisticalData;
     }
 

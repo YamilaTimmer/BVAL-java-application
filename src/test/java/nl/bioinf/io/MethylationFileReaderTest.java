@@ -3,6 +3,7 @@ package nl.bioinf.io;
 import nl.bioinf.model.MethylationArray;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ class MethylationFileReaderTest {
         Path path = Paths.get(fileName);
 
         MethylationFileReader methylationFileReader = new MethylationFileReader();
+        methylationFileReader.setSampleIndex(6);
         // Assert that IOException is thrown when trying to access non-existent path
         IOException exception = assertThrows(IOException.class,
                 () -> methylationFileReader.readCSV(path));
@@ -28,16 +30,17 @@ class MethylationFileReaderTest {
         // Check if expected message and actual message are equal
         String expectedMessage = "File not found: '" + path + "'. Please check the file path.";
         assertEquals(expectedMessage, exception.getMessage());
-            }
+    }
 
     @Test
     @DisplayName("Test path where permission is denied")
     void noPermissionFile() throws IOException {
 
-     // Create tempDir
-     Path tempDir = Files.createTempDirectory("tempDir");
+        // Create tempDir
+        Path tempDir = Files.createTempDirectory("tempDir");
 
         MethylationFileReader methylationFileReader = new MethylationFileReader();
+        methylationFileReader.setSampleIndex(6);
 
         // Assert that IOException is thrown when trying to access a dir instead of a file
         IOException exception = assertThrows(IOException.class,
@@ -57,6 +60,7 @@ class MethylationFileReaderTest {
         Files.writeString(tempFile, "");
 
         MethylationFileReader methylationFileReader = new MethylationFileReader();
+        methylationFileReader.setSampleIndex(6);
 
 
         // Assert that IOException is thrown with empty file
@@ -84,7 +88,10 @@ class MethylationFileReaderTest {
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
         expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+,", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
 
+
         MethylationFileReader methylationFileReader = new MethylationFileReader();
+        methylationFileReader.setSampleIndex(6);
+
         methylationFileReader.readCSV(tempFile);
 
         // Retrieve actual MethylationArray
