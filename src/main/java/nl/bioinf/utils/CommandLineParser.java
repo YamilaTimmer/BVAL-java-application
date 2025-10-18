@@ -202,10 +202,14 @@ class Filter implements Runnable {
             if (posArguments != null && posArguments.chr != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
 
-                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr, data);
+                String[] chromosomes = Arrays.stream(posArguments.chr)
+                        .map(String::toUpperCase)
+                        .toArray(String[]::new);
+
+                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
                 checker.addFilter(chrArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes));
 
             } else if (posArguments != null && posArguments.genes != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
@@ -389,23 +393,34 @@ class Compare implements Runnable {
 
             try {
                 if (posArguments.chr != null) {
-                    ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr, data);
+                    String[] chromosomes = Arrays.stream(posArguments.chr)
+                            .map(String::toUpperCase)
+                            .toArray(String[]::new);
+
+                    ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
                     checker.addFilter(chrArgumentCheck);
                     posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
 
+
                     if (checker.pass()) {
-                        MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr);
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes);
                     }
                 }
 
                 if (posArguments.genes != null) {
-                    GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(posArguments.genes, data);
+                    String[] genes = Arrays.stream(posArguments.genes)
+                            .map(String::toUpperCase)
+                            .toArray(String[]::new);
+
+                    GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
                     checker.addFilter(geneArgumentCheck);
                     posFilterType = MethylationDataFilter.PosFilterType.GENE;
 
+
+
                     if (checker.pass()) {
 
-                        MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.genes);
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, genes);
                     }
                 }
             }catch (IllegalArgumentException ex) {
