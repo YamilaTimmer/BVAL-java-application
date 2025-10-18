@@ -247,10 +247,14 @@ class Filter implements Runnable {
             if (posArguments != null && posArguments.chr != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
 
-                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr);
+                String[] chromosomes = Arrays.stream(posArguments.chr)
+                        .map(String::toUpperCase)
+                        .toArray(String[]::new);
+
+                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
                 checker.addFilter(chrArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes));
 
             } else if (posArguments != null && posArguments.genes != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
@@ -272,9 +276,11 @@ class Filter implements Runnable {
             CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff);
             checker.addFilter(cutOffArgumentCheck);
 
-            filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
+            if (cutoff != 0.0) {
+                filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
+            }
 
-            // Check all arguments using the ArgumentChecks, to see if passed arguments are valid
+
             if (checker.pass()) {
                 // Run all filters for which the user has passed arguments
                 for (Runnable filter : filtersToRun) {
@@ -316,6 +322,26 @@ class Compare implements Runnable {
     @Mixin
     FilePathOutput filePathOutput;
 
+    @ArgGroup()
+    PosArguments posArguments;
+
+    static class PosArguments {
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "2..*")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "2..*")
+        String[] genes;
+
+        public String[] getPosarguments() {
+            if (genes != null) {
+                return genes;
+            }
+            else return chr;
+        }
+    }
     @Mixin
     SampleIndex sampleIndex;
 
@@ -327,7 +353,7 @@ class Compare implements Runnable {
     @Spec
     CommandSpec spec;
     @Option(names = {"-m", "--methods"},
-            defaultValue = "t-test,spearman,wilcoxon-test",
+            defaultValue = "t-test,spearman,wilcoxon-test,welch-test",
             split = ",",
             description = "Name(s) of the different statistic methods to perform on the data. " +
                     "Default value: ${DEFAULT-VALUE} (all tests are performed by default). ",
@@ -337,7 +363,8 @@ class Compare implements Runnable {
     enum ValidMethods {
         TTEST("t-test"),
         SPEARMAN("spearman"),
-        WILCOXONTEST("wilcoxon-test");
+        WILCOXONTEST("wilcoxon-test"),
+        WELCH("welch-test");
 
         private final String name;
 
@@ -389,19 +416,88 @@ class Compare implements Runnable {
         }
 
         validateMethodInput();
-        MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
+        MethylationFileReader fileReader = null;
+
+
+        try {
+            fileReader = new MethylationFileReader();
+            fileReader.readCSV(filePathInput.filePath);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
+MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
+      CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
+
+        
 
         if (samples == null) {
             samples = data.getSamples().toArray(String[]::new);
         }
 
         SampleComparison corrData = null;
+        MethylationArray filteredData = new MethylationArray();
 
-        try {
-            corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(samples, methods);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
-            System.exit(1);
+
+        if (posArguments != null) {
+            filteredData = new MethylationArray();
+            filteredData.setHeader(data.getHeader());
+            filteredData.setSamples(data.getSamples());
+            filteredData.setData(data.getData());
+            filteredData.setIndexInformation(data.getIndexInformation());
+            MethylationDataFilter.PosFilterType posFilterType = null;
+
+            try {
+                if (posArguments.chr != null) {
+                    String[] chromosomes = Arrays.stream(posArguments.chr)
+                            .map(String::toUpperCase)
+                            .toArray(String[]::new);
+
+                    ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
+                    checker.addFilter(chrArgumentCheck);
+                    posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
+
+
+                    if (checker.pass()) {
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes);
+                        MethylationDataFilter.filterBySample(filteredData, samples);
+                        corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
+                                chromosomes).performStatisticalMethods();
+                    }
+                }
+
+                if (posArguments.genes != null) {
+                    String[] genes = Arrays.stream(posArguments.genes)
+                            .map(String::toUpperCase)
+                            .toArray(String[]::new);
+
+                    GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
+                    checker.addFilter(geneArgumentCheck);
+                    posFilterType = MethylationDataFilter.PosFilterType.GENE;
+
+                    if (checker.pass()) {
+
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, genes);
+                        MethylationDataFilter.filterBySample(filteredData, samples);
+                        corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
+                                genes).performStatisticalMethods();
+                    }
+                }
+            }catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+                System.exit(1);
+            }
+
+        }
+
+        else {
+            try {
+                corrData = new MethylationArraySampleComparer(data, samples, methods).performStatisticalMethods();
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+                System.exit(1);
+            }
         }
 
         try {

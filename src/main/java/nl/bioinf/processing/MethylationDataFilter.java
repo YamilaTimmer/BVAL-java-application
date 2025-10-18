@@ -20,7 +20,18 @@ public class MethylationDataFilter {
      * Enum for positional filter, determined by whether user wants to filter on gene/chromosome (mutually exclusive)
      */
     public enum PosFilterType {
-        GENE, CHROMOSOME
+        GENE("GENES"),
+        CHROMOSOME("CHR");
+
+        private final String name;
+
+        PosFilterType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package nl.bioinf.model;
 
+import nl.bioinf.processing.MethylationDataFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
@@ -61,6 +62,17 @@ public class MethylationArray {
         data.add(new MethylationData(methylationLocation, betaValues));
     }
 
+    public double[] getPosBetaValues(String posArg) {
+        List<Double> betaValues = new ArrayList<>();
+
+        for (MethylationData row : data) {
+            if (row.methylationLocation().contains(posArg)) {
+                betaValues.addAll(row.betaValues());
+            }
+        }
+    return betaValues.stream().mapToDouble(Double::doubleValue).toArray();
+    }
+
     public List<MethylationData> getData() {
         return new ArrayList<>(data);
     }
@@ -76,6 +88,14 @@ public class MethylationArray {
             genes.add(d.getGene(indexInformation).toUpperCase());
         }
         return Collections.unmodifiableList(genes);
+    }
+
+    public List<String> getChromosomes() {
+        ArrayList<String> chromosomes = new ArrayList<>();
+        for (MethylationData d : data) {
+            chromosomes.add(d.getChromosome(indexInformation).toUpperCase());
+        }
+        return Collections.unmodifiableList(chromosomes);
     }
 
     public DataIndexLocation getIndexInformation() {

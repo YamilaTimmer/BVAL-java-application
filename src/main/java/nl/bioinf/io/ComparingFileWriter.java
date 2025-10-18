@@ -46,7 +46,7 @@ public class ComparingFileWriter {
 
     private String createHeader() {
         StringBuilder header = new StringBuilder();
-        header.append("SampleVSSample");
+        header.append("Variable,Variable");
         for (String method : data.getStatisticMethods()) {
             header.append(",").append(method);
         }
