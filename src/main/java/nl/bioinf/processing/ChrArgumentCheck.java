@@ -1,13 +1,17 @@
 package nl.bioinf.processing;
 
+import nl.bioinf.model.MethylationArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 /**
  * Checks validity of chromosome argument(s) passed by user
  */
 public class ChrArgumentCheck implements UserArgumentsCheck {
     private final String[] filterChr;
+    private final List<String> chromosomes;
     private final Logger logger = LogManager.getLogger(ChrArgumentCheck.class.getName());
 
     /**
@@ -15,8 +19,10 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
      *
      * @param filterChr String array user argument, that should contain one or more chromosome
      */
-    public ChrArgumentCheck(String[] filterChr) {
+    public ChrArgumentCheck(String[] filterChr, MethylationArray methylationArray) {
+
         this.filterChr = filterChr;
+        this.chromosomes = methylationArray.getChromosomes();
     }
 
     /**
@@ -44,7 +50,7 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
                 if (chrInt < 1 || chrInt > 23) {
                     logger.error("Invalid input: '{}', number is either < 1 or > 23 please provide a number " +
                             "between 1-23 or X/Y for chromosome input.", chr);
-                    throw new IllegalArgumentException("Invalid chromosome: " + chr + ". Must be 1-23 or X/Y.");
+                    throw new IllegalArgumentException("\u001B[31mInvalid chromosome: '" + chr + "'. Must be 1-23 or X/Y.\u001B[0m");
                 }
 
                 // Throw NumberFormatException if chr could not be parsed to int
@@ -53,7 +59,15 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
                         "X/Y for chromosome input.", chr);
                 throw ex;
             }
+
+            if (!chromosomes.contains(chr)) {
+                logger.error("The following chromosome is not present in the data: '{}'. Please only pass chromosomes that " +
+                        "are present in the input file.", chr);
+                throw new IllegalArgumentException("\u001B[31mInvalid chromosome: '" + chr + "'. Given chromosome was not found in input file. \u001B[0m");
+            }
+
         }
+
         logger.info("Passed validity check for chromosome filter!");
         return true;
     }
