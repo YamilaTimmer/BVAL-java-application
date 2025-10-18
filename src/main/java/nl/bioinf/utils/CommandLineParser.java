@@ -404,6 +404,9 @@ class Compare implements Runnable {
 
                     if (checker.pass()) {
                         MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes);
+                        MethylationDataFilter.filterBySample(filteredData, samples);
+                        corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
+                                chromosomes).performStatisticalMethods();
                     }
                 }
 
@@ -416,11 +419,12 @@ class Compare implements Runnable {
                     checker.addFilter(geneArgumentCheck);
                     posFilterType = MethylationDataFilter.PosFilterType.GENE;
 
-
-
                     if (checker.pass()) {
 
                         MethylationDataFilter.filterByPos(filteredData, posFilterType, genes);
+                        MethylationDataFilter.filterBySample(filteredData, samples);
+                        corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
+                                genes).performStatisticalMethods();
                     }
                 }
             }catch (IllegalArgumentException ex) {
@@ -428,12 +432,7 @@ class Compare implements Runnable {
                 System.exit(1);
             }
 
-            MethylationDataFilter.filterBySample(filteredData, samples);
-            corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
-                    posArguments.getPosarguments()).performStatisticalMethods();
-
         }
-
 
         else {
             try {
