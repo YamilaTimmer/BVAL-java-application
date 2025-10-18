@@ -1,10 +1,8 @@
 package nl.bioinf.model;
 
-import nl.bioinf.processing.MethylationDataFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,7 +64,7 @@ public class MethylationArray {
         List<Double> betaValues = new ArrayList<>();
 
         for (MethylationData row : data) {
-            if (row.methylationLocation().contains(posArg)) {
+            if (row.methylationLocation().toUpperCase().contains(posArg.toUpperCase())) {
                 betaValues.addAll(row.betaValues());
             }
         }

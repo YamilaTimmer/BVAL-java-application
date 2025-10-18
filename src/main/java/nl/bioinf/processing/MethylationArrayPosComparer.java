@@ -6,9 +6,7 @@ import nl.bioinf.model.StatisticalMethods;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.Arrays;
-
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
@@ -32,7 +30,8 @@ public class MethylationArrayPosComparer {
      * @param posFilterType Used to log weather chromosomes or genes are compared.
      * @param posArguments Array if either chromosomes or genes to compare
      */
-    public MethylationArrayPosComparer(MethylationArray data, String[] methods, MethylationDataFilter.PosFilterType posFilterType, String[] posArguments) {
+    public MethylationArrayPosComparer(MethylationArray data, String[] methods,
+                                       MethylationDataFilter.PosFilterType posFilterType, String[] posArguments) {
         this.data = data;
         this.methods = methods;
         statisticalData = new SampleComparison(methods);
@@ -42,7 +41,8 @@ public class MethylationArrayPosComparer {
     }
 
     /**
-     * Compare the beta values of either genes OR chromosomes, based on user passed argument(s), via different statistical tests
+     * Compare the beta values of either genes OR chromosomes, based on user passed argument(s),
+     * via different statistical tests
      * @return {@link SampleComparison}, that holds the data of the compared action.
      */
     public SampleComparison performStatisticalMethods() {
@@ -67,10 +67,9 @@ public class MethylationArrayPosComparer {
 
                         logger.error("Invalid {} found: {} or {}. Exiting application!",
                                 posFilterType.getName(), posArguments[1], posArguments[j]);
-                        System.exit(-1);
+                        System.exit(1);
                     }
                 }
-
             }
         }
         logger.info("Succesfully compared the different {}s", posFilterType.getName());
@@ -82,7 +81,7 @@ public class MethylationArrayPosComparer {
 
             if (betaValues2.length != betaValues1.length &&
                     !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
-                logger.error("Used a statistical method that requires the same sample size in data." +
+                logger.error("Used a statistical method that requires the same sample size in data. " +
                         "Please use the [welch-test] to go around this");
                 throw new IllegalArgumentException();
 
@@ -94,10 +93,8 @@ public class MethylationArrayPosComparer {
                         "samples without -1 or NA values");
                 throw new IllegalArgumentException();
             }
-        } catch (IllegalArgumentException e) {
-            System.exit(-1);
+        } catch (IllegalArgumentException ex) {
+            System.exit(1);
         }
-
     }
-
 }
