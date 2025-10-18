@@ -195,7 +195,6 @@ class Filter implements Runnable {
                 SampleArgumentCheck sampleArgumentCheck = new SampleArgumentCheck(sampleInput.samples, data);
                 checker.addFilter(sampleArgumentCheck);
 
-                // Lambda for adding filter method to run after all checks are done
                 filtersToRun.add(() -> MethylationDataFilter.filterBySample(filteredData, sampleInput.samples));
 
             }
@@ -203,10 +202,9 @@ class Filter implements Runnable {
             if (posArguments != null && posArguments.chr != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
 
-                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr);
+                ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr, data);
                 checker.addFilter(chrArgumentCheck);
 
-                // Lambda for adding filter method to be run after all checks are done
                 filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr));
 
             } else if (posArguments != null && posArguments.genes != null) {
@@ -220,7 +218,6 @@ class Filter implements Runnable {
                 GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
                 checker.addFilter(geneArgumentCheck);
 
-                // Lambda for adding filter method to be run after all checks are done
                 filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes));
 
             }
@@ -229,13 +226,11 @@ class Filter implements Runnable {
             CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff);
             checker.addFilter(cutOffArgumentCheck);
 
-            // Lambda for adding filter method to be run after all checks are done
             if (cutoff != 0.0) {
                 filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
             }
 
 
-            // Check all arguments using the ArgumentChecks, to see if passed arguments are valid
             if (checker.pass()) {
                 // Run all filters for which the user has passed arguments
                 for (Runnable filter : filtersToRun) {
@@ -297,7 +292,7 @@ class Compare implements Runnable {
     }
 
     @Option(names = {"-s", "--sample"},
-            description = "Name(s) of the sample(s) to compare with eachother. default value: all samples in the file",
+            description = "Name(s) of the sample(s) to compare with each other. default value: all samples in the file",
             arity = "2..*")
     String[] samples;
 
@@ -368,17 +363,22 @@ class Compare implements Runnable {
             fileReader = new MethylationFileReader();
             fileReader.readCSV(filePathInput.filePath);
         } catch (IOException ex) {
-            // User-friendly output only
             System.out.println(ex.getMessage());
             System.exit(1);
         }
 
         MethylationArray data = fileReader.getData();
+        CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
+
+
         if (samples == null) {
             samples = data.getSamples().toArray(String[]::new);
         }
+
         SampleComparison corrData = null;
         MethylationArray filteredData = new MethylationArray();
+
+
         if (posArguments != null) {
             filteredData = new MethylationArray();
             filteredData.setHeader(data.getHeader());
@@ -387,18 +387,35 @@ class Compare implements Runnable {
             filteredData.setIndexInformation(data.getIndexInformation());
             MethylationDataFilter.PosFilterType posFilterType = null;
 
-            if (posArguments.chr != null) {
-                posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
-                MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr);
+            try {
+                if (posArguments.chr != null) {
+                    ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr, data);
+                    checker.addFilter(chrArgumentCheck);
+                    posFilterType = MethylationDataFilter.PosFilterType.CHROMOSOME;
+
+                    if (checker.pass()) {
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr);
+                    }
+                }
+
+                if (posArguments.genes != null) {
+                    GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(posArguments.genes, data);
+                    checker.addFilter(geneArgumentCheck);
+                    posFilterType = MethylationDataFilter.PosFilterType.GENE;
+
+                    if (checker.pass()) {
+
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.genes);
+                    }
+                }
+            }catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+                System.exit(1);
             }
 
-            if (posArguments.genes != null) {
-                posFilterType = MethylationDataFilter.PosFilterType.GENE;
-                MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.genes);
-
-            }
             MethylationDataFilter.filterBySample(filteredData, samples);
-            corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType, posArguments.getPosarguments()).performStatisticalMethods();
+            corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
+                    posArguments.getPosarguments()).performStatisticalMethods();
 
         }
 

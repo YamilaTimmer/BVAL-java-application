@@ -80,6 +80,14 @@ public class MethylationArray {
         return Collections.unmodifiableList(genes);
     }
 
+    public List<String> getChromosomes() {
+        ArrayList<String> chromosomes = new ArrayList<>();
+        for (MethylationData d : data) {
+            chromosomes.add(d.getChromosome(indexInformation).toUpperCase());
+        }
+        return Collections.unmodifiableList(chromosomes);
+    }
+
     public DataIndexLocation getIndexInformation() {
         return indexInformation;
     }
