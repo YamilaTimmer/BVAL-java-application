@@ -59,9 +59,9 @@ class Verbosity {
 
 class SampleIndex{
     @Option(names = {"-si", "--sample-index"},
-    description = "Starting index for sample locations. Default: ${DEFAULT-VALUE}",
+    description = "Starting index for sample locations, should be the number of the column containing the first sample.",
             arity = "1")
-    int sampleIndex = 6;
+    int sampleIndex;
 }
 
 /**
