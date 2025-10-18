@@ -3,8 +3,8 @@ package nl.bioinf.model;
 import java.util.*;
 
 public class SampleComparison {
-    private List<String> sampleVersusSampleNames = new ArrayList<>();
-    private Map<String, List<Double>> statisticsData = new HashMap<>();
+    private final List<String> sampleVersusSampleNames = new ArrayList<>();
+    private final Map<String, List<Double>> statisticsData = new HashMap<>();
 
     public SampleComparison(String[] methods) {
         for (String method : methods) {

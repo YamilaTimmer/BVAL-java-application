@@ -1,6 +1,5 @@
 package nl.bioinf.model;
 
-import nl.bioinf.processing.MethylationArraySampleComparer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,7 +7,7 @@ import java.util.*;
 
 /**
  * Model to hold index locations of different important values like:
- * chr, gene, etc
+ * chr, gene, etc.
  * This will be used to adapt to different possible orders in the header
  */
 public class DataIndexLocation {

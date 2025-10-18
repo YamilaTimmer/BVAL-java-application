@@ -9,18 +9,15 @@ import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.*;
 
+
 /**
- *
+ * Reusable option for filepath
  */
-
-
-// Reusable option for filepath
 class FilePathInput {
     @Option(names = {"-f", "--file"},
             description = "Path to file containing the input methylation data file containing beta values, genes, " +
@@ -30,6 +27,9 @@ class FilePathInput {
     Path filePath;
 }
 
+/**
+ * Reusable option for file output path
+ */
 class FilePathOutput {
     @Option(names = {"-o", "--output"},
             description = "Path to where output will be written to, DEFAULT: ${DEFAULT-VALUE}",
@@ -37,6 +37,9 @@ class FilePathOutput {
     Path outputFilePath = Path.of("output.txt");
 }
 
+/**
+ * Reusable option for sample input
+ */
 class SampleInput {
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to filter on",
@@ -44,6 +47,9 @@ class SampleInput {
     String[] samples;
 }
 
+/**
+ * Reusable option for verbosity
+ */
 class Verbosity {
     @Option(names = {"-v", "--verbose"},
             description = "Verbosity level. Default: ${DEFAULT-VALUE}",
@@ -51,7 +57,16 @@ class Verbosity {
     int verbose = 0;
 }
 
-// Parent class that will be called in main
+class SampleIndex{
+    @Option(names = {"-si", "--sample-index"},
+    description = "Starting index for sample locations. Default: ${DEFAULT-VALUE}",
+            arity = "1")
+    int sampleIndex = 6;
+}
+
+/**
+ * Parent class that is called in main
+ */
 @Command(name = "BVAL",
         version = "Current version of BVAL: 0.0.1",
         mixinStandardHelpOptions = true,
@@ -60,6 +75,25 @@ class Verbosity {
                 Compare.class})
 public class CommandLineParser implements Runnable {
 
+    static MethylationArray fileReader(FilePathInput filePathInput, int sampleIndex) {
+        MethylationFileReader fileReader = null;
+
+        try {
+            fileReader = new MethylationFileReader();
+            fileReader.setSampleIndex(sampleIndex);
+            fileReader.readCSV(filePathInput.filePath);
+        } catch (IOException ex) {
+
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+
+        return fileReader.getData();
+    }
+    /**
+     * Run method of parent class, only runs when user passes no subcommand (summary/filter/compare)
+     * and outputs usage help
+     */
     @Override
     public void run() {
 
@@ -67,7 +101,9 @@ public class CommandLineParser implements Runnable {
     }
 }
 
-// Summary use-case, takes file and returns summary of file
+/**
+ * Subcommand for generating summary, takes file and returns summary of file
+ */
 @Command(name = "summary",
         version = "Current version of BVAL: 0.0.1",
         description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
@@ -79,9 +115,16 @@ class Summary implements Runnable {
     @Mixin
     Verbosity verbosity;
 
+    @Mixin
+    SampleIndex sampleIndex;
+
+    /**
+     * Run method of summary subcommand, runs when user passes subcommand summary and outputs a summary to the terminal
+     */
     @Override
     public void run() {
         VerbosityLevel verbosityLevel = new VerbosityLevel();
+
         try {
             verbosityLevel.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
@@ -90,12 +133,11 @@ class Summary implements Runnable {
         }
 
         MethylationFileReader fileReader = new MethylationFileReader();
+        fileReader.setSampleIndex(sampleIndex.sampleIndex - 1);
 
         try {
-
             fileReader.readCSV(filePathInput.filePath);
         } catch (IOException ex) {
-            // User-friendly output only
             System.out.println(ex.getMessage());
             System.exit(1);
         }
@@ -106,7 +148,9 @@ class Summary implements Runnable {
     }
 }
 
-// Filter use-case, takes file, allows user to filter and returns overview to user
+/**
+ * Subcommand for filtering, takes file, allows user to filter and writes filtered file to output path
+ */
 @Command(name = "filter",
         description = "@|bold Takes input file containing beta values and allows for filtering based on samples, " +
                 "chromosomes or genes and a cutoff.|@",
@@ -116,6 +160,9 @@ class Filter implements Runnable {
 
     @Mixin
     FilePathInput filePathInput;
+
+    @Mixin
+    SampleIndex sampleIndex;
 
     @Mixin
     SampleInput sampleInput;
@@ -129,6 +176,9 @@ class Filter implements Runnable {
     @ArgGroup()
     PosArguments posArguments;
 
+    /**
+     * Class to make PosArguments gene/chr mutually exclusive as gene locations are tied to chromosome
+     */
     static class PosArguments {
         @Option(names = {"-chr", "--chromosome"},
                 description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
@@ -152,6 +202,11 @@ class Filter implements Runnable {
     MethylationDataFilter.CutoffType cutoffType = MethylationDataFilter.CutoffType.upper;
 
 
+    /**
+     * Run method of filter subcommand, runs when user passes subcommand filter.
+     * Checks are performed on argument input and input file is filtered on those arguments if they are valid
+     * (removing rows/columns or individual beta values), output  file is then written to output path.
+     */
     @Override
     public void run() {
 
@@ -164,22 +219,12 @@ class Filter implements Runnable {
 
         }
 
-        MethylationFileReader fileReader = null;
-
-        try {
-            fileReader = new MethylationFileReader();
-            fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException ex) {
-
-            System.out.println(ex.getMessage());
-            System.exit(1);
-        }
-
-        MethylationArray data = fileReader.getData();
+        MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex -1);
 
         // Make new MethylationArray object (copy of MethylationArray generated by MethylationFileReader),
         // to store filtered values
         MethylationArray filteredData = new MethylationArray();
+        filteredData.setSampleIndex(data.getSampleIndex());
         filteredData.setHeader(data.getHeader());
         filteredData.setSamples(data.getSamples());
         filteredData.setData(data.getData());
@@ -195,7 +240,6 @@ class Filter implements Runnable {
                 SampleArgumentCheck sampleArgumentCheck = new SampleArgumentCheck(sampleInput.samples, data);
                 checker.addFilter(sampleArgumentCheck);
 
-                // Lambda for adding filter method to run after all checks are done
                 filtersToRun.add(() -> MethylationDataFilter.filterBySample(filteredData, sampleInput.samples));
 
             }
@@ -206,7 +250,6 @@ class Filter implements Runnable {
                 ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(posArguments.chr);
                 checker.addFilter(chrArgumentCheck);
 
-                // Lambda for adding filter method to be run after all checks are done
                 filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, posArguments.chr));
 
             } else if (posArguments != null && posArguments.genes != null) {
@@ -220,16 +263,15 @@ class Filter implements Runnable {
                 GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
                 checker.addFilter(geneArgumentCheck);
 
-                // Lambda for adding filter method to be run after all checks are done
                 filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes));
 
             }
 
-            // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction
+            // Cutoff filter is always ran with a default of 0.0 and 'hyper' for direction, as it cannot be checked for
+            // being 'null', like the other arguments
             CutOffArgumentCheck cutOffArgumentCheck = new CutOffArgumentCheck(cutoff);
             checker.addFilter(cutOffArgumentCheck);
 
-            // Lambda for adding filter method to be run after all checks are done
             filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
 
             // Check all arguments using the ArgumentChecks, to see if passed arguments are valid
@@ -244,7 +286,6 @@ class Filter implements Runnable {
             System.exit(1);
         }
 
-        // Try writing to output
         try {
             FilterFileWriter.writeData(filteredData, filePathOutput.outputFilePath);
         } catch (IOException ex) {
@@ -252,11 +293,14 @@ class Filter implements Runnable {
             System.exit(1);
 
         }
-
     }
+
 }
 
-// Compare use-case, compares 2 or more samples/regions
+
+/**
+ * Subcommand for compare, takes file, allows user to compare samples using statistical methods.
+ */
 @Command(name = "compare",
         description = "Compare two or more samples/regions",
         version = "Current version of BVAL: 0.0.1",
@@ -272,8 +316,11 @@ class Compare implements Runnable {
     @Mixin
     FilePathOutput filePathOutput;
 
+    @Mixin
+    SampleIndex sampleIndex;
+
     @Option(names = {"-s", "--sample"},
-            description = "Name(s) of the sample(s) to compare with eachother. default value: all samples in the file",
+            description = "Name(s) of the sample(s) to compare with each other. default value: all samples in the file",
             arity = "2..*")
     String[] samples;
 
@@ -282,7 +329,8 @@ class Compare implements Runnable {
     @Option(names = {"-m", "--methods"},
             defaultValue = "t-test,spearman,wilcoxon-test",
             split = ",",
-            description = "Name(s) of the different statistic methods, default values: ${DEFAULT-VALUE}",
+            description = "Name(s) of the different statistic methods to perform on the data. " +
+                    "Default value: ${DEFAULT-VALUE} (all tests are performed by default). ",
             arity = "1..*")
     String[] methods;
 
@@ -323,6 +371,11 @@ class Compare implements Runnable {
         }
     }
 
+    /**
+     * Run method of compare subcommand, runs when user passes compare filter.
+     * Input arguments are validated, statistical methods are applied based on user input and output is written to
+     * output path.
+     */
     @Override
     public void run() {
 
@@ -336,24 +389,14 @@ class Compare implements Runnable {
         }
 
         validateMethodInput();
-        MethylationFileReader fileReader = null;
-
-        try {
-            fileReader = new MethylationFileReader();
-            fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException ex) {
-            // User-friendly output only
-            System.out.println(ex.getMessage());
-            System.exit(1);
-        }
-
-        MethylationArray data = fileReader.getData();
+        MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
 
         if (samples == null) {
             samples = data.getSamples().toArray(String[]::new);
         }
 
         SampleComparison corrData = null;
+
         try {
             corrData = new MethylationArraySampleComparer(data).performStatisticalMethods(samples, methods);
         } catch (IllegalArgumentException ex) {

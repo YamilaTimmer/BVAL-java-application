@@ -8,6 +8,8 @@ import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -15,8 +17,8 @@ import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
     private static final Logger logger = LogManager.getLogger(MethylationArraySampleComparer.class.getName());
-    private Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
-    private MethylationArray data;
+    private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
+    private final MethylationArray data;
 
     public MethylationArraySampleComparer(MethylationArray data) {
         this.data = data;
@@ -26,6 +28,7 @@ public class MethylationArraySampleComparer {
     }
 
     public SampleComparison performStatisticalMethods(String[] samples, String[] methods) throws IllegalArgumentException {
+        logger.info("Performing statistical-methods: {}.",  Arrays.toString(methods));
         SampleComparison statisticalData = new SampleComparison(methods);
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
@@ -52,7 +55,6 @@ public class MethylationArraySampleComparer {
                 statisticalData.addNewSampleVsSample(sampleNames);
 
                 for (String statisticalMethod : methods) {
-
                     BiFunction<double[], double[], Double> func = statisticalMethods.get(statisticalMethod);
                     double methodOutput = func.apply(sample1BetaValues, sample2BetaValues);
                     statisticalData.addToData(statisticalMethod, methodOutput);
@@ -60,6 +62,8 @@ public class MethylationArraySampleComparer {
                 }
             }
         }
+
+        logger.info("Successfully performed statistical-methods.");
         return statisticalData;
     }
 

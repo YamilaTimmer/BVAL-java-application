@@ -3,7 +3,7 @@ package nl.bioinf.processing;
 
 public interface UserArgumentsCheck {
     /**
-     * Checks the user passed arguments.
+     * Checks if user provided arguments pass validity checks.
      */
     boolean pass() throws IllegalArgumentException;
 

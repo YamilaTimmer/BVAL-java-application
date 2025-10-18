@@ -18,7 +18,8 @@ class MethylationArrayTest {
         File file = new File(Objects.requireNonNull(classloader.getResource("faultyData.csv")).getFile());
 
         MethylationFileReader methylationFileReader = new MethylationFileReader();
-        Exception exception= assertThrows(IllegalArgumentException.class, () -> {
+        methylationFileReader.setSampleIndex(6);
+        assertThrows(IllegalArgumentException.class, () -> {
             methylationFileReader.readCSV(Path.of(file.getPath()));
         });
     }
@@ -46,7 +47,7 @@ class MethylationArrayTest {
         ArrayList<Double> values = new ArrayList<>(Arrays.asList(1.0, 0.5));
         MethylationArray tester = new MethylationArray();
         tester.setSamples(samples);
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             tester.addData("cg00000029,TP53,17,7565097,7565097,+", values);
         });
 
