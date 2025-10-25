@@ -51,6 +51,22 @@ Also see the [example data](https://github.com/YamilaTimmer/BVAL-java-applicatio
 > [!IMPORTANT]  
 > There is no strict column order, as the app relies on checking on column names instead. Make sure to name the gene column `gene` and the chromosome column `chr`! Samples columns can have any name, but the index of the first sample column has to be specified, this index uses normal counting, so the first column of the file is index 1, etc. **All other samples have to be after the first sample column and no other columns should be behind or within the sample columns.**
 
+#### How to obtain input data
+[DepMap](https://depmap.org/portal/data_page/?tab=allData) has two large datasets from the [CCLE project](https://depmap.org/portal/ccle/), which can be used as input for BVAL. Datasets can also be found through [GEO](https://www.ncbi.nlm.nih.gov/geo/), when looking for methylation data. Processed files containing beta values are not as common to find through GEO, but there are some. The file will likely contain words such as 'processed' and 'matrix'.
+
+Some datasets might be tab separated, but can easily be converted to .csv by running the command below, which will replace all tabs with a comma.
+
+```bash
+tr '\t' ',' < input.txt > output.csv
+```
+
+Afterwards the tool can be ran using the data as input, read more about the use cases [below](#use-cases-of-bval). 
+
+> [!IMPORTANT]  
+> If using one of the DepMap datasets, make sure to pass `-si 8` as argument, as the samples start from the 8th column and on
+
+When working with raw data, some steps prior will have to be done, including mapping and aligning of the data and calculating the beta values, a commonly used R-package for this is [minfi](https://pmc.ncbi.nlm.nih.gov/articles/PMC4016708/), read more about how to use this package [here](https://bioconductor.org/packages/devel/bioc/vignettes/minfi/inst/doc/minfi.html).
+
 #### Use cases of BVAL
 The tool contains three distinct use cases, below some examples are shown on how to use these.
 ##### Generating a summary
