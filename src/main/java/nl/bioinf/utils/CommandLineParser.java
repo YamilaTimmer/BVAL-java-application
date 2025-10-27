@@ -3,7 +3,7 @@ package nl.bioinf.utils;
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.processing.*;
-import nl.bioinf.io.ComparingFileWriter;
+import nl.bioinf.io.ComparisonFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
 import picocli.CommandLine;
@@ -124,10 +124,10 @@ class Summary implements Runnable {
      */
     @Override
     public void run() {
-        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        VerbosityLevelProcessor verbosityLevelProcessor = new VerbosityLevelProcessor();
 
         try {
-            verbosityLevel.applyVerbosity(verbosity.verbose);
+            verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
@@ -211,9 +211,9 @@ class Filter implements Runnable {
     @Override
     public void run() {
 
-        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        VerbosityLevelProcessor verbosityLevelProcessor = new VerbosityLevelProcessor();
         try {
-            verbosityLevel.applyVerbosity(verbosity.verbose);
+            verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
@@ -406,10 +406,10 @@ class Compare implements Runnable {
      */
     @Override
     public void run() {
-        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        VerbosityLevelProcessor verbosityLevelProcessor = new VerbosityLevelProcessor();
 
         try {
-            verbosityLevel.applyVerbosity(verbosity.verbose);
+            verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
@@ -489,7 +489,7 @@ class Compare implements Runnable {
         }
 
         try {
-            new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();
+            new ComparisonFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);

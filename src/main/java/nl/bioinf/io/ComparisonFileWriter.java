@@ -12,13 +12,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public class ComparingFileWriter {
+public class ComparisonFileWriter {
 
-    private static final Logger logger = LogManager.getLogger(ComparingFileWriter.class.getName());
+    private static final Logger logger = LogManager.getLogger(ComparisonFileWriter.class.getName());
     SampleComparison data;
     Path pathFileOutput;
 
-    public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
+    public ComparisonFileWriter(SampleComparison data, Path filePathOutput) {
         this.data = data;
         pathFileOutput = filePathOutput;
     }
