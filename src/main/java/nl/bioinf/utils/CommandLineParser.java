@@ -129,7 +129,7 @@ class Summary implements Runnable {
             verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
+            return;
         }
 
         MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
@@ -280,14 +280,14 @@ class Filter implements Runnable {
             }
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
+            return;
         }
 
         try {
             FilterFileWriter.writeData(filteredData, filePathOutput.outputFilePath);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
+            return;
 
         }
     }
@@ -402,7 +402,7 @@ class Compare implements Runnable {
             verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
+            return;
         }
 
         validateMethodInput();
@@ -480,7 +480,6 @@ class Compare implements Runnable {
             new ComparisonFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
 
         }
     }
