@@ -415,13 +415,13 @@ class Compare implements Runnable {
             System.exit(1);
         }
 
-        //validateMethodInput();
+        validateMethodInput();
 
         MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
 
-//        if (samples == null) {
-//            samples = data.getSamples().toArray(String[]::new);
-//        }
+        if (samples == null) {
+            samples = data.getSamples().toArray(String[]::new);
+        }
 
         SampleComparison corrData = null;
         MethylationArray filteredData = new MethylationArray();
