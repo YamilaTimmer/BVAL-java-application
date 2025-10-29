@@ -83,10 +83,7 @@ public class CommandLineParser implements Runnable {
             fileReader = new MethylationFileReader();
             fileReader.setSampleIndex(sampleIndex);
             fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            return null;
-        } catch (IllegalArgumentException _) {
+        } catch (IOException | IllegalArgumentException ex) {
             return null;
         }
 
@@ -135,17 +132,9 @@ class Summary implements Runnable {
             System.exit(1);
         }
 
-        MethylationFileReader fileReader = new MethylationFileReader();
-        fileReader.setSampleIndex(sampleIndex.sampleIndex - 1);
+        MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
+        if (data == null) {return;}
 
-        try {
-            fileReader.readCSV(filePathInput.filePath);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            System.exit(1);
-        }
-
-        MethylationArray data = fileReader.getData();
 
         SummaryGenerator.generateSummary(data);
     }
