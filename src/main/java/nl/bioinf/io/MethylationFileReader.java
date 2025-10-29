@@ -41,7 +41,7 @@ public class MethylationFileReader {
                 logger.error("""
                         Provided file: '{}' is empty, please provide a file with beta values, gene/chr regions and samples.
                         """, filePath);
-                throw new IOException("File is empty: '" + filePath + "'"); //Error handling: Empty file
+                throw new IOException(); //Error handling: Empty file
             }
 
             String line;
@@ -59,16 +59,10 @@ public class MethylationFileReader {
 
                 try {
                     bValues = getBValues(lineSplit, this.sampleIndex);
-                } catch (NumberFormatException ex){
-                    System.out.println(ex.getMessage());
-                    System.exit(1);
-                }
-
-                try{
                     methylationData.addData(buildMethylationLocation(lineSplit, this.sampleIndex), bValues);
-                }catch(IllegalArgumentException ex){
-                    System.out.println(ex.getMessage());
-                    System.exit(1);
+                } catch (IllegalArgumentException ex){
+                    logger.error(ex.getMessage());
+                    return;
                 }
             }
 
@@ -106,10 +100,14 @@ public class MethylationFileReader {
 
         ArrayList<String> samples = new ArrayList<>();
         String[] headerSplit = header.split(",");
-        for (int i = sampleIndex; i < headerSplit.length; i++) {
-            samples.add(headerSplit[i]);
+        try {
+            for (int i = sampleIndex; i < headerSplit.length; i++) {
+                samples.add(headerSplit[i]);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            logger.error("Sample Index: '{}' not valid, please specify using -si", sampleIndex);
+            throw new IllegalArgumentException();
         }
-
         return samples;
     }
 
@@ -136,9 +134,10 @@ public class MethylationFileReader {
             try {
                 betaValues.add(Double.parseDouble(lineSplit[i]));
             } catch (NumberFormatException ex){
-                System.err.println("Invalid beta value: '" + lineSplit[i] + "', please check if the correct sample " +
-                        "index [-si] was passed.");
-                System.exit(1);
+                String msg = String.format(
+                        "Invalid beta value '%s' at index %d — check your sample index [-si].", lineSplit[i], i
+                );
+                throw new IllegalArgumentException(msg, ex);
             }
         }
         return betaValues;
