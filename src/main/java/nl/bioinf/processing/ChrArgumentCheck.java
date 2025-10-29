@@ -35,17 +35,21 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
      */
     @Override
     public boolean pass() throws IllegalArgumentException {
+        String xChromosome = "X";
+        String yChromosome = "Y";
+        int firstChromosome = 1;
+        int lastChromosome = 23;
         logger.info("Starting validity check for chromosome filter...");
 
         for (String chr : filterChr) {
             logger.debug("Validity check for user provided chromosome: '{}'", chr);
 
-            if (!chr.equalsIgnoreCase("X") && !chr.equalsIgnoreCase("Y")) {
+            if (!chr.equalsIgnoreCase(xChromosome) && !chr.equalsIgnoreCase(yChromosome)) {
 
                 // If not 'X' or 'Y', try to parse to int to determine whether it lies in the range of [1-23]
                 try {
                     int chrInt = Integer.parseInt(chr);
-                    if (chrInt < 1 || chrInt > 23) {
+                    if (chrInt < firstChromosome || chrInt > lastChromosome) {
                         logger.error("Invalid input: '{}', number is either < 1 or > 23 please provide a number " +
                                 "between 1-23 or X/Y for chromosome input.", chr);
                         throw new IllegalArgumentException("\u001B[31mInvalid chromosome: '" + chr + "'. Must be 1-23 or X/Y.\u001B[0m");

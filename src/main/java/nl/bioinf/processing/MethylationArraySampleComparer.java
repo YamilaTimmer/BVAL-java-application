@@ -35,12 +35,14 @@ public class MethylationArraySampleComparer {
 
 
     public SampleComparison performStatisticalMethods() throws IllegalArgumentException {
+        int invalidSample = -1;
+        int naValue = -1;
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
 
-                    if (sample1 == -1 || sample2 == -1) {
+                    if (sample1 == invalidSample || sample2 == invalidSample) {
                         logger.error("Sample not found in the data, exiting code. Did not compare following samples: {} vs {}\n", samples[i], samples[j]);
                         throw new IllegalArgumentException();
                     }
@@ -48,8 +50,8 @@ public class MethylationArraySampleComparer {
 
                 double[] sample1BetaValues = getBetaValues(sample1);
                 double[] sample2BetaValues = getBetaValues(sample2);
-                if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == -1) ||
-                        DoubleStream.of(sample2BetaValues).anyMatch(x -> x == -1)) {
+                if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == naValue) ||
+                        DoubleStream.of(sample2BetaValues).anyMatch(x -> x == naValue)) {
                     logger.warn("Found invalid values in 1 of the samples: (-1 / NA) {} vs {}, please compare " +
                             "samples without -1 or NA values", samples[i], samples[j]);
                     continue;

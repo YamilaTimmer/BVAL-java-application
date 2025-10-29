@@ -26,13 +26,14 @@ public class SummaryGenerator {
 
         int amountNAValues = 0;
         double betaVal = 0.0;
+        int minAllowedBetaVal = 0;
 
         // Add value of all beta values to calculate the average
         logger.debug("Calculating average beta values...");
         for (MethylationData row : dataRows) {
             ArrayList<Double> betas = row.betaValues();
             for (double beta : betas) {
-                if (beta >= 0) {
+                if (beta >= minAllowedBetaVal) {
                     betaVal += beta;
                     continue;
                 }
