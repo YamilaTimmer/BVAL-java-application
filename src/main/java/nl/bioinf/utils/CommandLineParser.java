@@ -465,16 +465,14 @@ class Compare implements Runnable {
                     }
                 }
             } catch (IllegalArgumentException ex) {
-                System.out.println(ex.getMessage());
-                System.exit(1);
+                return;
             }
 
         } else {
             try {
                 corrData = new MethylationArraySampleComparer(data, samples, methods).performStatisticalMethods();
             } catch (IllegalArgumentException ex) {
-                System.out.println(ex.getMessage());
-                System.exit(1);
+                return;
             }
         }
 

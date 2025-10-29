@@ -67,7 +67,7 @@ public class MethylationArrayPosComparer {
 
                         logger.error("Invalid {} found: {} or {}. Exiting application!",
                                 posFilterType.getName(), posArguments[1], posArguments[j]);
-                        System.exit(1);
+                        throw new IllegalArgumentException();
                     }
                 }
             }
@@ -77,12 +77,11 @@ public class MethylationArrayPosComparer {
     }
 
     private void validateValuesAndStatistics(double[] betaValues2, double[] betaValues1) {
-        try {
 
             if (betaValues2.length != betaValues1.length &&
                     !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
                 logger.error("Used a statistical method that requires the same sample size in data. " +
-                        "Please use the [welch-test] to go around this");
+                        "Please use the [welch-test] to go workaround this");
                 throw new IllegalArgumentException();
 
             }
@@ -93,8 +92,5 @@ public class MethylationArrayPosComparer {
                         "samples without -1 or NA values");
                 throw new IllegalArgumentException();
             }
-        } catch (IllegalArgumentException ex) {
-            System.exit(1);
-        }
     }
 }
