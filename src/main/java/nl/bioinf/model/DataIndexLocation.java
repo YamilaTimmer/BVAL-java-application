@@ -28,7 +28,7 @@ public class DataIndexLocation {
             int index = listHeader.indexOf(indexToFind);
             if (index == -1) {
                 logger.error("'{}' not found in header, invalid header", indexToFind);
-                System.exit(-1);
+                throw new IllegalArgumentException();
             }
             indexes.put(indexToFind, index);
         }

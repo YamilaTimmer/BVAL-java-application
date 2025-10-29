@@ -1,6 +1,6 @@
 package nl.bioinf.model;
 
-import nl.bioinf.processing.MethylationArraySampleComparer;
+
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
@@ -18,26 +18,44 @@ public class StatisticalMethods {
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
 
     public StatisticalMethods() {
-        statisticalMethods.put("spearman", StatisticalMethods::runSpearman);
-        statisticalMethods.put("t-test", StatisticalMethods::runTTest);
-        statisticalMethods.put("wilcoxon-test", StatisticalMethods::runWilcoxonTest);
-        statisticalMethods.put("welch-test", StatisticalMethods::runWelchTest);
+        statisticalMethods.put("spearman", RunStatisticalMethods.SPEARMAN::run);
+        statisticalMethods.put("t-test", RunStatisticalMethods.TTEST::run);
+        statisticalMethods.put("wilcoxon-test", RunStatisticalMethods.WILCOXONTEST::run);
+        statisticalMethods.put("welch-test", RunStatisticalMethods.WELCH::run);
+
     }
 
-    private static double runSpearman(double[] sample1, double[] sample2) {
-        return new SpearmansCorrelation().correlation(sample1, sample2);
-    }
+    enum RunStatisticalMethods {
+        TTEST {
+            @Override
+            public double run(double[] sample1, double[] sample2) {
+                return new TTest().pairedTTest(sample1, sample2);
+            }
 
-    private static double runTTest(double[] sample1, double[] sample2) {
-        return new TTest().pairedTTest(sample1, sample2);
-    }
+        },
+        SPEARMAN {
+            @Override
+            public double run(double[] sample1, double[] sample2) {
+                return new SpearmansCorrelation().correlation(sample1, sample2);
+            }
+        },
 
-    private static double runWilcoxonTest(double[] sample1, double[] sample2) {
-        return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
-    }
+        WELCH {
+            @Override
+            public double run(double[] sample1, double[] sample2) {
+                return new TTest().tTest(sample1, sample2);
+            }
+        },
 
-    private static double runWelchTest(double[] sample1, double[] sample2) {
-        return new TTest().tTest(sample1, sample2);
+        WILCOXONTEST {
+            @Override
+            public double run(double[] sample1, double[] sample2) {
+                return new WilcoxonSignedRankTest().wilcoxonSignedRank(sample1, sample2);
+            }
+        };
+
+
+        public abstract double run(double[] sample1, double[] sample2);
     }
 
     /**
