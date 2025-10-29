@@ -12,6 +12,8 @@ import java.util.*;
  */
 public class DataIndexLocation {
     private static final Logger logger = LogManager.getLogger(DataIndexLocation.class.getName());
+    // Key: header (chr or gene)
+    // Value: the index of said key in the header
     private final Map<String, Integer> indexes;
     private final String header;
 

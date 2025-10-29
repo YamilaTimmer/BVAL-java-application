@@ -16,6 +16,8 @@ import java.util.stream.DoubleStream;
  */
 public class MethylationArrayPosComparer {
     private static final Logger logger = LogManager.getLogger(MethylationArrayPosComparer.class.getName());
+    // Key: name of statistical tests
+    // Value: Bifunction that can be used to run the statistical test
     private final StatisticalMethods statisticalMethods;
     private final MethylationArray data;
     private final String[] methods;

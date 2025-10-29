@@ -15,6 +15,8 @@ import java.util.function.BiFunction;
  * Model that holds the different statistic tests, and provides a way to run said tests
  */
 public class StatisticalMethods {
+    // Key: name of statistical tests
+    // Value: Bifunction that can be used to run the statistical test
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new HashMap<>();
 
     public StatisticalMethods() {

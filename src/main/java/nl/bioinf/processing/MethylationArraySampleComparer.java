@@ -18,6 +18,8 @@ import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
     private static final Logger logger = LogManager.getLogger(MethylationArraySampleComparer.class.getName());
+    // Key: name of statistical tests
+    // Value: Bifunction that can be used to run the statistical test
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new StatisticalMethods().getStatisticalMethods();
     private final MethylationArray data;
     private final String[] samples;
