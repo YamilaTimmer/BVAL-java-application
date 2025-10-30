@@ -61,6 +61,32 @@ public class MethylationDataFilter {
         ArrayList<String> filteredSamples = new ArrayList<>();
 
         logger.debug("Determining what sample columns to keep...");
+        determineColumnsToKeep(samplesFilter, samples, columnsToKeep, filteredSamples);
+
+        // Retrieve old data and initiate new arraylist
+        removeUnwantedSamples(dataRows, columnsToKeep);
+
+        logger.debug("Saving filtered sample data.");
+
+        samples.clear();
+        samples.addAll(filteredSamples);
+
+        methylationArray.setData(dataRows);
+        methylationArray.setSamples(samples);
+
+        logger.info("Successfully filtered on sample(s)");
+    }
+
+    /**
+     * Determine what columns (corresponding with samples) should be kept, based on user input
+     *
+     * @param samplesFilter String array that user has provided, containing sample names that correspond with
+     *                      columns in the data
+     * @param samples       List containing all samples of the input data
+     * @param columnsToKeep ArrayList in which the indexes of the columns that should be kept will be saved in
+     * @param filteredSamples ArrayList in which the names of the samples to keep will be saved
+     */
+    private static void determineColumnsToKeep(String[] samplesFilter, List<String> samples, ArrayList<Integer> columnsToKeep, ArrayList<String> filteredSamples) {
         for (int i = 0; i < samples.size(); i++) {
             String sample = samples.get(i);
 
@@ -72,8 +98,15 @@ public class MethylationDataFilter {
                 }
             }
         }
+    }
 
-        // Retrieve old data and initiate new arraylist
+    /**
+     * Keep only the samples of which the columns match the indexes that correspond with the columns that should be kept
+     *
+     * @param dataRows the rows of data of the methylationArray object
+     * @param columnsToKeep indexes of columns that match samples that were selected to keep by user
+     */
+    private static void removeUnwantedSamples(List<MethylationData> dataRows, ArrayList<Integer> columnsToKeep) {
         logger.debug("Creating new data object to save filtered beta values in.");
         for (MethylationData row : dataRows) {
             ArrayList<Double> oldBetaValues = row.betaValues();
@@ -87,17 +120,6 @@ public class MethylationDataFilter {
             oldBetaValues.clear(); // Remove items from list
             oldBetaValues.addAll(filteredBetaValues); // Replace with filtered values
         }
-
-        logger.debug("Saving filtered sample data.");
-
-        samples.clear();
-        samples.addAll(filteredSamples);
-
-        methylationArray.setData(dataRows);
-        methylationArray.setSamples(samples);
-        //methylationArray.setHeader(methylationArray.getHeader());
-
-        logger.info("Successfully filtered on sample(s)");
     }
 
     /**
@@ -115,10 +137,29 @@ public class MethylationDataFilter {
 
         // Use iterator for removing rows from MethylationData, if user passed gene filter argument
         Iterator<MethylationData> iter = dataRows.iterator();
-        String valueToCheck;
 
         logger.debug("Removing rows that don't contain given {} arguments", posFilterType);
-        while (iter.hasNext()) { // As long as there is a next row
+
+        removeUnwantedPos(methylationArray, posFilterType, posFilter, iter);
+
+        logger.debug("Saving filtered {} data", posFilterType);
+        methylationArray.setData(dataRows);
+
+        logger.info("Successfully filtered on {}", posFilterType);
+    }
+
+    /**
+     * Remove rows that don`t contain chromosomes or genes as specified by user parameters
+     *
+     * @param methylationArray methylationArray contains parsed data from input file, including present genes
+     * @param posFilterType enum, either CHROMOSOME or GENE
+     * @param posFilter String array that user has provided, containing either chromosome- or gene names
+     * @param iter iterator for iterating through dataRows
+     */
+    private static void removeUnwantedPos(MethylationArray methylationArray, PosFilterType posFilterType,
+                                              String[] posFilter, Iterator<MethylationData> iter) {
+        String valueToCheck;
+        while (iter.hasNext()) {
             MethylationData row = iter.next();
 
             // Determine positional variable to filter on, either GENE or CHROMOSOME
@@ -134,11 +175,6 @@ public class MethylationDataFilter {
                 iter.remove();
             }
         }
-
-        logger.debug("Saving filtered {} data", posFilterType);
-        methylationArray.setData(dataRows);
-
-        logger.info("Successfully filtered on {}", posFilterType);
     }
 
     /**
