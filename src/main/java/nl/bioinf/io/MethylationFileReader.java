@@ -17,22 +17,18 @@ import java.util.ArrayList;
 public class MethylationFileReader {
     private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
     private MethylationArray methylationData;
-    private int sampleIndex;
 
     public MethylationFileReader() {
         methylationData = new MethylationArray();
 
     }
 
-    public void setSampleIndex(int sampleIndex){
-        this.sampleIndex = sampleIndex;
-    }
     /**
      * This method tries to read the file at the user-provided file path and converts it to a MethylationArray datatype.
      *
      * @param filePath which refers to the path for the input file
      */
-    public void readCSV(Path filePath) throws IOException {
+    public void readCSV(Path filePath, int sampleIndex) throws IOException {
 
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
             String headerLine = br.readLine();
@@ -46,9 +42,8 @@ public class MethylationFileReader {
 
             String line;
             methylationData = new MethylationArray();
-            methylationData.setSampleIndex(this.sampleIndex);
             methylationData.setHeader(headerLine);
-            methylationData.setSamples(getSamples(headerLine, this.sampleIndex));
+            methylationData.setSamples(getSamples(headerLine, sampleIndex));
 
             DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
             methylationData.setIndexInformation(indexLocation);
@@ -58,14 +53,14 @@ public class MethylationFileReader {
                 ArrayList<Double> bValues = null;
 
                 try {
-                    bValues = getBValues(lineSplit, this.sampleIndex);
+                    bValues = getBValues(lineSplit, sampleIndex);
                 } catch (NumberFormatException ex){
                     System.out.println(ex.getMessage());
                     System.exit(1);
                 }
 
                 try{
-                    methylationData.addData(buildMethylationLocation(lineSplit, this.sampleIndex), bValues);
+                    methylationData.addData(buildMethylationLocation(lineSplit, sampleIndex), bValues);
                 }catch(IllegalArgumentException ex){
                     System.out.println(ex.getMessage());
                     System.exit(1);

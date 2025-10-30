@@ -81,8 +81,7 @@ public class CommandLineParser implements Runnable {
 
         try {
             fileReader = new MethylationFileReader();
-            fileReader.setSampleIndex(sampleIndex);
-            fileReader.readCSV(filePathInput.filePath);
+            fileReader.readCSV(filePathInput.filePath, sampleIndex);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
@@ -134,10 +133,9 @@ class Summary implements Runnable {
         }
 
         MethylationFileReader fileReader = new MethylationFileReader();
-        fileReader.setSampleIndex(sampleIndex.sampleIndex - 1);
 
         try {
-            fileReader.readCSV(filePathInput.filePath);
+            fileReader.readCSV(filePathInput.filePath, sampleIndex.sampleIndex - 1);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
@@ -336,11 +334,6 @@ class Compare implements Runnable {
                 arity = "2..*")
         String[] genes;
 
-        public String[] getPosarguments() {
-            if (genes != null) {
-                return genes;
-            } else return chr;
-        }
     }
 
     @Mixin
@@ -415,16 +408,16 @@ class Compare implements Runnable {
             System.exit(1);
         }
 
-        //validateMethodInput();
+        validateMethodInput();
 
         MethylationArray data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
 
-//        if (samples == null) {
-//            samples = data.getSamples().toArray(String[]::new);
-//        }
+        if (samples == null) {
+            samples = data.getSamples().toArray(String[]::new);
+        }
 
         SampleComparison corrData = null;
-        MethylationArray filteredData = new MethylationArray();
+        MethylationArray filteredData;
 
 
         if (posArguments != null) {
@@ -434,7 +427,7 @@ class Compare implements Runnable {
             filteredData.setSamples(data.getSamples());
             filteredData.setData(data.getData());
             filteredData.setIndexInformation(data.getIndexInformation());
-            MethylationDataFilter.PosFilterType posFilterType = null;
+            MethylationDataFilter.PosFilterType posFilterType;
 
             CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
 
