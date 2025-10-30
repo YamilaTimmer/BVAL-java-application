@@ -1,9 +1,5 @@
 # BVAL: Beta Value Analyzer
 
-## Authors:
-- [Ramon Reilman](https://github.com/RamonReilman)
-- [Yamila Timmer](https://github.com/YamilaTimmer)
-
 ## Description
 This repository contains a Java commandline tool for analyzing- and comparing of beta values as found in methylation data. With BVAL we hope to allow users to get more insight into methylation of various input samples- and regions. 
 
@@ -16,6 +12,7 @@ This repository contains a Java commandline tool for analyzing- and comparing of
 ### System requirements
 - **OS**: Windows, macOS or Linux
 
+### Version info:
 This tool was created using:
 - Java ([v.24.0.1](https://www.oracle.com/java/technologies/javase/jdk24-archive-downloads.html))
 - Gradle ([v.8.14](https://gradle.org/releases/))
@@ -25,7 +22,7 @@ Download the newest release of BVAL ([v0.0.1](https://github.com/YamilaTimmer/me
 
 After downloading, run the app using:
 ```bash
-java -jar bval-app-0.0.1.jar 
+java -jar bval-app-0.0.1.jar <subcommand>
 ```
 
 The example above runs the app with no arguments and will print the help function, showing information on the different commands of BVAL, read more about how to use the different commands in the chapter '[Use cases of BVAL](#use-cases-of-bval)'.
@@ -35,6 +32,8 @@ For further developing and/or testing we recommend cloning the repository, this 
 ```bash
 git clone https://github.com/YamilaTimmer/methylation-java-app
 ```
+> [!IMPORTANT]
+> Disregarding the method of installation, a JVM installation is also needed to be able to run the tool. Preferably it is the same version of Java as described under the [version info](#version-info). If the Java version differs, it could possibly lead to parts of the tool not working.
 
 ### Running the tool
 #### Information about required data
@@ -117,7 +116,7 @@ Generating a filtered output file from the input can be done by passing `filter`
 
 Below an example of the command, with arguments is shown. This example filters the input data in a way that only Sample1 and Sample 2 (the first two columns) are kept, with only rows containing chromosome 17. Only beta values below 0.5 are kept.
 ```bash
-BVAL filter -f data/exampledata.csv -si 7 -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
+filter -f data/exampledata.csv -si 7 -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
 ```
 
 The filtered output is written to the user-specified path, if no path is given it is automatically generated as output.txt in the same directory as the tool
@@ -162,7 +161,7 @@ This will show a menu with all possible options and their usage.
 To check the current version of the application use:
 
 ```bash
-BVAL  [-V/--version]
+[-V/--version]
 ```
 
 ## Biological background
@@ -182,6 +181,10 @@ In case of any bugs or needed support, please open an issue [here](https://githu
 
 ## License
 This project is licensed under GNU General Public License v3.0. See the [LICENSE file](https://github.com/YamilaTimmer/methylation-java-app/blob/main/LICENSE) for details.
+
+## Authors:
+- [Ramon Reilman](https://github.com/RamonReilman)
+- [Yamila Timmer](https://github.com/YamilaTimmer)
 
 ## Sources
 
