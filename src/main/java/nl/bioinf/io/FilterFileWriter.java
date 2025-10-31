@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Locale;
 
 public class FilterFileWriter {
     private static final Logger logger = LogManager.getLogger();
@@ -19,9 +20,24 @@ public class FilterFileWriter {
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(filePath))) {
             String headerToWrite = data.getHeader();
             newFile.write(String.format("%s%n", headerToWrite));
+            StringBuilder sb = new StringBuilder();
+
             for (MethylationData lineData : data.getData()) {
-                newFile.write(lineData.toString());
+                sb.append(lineData.methylationLocation());
+
+                for (Double val : lineData.betaValues()) {
+                    sb.append(',');
+                    if (val.isNaN()) {
+                        sb.append("NaN");
+                    } else {
+                        sb.append(String.format(Locale.US, "%.2f", val)); // Changes commas in numbers to periods,
+                        // to be able to distinguish from comma line seperator
+                    }
+                }
+                sb.append(System.lineSeparator());
             }
+
+            newFile.write(sb.toString());
 
             logger.debug("Output successfully written to: {}.", filePath);
             System.out.println("Output file generated at: '" + filePath + "'");
