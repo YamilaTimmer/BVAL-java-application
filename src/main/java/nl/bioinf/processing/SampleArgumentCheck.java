@@ -10,9 +10,9 @@ import java.util.List;
  * Checks validity of sample argument(s) passed by user
  */
 public class SampleArgumentCheck implements UserArgumentsCheck {
+    private static final Logger logger = LogManager.getLogger();
     private final String[] filterSamples;
     private final List<String> samples;
-    private final Logger logger = LogManager.getLogger(SampleArgumentCheck.class.getName());
 
     /**
      * Sets passed sample filter argument(s) and all samples present in dataset as class variable
@@ -43,7 +43,7 @@ public class SampleArgumentCheck implements UserArgumentsCheck {
             if (!samples.contains(sample)) {
                 logger.error("The following sample is not present in the data: '{}'. Please only pass samples " +
                         "that are present in the input file.", sample);
-                throw new IllegalArgumentException("\u001B[31mError: Given sample was not found in input file. \u001B[0m");
+                throw new IllegalArgumentException();
             }
         }
         logger.info("Passed validity check for sample filter!");

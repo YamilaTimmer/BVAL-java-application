@@ -11,7 +11,7 @@ import java.util.*;
  * This will be used to adapt to different possible orders in the header
  */
 public class DataIndexLocation {
-    private static final Logger logger = LogManager.getLogger(DataIndexLocation.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     private final Map<String, Integer> indexes;
     private final String header;
 

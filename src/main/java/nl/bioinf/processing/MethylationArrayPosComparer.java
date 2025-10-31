@@ -15,7 +15,7 @@ import java.util.stream.DoubleStream;
  * Compare class that will compare the beta values of either genes OR chromosomes via statistical tests.
  */
 public class MethylationArrayPosComparer {
-    private static final Logger logger = LogManager.getLogger(MethylationArrayPosComparer.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     private final StatisticalMethods statisticalMethods;
     private final MethylationArray data;
     private final String[] methods;
@@ -89,7 +89,7 @@ public class MethylationArrayPosComparer {
 
             if (DoubleStream.of(betaValues1).anyMatch(x -> x == -1) ||
                     DoubleStream.of(betaValues2).anyMatch(x -> x == -1)) {
-                logger.warn("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
+                logger.error("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
                         "samples without -1 or NA values");
                 throw new IllegalArgumentException();
             }

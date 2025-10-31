@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
-    private static final Logger logger = LogManager.getLogger(MethylationArraySampleComparer.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new StatisticalMethods().getStatisticalMethods();
     private final MethylationArray data;
     private final String[] samples;
@@ -31,7 +31,6 @@ public class MethylationArraySampleComparer {
         this.data = data;
     }
 
-
     public SampleComparison performStatisticalMethods() throws IllegalArgumentException {
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
@@ -39,19 +38,22 @@ public class MethylationArraySampleComparer {
                 int sample2 = data.getSamples().indexOf(samples[j]);
                 try {
                     if (sample1 == -1 || sample2 == -1) {
-                        logger.error("Sample not found in the data, exiting code. Did not compare following samples: {} vs {}\n", samples[i], samples[j]);
+                        logger.error("Sample not found in the data, exiting code. " +
+                                "Did not compare following samples: {} vs {}\n", samples[i], samples[j]);
                         throw new IndexOutOfBoundsException();
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    System.exit(-1);
+                    return null;
                 }
 
                 double[] sample1BetaValues = getBetaValues(sample1);
                 double[] sample2BetaValues = getBetaValues(sample2);
                 if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == -1) ||
                         DoubleStream.of(sample2BetaValues).anyMatch(x -> x == -1)) {
-                    logger.warn("Found invalid values in 1 of the samples: (-1 / NA) {} vs {}, please compare " +
-                            "samples without -1 or NA values", samples[i], samples[j]);
+                    logger.warn("Found invalid values (-1 / NA) in 1 of the samples in the comparison: {} vs {}, " +
+                                    "please compare samples without -1 or NA values. Continuing comparisons, " +
+                                    "excluding {} vs {}.",
+                            samples[i], samples[j], samples[i], samples[j]);
                     continue;
                 }
                 String sampleNames = String.format("%s,%s", samples[i], samples[j]);

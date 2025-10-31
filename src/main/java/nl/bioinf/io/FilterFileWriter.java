@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public class FilterFileWriter {
-    private static final Logger logger = LogManager.getLogger(FilterFileWriter.class.getName());
+    private static final Logger logger = LogManager.getLogger();
 
     public static void writeData(MethylationArray data, Path outputFilePath) throws IOException {
         File filePath = new File(outputFilePath.toUri());

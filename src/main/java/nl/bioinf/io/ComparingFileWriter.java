@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class ComparingFileWriter {
 
-    private static final Logger logger = LogManager.getLogger(ComparingFileWriter.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     SampleComparison data;
     Path pathFileOutput;
 
@@ -38,7 +38,7 @@ public class ComparingFileWriter {
                             Exception occurred: '{}'.
                             """,
                     ex.getMessage(), ex);
-            throw new IOException(ex);
+            throw ex;
         }
         System.out.println("Output generated at: " + filePath);
 

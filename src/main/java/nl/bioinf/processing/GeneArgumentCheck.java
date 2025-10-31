@@ -10,9 +10,9 @@ import java.util.List;
  * Checks validity of gene argument(s) passed by user
  */
 public class GeneArgumentCheck implements UserArgumentsCheck {
+    private static final Logger logger = LogManager.getLogger();
     private final String[] filterGenes;
     private final List<String> genes;
-    private final Logger logger = LogManager.getLogger(GeneArgumentCheck.class.getName());
 
     /**
      * Sets passed gene argument(s) and all genes in the dataset as class variable
@@ -43,7 +43,7 @@ public class GeneArgumentCheck implements UserArgumentsCheck {
             if (!genes.contains(gene)) {
                 logger.error("The following gene is not present in the data: '{}'. Please only pass genes that " +
                         "are present in the input file.", gene);
-                throw new IllegalArgumentException("\u001B[31mInvalid gene: '" + gene + "'. Given gene was not found in input file. \u001B[0m");
+                throw new IllegalArgumentException();
             }
         }
         logger.info("Passed validity check for gene filter!");

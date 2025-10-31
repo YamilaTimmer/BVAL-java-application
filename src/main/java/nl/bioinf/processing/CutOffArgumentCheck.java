@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
  * Checks validity of cutoff argument passed by user
  */
 public class CutOffArgumentCheck implements UserArgumentsCheck {
+    private static final Logger logger = LogManager.getLogger();
     private final float cutoff;
-    private final Logger logger = LogManager.getLogger(CutOffArgumentCheck.class.getName());
 
     /**
      * Sets passed cutoff argument as class variable.
@@ -35,7 +35,7 @@ public class CutOffArgumentCheck implements UserArgumentsCheck {
 
             logger.error("Provided cutoff value: '{}' is out of bounds, please provide a cutoff value within " +
                     "a range of [0.0-1.0].", cutoff);
-            throw new IllegalArgumentException("\u001B[31mError: Please provide a cutoff value between 0.0 and 1.0 \u001B[0m");
+            throw new IllegalArgumentException();
         }
         logger.info("Passed validity check for cutoff filter!");
         return true;

@@ -10,9 +10,8 @@ import java.util.List;
  * Checks validity of all filter user arguments, using all ArgumentCheckers
  */
 public class CompositeUserArgumentsCheck implements UserArgumentsCheck {
+    private static final Logger logger = LogManager.getLogger();
     private final List<UserArgumentsCheck> filters = new ArrayList<>();
-    private final Logger logger = LogManager.getLogger(CompositeUserArgumentsCheck.class.getName());
-
 
     /**
      * Add all ArgumentCheckers (filters) to the CompositeUserArgumentsChecker
