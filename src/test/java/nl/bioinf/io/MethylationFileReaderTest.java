@@ -52,13 +52,8 @@ class MethylationFileReaderTest {
 
 
         // Assert that IOException is thrown with empty file
-        IOException exception = assertThrows(IOException.class,
+        assertThrows(IOException.class,
                 () -> methylationFileReader.readCSV(tempFile, 6));
-        String expectedMessage = "File is empty: '" + tempFile + "'";
-
-        // Check if expected message and actual message are equal
-        assertEquals(expectedMessage, exception.getMessage());
-
     }
 
     @Test

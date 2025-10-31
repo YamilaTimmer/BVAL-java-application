@@ -37,21 +37,21 @@ public class MethylationFileReader {
                 logger.error("""
                         Provided file: '{}' is empty, please provide a file with beta values, gene/chr regions and samples.
                         """, filePath);
-                throw new IOException("File is empty: '" + filePath + "'"); //Error handling: Empty file
+                throw new IOException();
             }
 
             String line;
-            methylationData = new MethylationArray();
-            methylationData.setHeader(headerLine);
-            methylationData.setSamples(getSamples(headerLine, sampleIndex));
-
             DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
+
+            methylationData = new MethylationArray();
+            methylationData.setSampleIndex(sampleIndex);
+            methylationData.setHeader(headerLine, sampleIndex);
+            methylationData.setSamples(getSamples(headerLine, sampleIndex));
             methylationData.setIndexInformation(indexLocation);
 
             while ((line = br.readLine()) != null) {
                 String[] lineSplit = line.split(",");
                 ArrayList<Double> bValues;
-
                 try {
                     bValues = getBValues(lineSplit, sampleIndex);
                 } catch (NumberFormatException ex){
@@ -118,7 +118,7 @@ public class MethylationFileReader {
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = sampleIndex; i < lineSplit.length; i++) {
             if (lineSplit[i].equalsIgnoreCase("na")) {
-                betaValues.add((double) -1);
+                betaValues.add(Double.NaN);
                 continue;
             }
 
@@ -142,7 +142,10 @@ public class MethylationFileReader {
     private String buildMethylationLocation(String[] lineSplit, int sampleIndex) {
         StringBuilder methylationLocation = new StringBuilder();
         for (int i = 0; i < sampleIndex; i++) {
-            methylationLocation.append(lineSplit[i]).append(",");
+            methylationLocation.append(lineSplit[i]);
+            if (i < sampleIndex - 1) {
+                methylationLocation.append(",");
+            }
         }
 
         return methylationLocation.toString();
