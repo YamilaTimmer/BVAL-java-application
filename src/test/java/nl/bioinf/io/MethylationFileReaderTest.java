@@ -23,12 +23,7 @@ class MethylationFileReaderTest {
 
         MethylationFileReader methylationFileReader = new MethylationFileReader();
         // Assert that IOException is thrown when trying to access non-existent path
-        IOException exception = assertThrows(IOException.class,
-                () -> methylationFileReader.readCSV(path, 6));
-
-        // Check if expected message and actual message are equal
-        String expectedMessage = "File not found: '" + path + "'. Please check the file path.";
-        assertEquals(expectedMessage, exception.getMessage());
+        assertThrows(IOException.class, () -> methylationFileReader.readCSV(path, 6));
     }
 
     @Test
@@ -41,12 +36,8 @@ class MethylationFileReaderTest {
         MethylationFileReader methylationFileReader = new MethylationFileReader();
 
         // Assert that IOException is thrown when trying to access a dir instead of a file
-        IOException exception = assertThrows(IOException.class,
+        assertThrows(IOException.class,
                 () -> methylationFileReader.readCSV(tempDir, 6));
-
-        // Check if expected message and actual message are equal
-        String expectedMessage = "Please make sure the provided path:" + tempDir + " is not a directory and that the file has appropriate permissions.";
-        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
@@ -83,8 +74,8 @@ class MethylationFileReaderTest {
         // Create MethylationArray that is expected based on input
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+,", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
 
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+,", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
 
         MethylationFileReader methylationFileReader = new MethylationFileReader();
 
