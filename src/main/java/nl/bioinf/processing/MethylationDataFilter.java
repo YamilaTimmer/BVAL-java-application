@@ -129,7 +129,8 @@ public class MethylationDataFilter {
      * @param posFilterType    enum, either CHROMOSOME or GENE
      * @param posFilter        String array that user has provided, containing either chromosome- or gene names
      */
-    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter) {
+    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter,
+                                   boolean removeNa) {
         logger.info("Starting filtering on {}(s)", posFilterType);
         logger.debug("Filtering on: {} {}.", posFilterType, Arrays.toString(posFilter));
 
@@ -140,7 +141,7 @@ public class MethylationDataFilter {
 
         logger.debug("Removing rows that don't contain given {} arguments", posFilterType);
 
-        removeUnwantedPos(methylationArray, posFilterType, posFilter, iter);
+        removeUnwantedPos(methylationArray, posFilterType, posFilter, iter, removeNa);
 
         logger.debug("Saving filtered {} data", posFilterType);
         methylationArray.setData(dataRows);
@@ -157,10 +158,11 @@ public class MethylationDataFilter {
      * @param iter iterator for iterating through dataRows
      */
     private static void removeUnwantedPos(MethylationArray methylationArray, PosFilterType posFilterType,
-                                              String[] posFilter, Iterator<MethylationData> iter) {
+                                              String[] posFilter, Iterator<MethylationData> iter, boolean removeNa) {
         String valueToCheck;
         while (iter.hasNext()) {
             MethylationData row = iter.next();
+            System.out.println(row);
 
             // Determine positional variable to filter on, either GENE or CHROMOSOME
             if (posFilterType == PosFilterType.GENE) {
@@ -171,9 +173,19 @@ public class MethylationDataFilter {
             }
 
             // remove rows that don't contain the positional variable
-            if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
-                iter.remove();
+            if (removeNa) {
+                ArrayList<Double> naValueToCheck = row.betaValues();
+                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase()) || naValueToCheck.contains(-1.00)) {
+                    System.out.println(naValueToCheck);
+                    System.out.println(Arrays.asList(posFilter));
+                    iter.remove();
+                }
+            } else {
+                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
+                    iter.remove();
+                }
             }
+
         }
     }
 

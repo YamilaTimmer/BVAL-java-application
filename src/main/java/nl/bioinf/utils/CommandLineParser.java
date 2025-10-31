@@ -63,7 +63,13 @@ class SampleIndex {
             arity = "1")
     int sampleIndex;
 }
-
+class NaRemover {
+@Option(names = {"-NA", "--remove-na"},
+        description = "Whether to remove all datarows that contain one or more NA " +
+                "Default: ${DEFAULT-VALUE}. Valid values: [true/false]",
+        arity = "1")
+boolean removeNa = false;
+}
 /**
  * Parent class that is called in main
  */
@@ -172,6 +178,9 @@ class Filter implements Runnable {
     @Mixin
     FilePathOutput filePathOutput;
 
+    @Mixin
+    NaRemover naRemover;
+
     @ArgGroup()
     PosArguments posArguments;
     @Option(names = {"-c", "--cutoff"},
@@ -183,6 +192,8 @@ class Filter implements Runnable {
                     "Valid values: ${COMPLETION-CANDIDATES}",
             arity = "1")
     MethylationDataFilter.CutoffType cutoffType = MethylationDataFilter.CutoffType.upper;
+
+
 
     /**
      * Run method of filter subcommand, runs when user passes subcommand filter.
@@ -249,7 +260,7 @@ class Filter implements Runnable {
                 ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
                 checker.addFilter(chrArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes, naRemover.removeNa));
 
             } else if (posArguments != null && posArguments.genes != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
@@ -262,7 +273,7 @@ class Filter implements Runnable {
                 GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
                 checker.addFilter(geneArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes, naRemover.removeNa));
 
             }
 
@@ -325,6 +336,9 @@ class Compare implements Runnable {
 
     @Mixin
     FilePathOutput filePathOutput;
+
+    @Mixin
+    NaRemover naRemover;
 
     @ArgGroup()
     PosArguments posArguments;
@@ -415,7 +429,7 @@ class Compare implements Runnable {
 
 
                     if (checker.pass()) {
-                        MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes);
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes, naRemover.removeNa);
                         MethylationDataFilter.filterBySample(filteredData, samples);
                         corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
                                 chromosomes).performStatisticalMethods();
@@ -431,7 +445,7 @@ class Compare implements Runnable {
 
                     if (checker.pass()) {
 
-                        MethylationDataFilter.filterByPos(filteredData, posFilterType, genes);
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, genes, naRemover.removeNa);
                         MethylationDataFilter.filterBySample(filteredData, samples);
                         corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
                                 genes).performStatisticalMethods();

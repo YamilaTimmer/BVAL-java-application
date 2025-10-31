@@ -54,7 +54,7 @@ public class MethylationArray {
     public void addData(String methylationLocation, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
             logger.error("""
-                    Unmatched argument lengths, n. of betavalues: '{}', n. of samples '{}'.
+                    Unmatched argument lengths, n. of beta values: '{}', n. of samples '{}'.
                     """, betaValues.size(), samples.size());
             throw new IllegalArgumentException();
         } else {

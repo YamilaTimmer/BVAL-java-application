@@ -72,7 +72,7 @@ public class MethylationArrayPosComparer {
                 }
             }
         }
-        logger.info("Succesfully compared the different {}s", posFilterType.getName());
+        logger.info("Successfully compared the different {}s", posFilterType.getName());
         return statisticalData;
     }
 

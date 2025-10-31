@@ -4,14 +4,8 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;
-import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
-import org.apache.commons.math3.stat.inference.TTest;
-import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
@@ -52,7 +46,7 @@ public class MethylationArraySampleComparer {
                         DoubleStream.of(sample2BetaValues).anyMatch(x -> x == -1)) {
                     logger.warn("Found invalid values (-1 / NA) in 1 of the samples in the comparison: {} vs {}, " +
                                     "please compare samples without -1 or NA values. Continuing comparisons, " +
-                                    "excluding {} vs {}.",
+                                    "excluding {} vs {}. Run with -NA or --remove-na to remove all NA values.",
                             samples[i], samples[j], samples[i], samples[j]);
                     continue;
                 }

@@ -63,7 +63,7 @@ class MethylationDataFilterTest {
         methylationData.setIndexInformation(indexLocation);
 
         // Call method filterByGene
-        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes, false);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -90,7 +90,7 @@ class MethylationDataFilterTest {
         methylationData.setIndexInformation(indexLocation);
 
         // Call method filterByChr
-        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr, false);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
