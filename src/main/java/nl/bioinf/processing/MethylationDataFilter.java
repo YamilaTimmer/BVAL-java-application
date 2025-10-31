@@ -162,7 +162,6 @@ public class MethylationDataFilter {
         String valueToCheck;
         while (iter.hasNext()) {
             MethylationData row = iter.next();
-            System.out.println(row);
 
             // Determine positional variable to filter on, either GENE or CHROMOSOME
             if (posFilterType == PosFilterType.GENE) {
@@ -175,9 +174,7 @@ public class MethylationDataFilter {
             // remove rows that don't contain the positional variable
             if (removeNa) {
                 ArrayList<Double> naValueToCheck = row.betaValues();
-                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase()) || naValueToCheck.contains(-1.00)) {
-                    System.out.println(naValueToCheck);
-                    System.out.println(Arrays.asList(posFilter));
+                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase()) || naValueToCheck.contains(-1.00) || naValueToCheck.contains(Double.NaN)) {
                     iter.remove();
                 }
             } else {
@@ -238,9 +235,15 @@ public class MethylationDataFilter {
                 if (betaValue <= cutoff) {
                     filteredBetaValues.add(betaValue);
                 }
+                else  {
+                    filteredBetaValues.add(Double.NaN);
+                }
             } else { // if CutoffType = 'upper'
                 if (betaValue >= cutoff) {
                     filteredBetaValues.add(betaValue);
+                }
+                else  {
+                    filteredBetaValues.add(Double.NaN);
                 }
             }
         }
