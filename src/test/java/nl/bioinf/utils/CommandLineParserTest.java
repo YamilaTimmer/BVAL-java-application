@@ -127,10 +127,4 @@ class CommandLineParserTest {
 
         assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
     }
-
-
-
-
-
-
 }

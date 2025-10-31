@@ -34,7 +34,7 @@ class FilePathOutput {
     @Option(names = {"-o", "--output"},
             description = "Path to where output will be written to, DEFAULT: ${DEFAULT-VALUE}",
             arity = "1")
-    Path outputFilePath = Path.of("output.txt");
+    Path outputFilePath = Path.of("BVAL-output.csv");
 }
 
 /**
@@ -81,7 +81,7 @@ boolean removeNa = false;
                 Compare.class})
 public class CommandLineParser implements Runnable {
 
-    static MethylationArray fileReader(FilePathInput filePathInput, int sampleIndex) {
+    static MethylationArray readFile(FilePathInput filePathInput, int sampleIndex) {
         MethylationFileReader fileReader;
 
         try {
@@ -92,6 +92,7 @@ public class CommandLineParser implements Runnable {
         }
 
         return fileReader.getData();
+
     }
 
     /**
@@ -139,7 +140,7 @@ class Summary implements Runnable {
 
         if (sampleIndex.sampleIndex > 1) {
             try {
-                data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
+                data = CommandLineParser.readFile(filePathInput, sampleIndex.sampleIndex - 1);
             } catch (Exception e) {
                 return;
             }
@@ -214,7 +215,7 @@ class Filter implements Runnable {
 
         if (sampleIndex.sampleIndex > 1) {
             try {
-                data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
+                data = CommandLineParser.readFile(filePathInput, sampleIndex.sampleIndex - 1);
             } catch (Exception ex) {
                 return;
             }
@@ -228,7 +229,8 @@ class Filter implements Runnable {
 
         if (data != null) {
             filteredData.setSampleIndex(data.getSampleIndex());
-            filteredData.setHeader(data.getHeader());
+
+            filteredData.setHeader(data.getHeader(), data.getSampleIndex());
             filteredData.setSamples(data.getSamples());
             filteredData.setData(data.getData());
             filteredData.setIndexInformation(data.getIndexInformation());
@@ -390,7 +392,7 @@ class Compare implements Runnable {
 
         if (sampleIndex.sampleIndex > 0) {
             try {
-                data = CommandLineParser.fileReader(filePathInput, sampleIndex.sampleIndex - 1);
+                data = CommandLineParser.readFile(filePathInput, sampleIndex.sampleIndex - 1);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -405,11 +407,10 @@ class Compare implements Runnable {
         SampleComparison corrData = null;
         MethylationArray filteredData;
 
-
         if (posArguments != null & data != null) {
             filteredData = new MethylationArray();
             filteredData.setSampleIndex(data.getSampleIndex());
-            filteredData.setHeader(data.getHeader());
+            filteredData.setHeader(data.getHeader(), data.getSampleIndex());
             filteredData.setSamples(data.getSamples());
             filteredData.setData(data.getData());
             filteredData.setIndexInformation(data.getIndexInformation());

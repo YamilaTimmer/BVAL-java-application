@@ -17,7 +17,7 @@ public class MethylationArray {
     private List<MethylationData> data = new ArrayList<>();
     private String header;
     private DataIndexLocation indexInformation = null;
-    private int sampleIndex = 0;
+    private int sampleIndex;
 
     public List<String> getSamples() {
         return new ArrayList<>(samples);
@@ -33,7 +33,7 @@ public class MethylationArray {
      * @return full header line
      */
     public String getHeader() {
-        return header + String.format("%s", String.join(",", this.samples));
+        return this.header + String.format("%s", String.join(",", this.samples));
     }
 
     /**
@@ -41,15 +41,15 @@ public class MethylationArray {
      *
      * @param header string containing entire first line of input file
      */
-    public void setHeader(String header) {
+    public void setHeader(String header, int sampleIndex) {
         String[] headerSplit = header.split(",");
         StringBuilder headerString = new StringBuilder();
-        for (int i = 0; i < this.sampleIndex; i++) {
+        for (int i = 0; i < sampleIndex; i++) {
             headerString.append(headerSplit[i]).append(",");
         }
         this.header = headerString.toString();
-
     }
+
 
     public void addData(String methylationLocation, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
