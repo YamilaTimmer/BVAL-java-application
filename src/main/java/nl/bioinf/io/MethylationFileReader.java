@@ -18,7 +18,6 @@ import java.util.Arrays;
  * MethylationArray datatype.
  */
 public class MethylationFileReader {
-    private static final String NA = "na";
     private static final Logger logger = LogManager.getLogger();
     private MethylationArray methylationData;
 
@@ -56,21 +55,31 @@ public class MethylationFileReader {
      * @param sampleIndex: index of first sample column (int), passed by user
      * @return betaValues: Arraylist containing the beta values per line, containing one beta value per sample
      */
-    private static ArrayList<Double> getBValues(String[] lineSplit, int sampleIndex) throws NumberFormatException {
+    private static ArrayList<Double> getBValues(String[] lineSplit, int sampleIndex) throws IllegalArgumentException {
         ArrayList<Double> betaValues = new ArrayList<>();
+        double betaVal;
+
         for (int i = sampleIndex; i < lineSplit.length; i++) {
-            if (lineSplit[i].equalsIgnoreCase(NA)) {
+            try {
+                betaVal = Double.parseDouble(lineSplit[i]);
+            } catch (NumberFormatException ex) {
+                logger.error("Invalid beta value: '{}', could not parse to double. Check if correct sample " +
+                        "index [-si] was provided and make sure all beta values are either numbers in the range of [0-1] " +
+                        "or NaN.", lineSplit[i]);
+                throw new IllegalArgumentException();
+            }
+
+            if (Double.isNaN(betaVal)) {
                 betaValues.add(Double.NaN);
                 continue;
             }
 
-            try {
-                betaValues.add(Double.parseDouble(lineSplit[i]));
-            } catch (NumberFormatException ex) {
-                logger.error("Invalid beta value: '{}', please check if the correct sample index [-si] " +
-                        "was passed.", lineSplit[i]);
-                return null;
+            if (betaVal < 0 || betaVal > 1) {
+                logger.error("Beta value out of range: '{}', must be in range of [0-1].", betaVal);
+                throw new IllegalArgumentException();
             }
+
+            betaValues.add(betaVal);
         }
         return betaValues;
     }
@@ -99,7 +108,6 @@ public class MethylationFileReader {
             methylationData.setSampleIndex(sampleIndex);
             methylationData.setHeader(headerLine, sampleIndex);
             methylationData.setSamples(getSamples(headerLine, sampleIndex));
-
             methylationData.setIndexInformation(indexLocation);
 
             while ((line = br.readLine()) != null) {
@@ -108,17 +116,14 @@ public class MethylationFileReader {
 
                 try {
                     bValues = getBValues(lineSplit, sampleIndex);
-                } catch (NumberFormatException ex) {
-                    System.out.println(ex.getMessage());
-                    throw ex;
+                } catch (IllegalArgumentException ex) {
+                    return;
                 }
 
                 try {
-                    assert bValues != null;
                     methylationData.addData(buildMethylationLocation(lineSplit, sampleIndex), bValues);
                 } catch (IllegalArgumentException ex) {
-                    System.out.println(ex.getMessage());
-                    throw ex;
+                    return;
                 }
             }
 
