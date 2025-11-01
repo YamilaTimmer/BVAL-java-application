@@ -4,20 +4,15 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;
-import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
-import org.apache.commons.math3.stat.inference.TTest;
-import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
-    private static final Logger logger = LogManager.getLogger(MethylationArraySampleComparer.class.getName());
+    private static final Logger logger = LogManager.getLogger();
+
     // Key: name of statistical tests
     // Value: Bifunction that can be used to run the statistical test
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new StatisticalMethods().getStatisticalMethods();
@@ -42,18 +37,23 @@ public class MethylationArraySampleComparer {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
 
+              try {
                     if (sample1 == invalidSample || sample2 == invalidSample) {
                         logger.error("Sample not found in the data, exiting code. Did not compare following samples: {} vs {}\n", samples[i], samples[j]);
                         throw new IllegalArgumentException();
                     }
-
+                } catch (IllegalArgumentException e) {
+                    return null;
+                }
 
                 double[] sample1BetaValues = getBetaValues(sample1);
                 double[] sample2BetaValues = getBetaValues(sample2);
                 if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == naValue) ||
                         DoubleStream.of(sample2BetaValues).anyMatch(x -> x == naValue)) {
-                    logger.warn("Found invalid values in 1 of the samples: (-1 / NA) {} vs {}, please compare " +
-                            "samples without -1 or NA values", samples[i], samples[j]);
+                     logger.warn("Found invalid values (-1 / NA) in 1 of the samples in the comparison: {} vs {}, " +
+                                    "please compare samples without -1 or NA values. Continuing comparisons, " +
+                                    "excluding {} vs {}. Run with -NA or --remove-na to remove all NA values.",
+                            samples[i], samples[j], samples[i], samples[j]);;
                     continue;
                 }
                 String sampleNames = String.format("%s,%s", samples[i], samples[j]);

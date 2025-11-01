@@ -2,7 +2,6 @@ package nl.bioinf.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.*;
 
 /**
@@ -11,7 +10,8 @@ import java.util.*;
  * This will be used to adapt to different possible orders in the header
  */
 public class DataIndexLocation {
-    private static final Logger logger = LogManager.getLogger(DataIndexLocation.class.getName());
+    private static final Logger logger = LogManager.getLogger();
+
     // Key: header (chr or gene)
     // Value: the index of said key in the header
     private final Map<String, Integer> indexes;

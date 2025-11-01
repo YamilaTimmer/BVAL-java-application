@@ -15,7 +15,7 @@ import java.util.stream.DoubleStream;
  * Compare class that will compare the beta values of either genes OR chromosomes via statistical tests.
  */
 public class MethylationArrayPosComparer {
-    private static final Logger logger = LogManager.getLogger(MethylationArrayPosComparer.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     // Key: name of statistical tests
     // Value: Bifunction that can be used to run the statistical test
     private final StatisticalMethods statisticalMethods;
@@ -74,7 +74,7 @@ public class MethylationArrayPosComparer {
                 }
             }
         }
-        logger.info("Succesfully compared the different {}s", posFilterType.getName());
+        logger.info("Successfully compared the different {}s", posFilterType.getName());
         return statisticalData;
     }
 
@@ -84,7 +84,7 @@ public class MethylationArrayPosComparer {
             if (betaValues2.length != betaValues1.length &&
                     !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
                 logger.error("Used a statistical method that requires the same sample size in data. " +
-                        "Please use the [welch-test] to go workaround this");
+                        "Please use the [welch-test] to work around this");
                 throw new IllegalArgumentException();
 
             }

@@ -1,11 +1,8 @@
 package nl.bioinf.model;
 
-
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
-
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

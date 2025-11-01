@@ -33,7 +33,7 @@ class MethylationDataFilterTest {
     void filterBySample() {
 
         String[] samples = {"Sample1", "Sample2"};
-        methylationData.setHeader("id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3");
+        methylationData.setHeader("id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3", 7);
 
         // Call method filterBySample
         MethylationDataFilter.filterBySample(methylationData, samples);
@@ -57,13 +57,13 @@ class MethylationDataFilterTest {
         String[] genes = {"TP53", "BRCA1"};
 
         String headerLine = "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3";
-        methylationData.setHeader(headerLine);
+        methylationData.setHeader(headerLine, 7);
 
         DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
         // Call method filterByGene
-        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes, false);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -84,13 +84,13 @@ class MethylationDataFilterTest {
         String[] chr = {"17", "X"};
 
         String headerLine = "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3";
-        methylationData.setHeader(headerLine);
+        methylationData.setHeader(headerLine, 7);
 
         DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
         // Call method filterByChr
-        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr, false);
 
         // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
@@ -101,49 +101,45 @@ class MethylationDataFilterTest {
         // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), methylationData.toString());
     }
-}
+
 
 
     // TODO: tests for cutoff values, cannot add data with missing beta values
-//    @Test
-//    @Description("Tests filtering by cutoff, with directional argument 'hyper'")
-//    void filterByCutOffHyper() {
-//
-//        MethylationFileReader.methylationData = methylationData;
-//
-//        float cutoff = 0.7f;
-//
-//        MethylationDataFilter.filterByCutOff(methylationData , cutoff, "hyper");
-//
-//        MethylationArray expectedMethylationArray = new MethylationArray();
+    @Test
+    @Description("Tests filtering by cutoff, with directional argument 'upper'")
+    void filterByCutOffHyper() {
 
-//        expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-//        expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
-//        expectedMethylationArray.addData("16", "CDH5", new ArrayList<>(List.of()));
-//        expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(1.0)));
-//
-//        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
+        float cutoff = 0.7f;
 
-//}
+        MethylationDataFilter.filterByCutOff(methylationData , cutoff, MethylationDataFilter.CutoffType.upper);
 
-//
-//    @Test
-//    @Description("Tests filtering by cutoff, with directional argument 'hypo'")
-//    void filterByCutOffHypo() {
-//
-//        MethylationFileReader.methylationData = methylationData;
-//
-//        float cutoff = 0.7f;
-//
-//        MethylationDataFilter.filterByCutOff(methylationData , cutoff, "hypo");
-//
-//        MethylationArray expectedMethylationArray = new MethylationArray();
-//
-//        expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-//        expectedMethylationArray.addData("17", "TP53", new ArrayList<>(List.of()));
-//        expectedMethylationArray.addData("16", "CDH5", new ArrayList<>(List.of(0.1, 0.0, 0.4)));
-//        expectedMethylationArray.addData("X", "BRCA1", new ArrayList<>(List.of(0.0, 0.45)));
-//
-//        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
-    //}
-//}
+        MethylationArray expectedMethylationArray = new MethylationArray();
+
+        expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
+        expectedMethylationArray.addData("cg00000236,CDH5,16,53468160,53468160,+", new ArrayList<>(List.of(Double.NaN, Double.NaN, Double.NaN)));
+        expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(Double.NaN, 1.0, Double.NaN)));
+
+        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
+
+}
+
+
+    @Test
+    @Description("Tests filtering by cutoff, with directional argument 'lower'")
+    void filterByCutOffHypo() {
+
+        float cutoff = 0.7f;
+
+        MethylationDataFilter.filterByCutOff(methylationData , cutoff, MethylationDataFilter.CutoffType.lower);
+
+        MethylationArray expectedMethylationArray = new MethylationArray();
+
+        expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(Double.NaN,Double.NaN,Double.NaN)));
+        expectedMethylationArray.addData("cg00000236,CDH5,16,53468160,53468160,+", new ArrayList<>(List.of(0.1, 0.0, 0.4)));
+        expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, Double.NaN, 0.45)));
+
+        assertEquals(expectedMethylationArray.toString(), methylationData.toString());
+    }
+}

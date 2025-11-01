@@ -4,7 +4,6 @@ import nl.bioinf.model.DataIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
@@ -17,24 +16,19 @@ import java.util.ArrayList;
 public class MethylationFileReader {
     private static final int NAPLACEHOLDER = -1;
     private static final String NA = "na";
-    private static final Logger logger = LogManager.getLogger(MethylationFileReader.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     private MethylationArray methylationData;
-    private int sampleIndex;
 
     public MethylationFileReader() {
         methylationData = new MethylationArray();
-
     }
 
-    public void setSampleIndex(int sampleIndex){
-        this.sampleIndex = sampleIndex;
-    }
     /**
      * This method tries to read the file at the user-provided file path and converts it to a MethylationArray datatype.
      *
      * @param filePath which refers to the path for the input file
      */
-    public void readCSV(Path filePath) throws IOException {
+    public void readCSV(Path filePath, int sampleIndex) throws IOException {
 
         try (BufferedReader br = Files.newBufferedReader(filePath)) {
             String headerLine = br.readLine();
@@ -48,23 +42,29 @@ public class MethylationFileReader {
 
             String line;
             methylationData = new MethylationArray();
-            methylationData.setSampleIndex(this.sampleIndex);
-            methylationData.setHeader(headerLine);
-            methylationData.setSamples(getSamples(headerLine, this.sampleIndex));
+            methylationData.setHeader(headerLine, sampleIndex);
+            methylationData.setSamples(getSamples(headerLine, sampleIndex));
 
             DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
             methylationData.setIndexInformation(indexLocation);
 
             while ((line = br.readLine()) != null) {
                 String[] lineSplit = line.split(",");
-                ArrayList<Double> bValues = null;
+                ArrayList<Double> bValues;
 
                 try {
-                    bValues = getBValues(lineSplit, this.sampleIndex);
-                    methylationData.addData(buildMethylationLocation(lineSplit, this.sampleIndex), bValues);
-                } catch (IllegalArgumentException ex){
-                    logger.error(ex.getMessage());
-                    return;
+                    bValues = getBValues(lineSplit, sampleIndex);
+                } catch (NumberFormatException ex){
+                    System.out.println(ex.getMessage());
+                    throw ex;
+                }
+
+                try {
+                    assert bValues != null;
+                    methylationData.addData(buildMethylationLocation(lineSplit, sampleIndex), bValues);
+                }catch(IllegalArgumentException ex){
+                    System.out.println(ex.getMessage());
+                    throw ex;
                 }
             }
 
@@ -74,20 +74,13 @@ public class MethylationFileReader {
                             Exception occurred: '{}'.\s
                             """,
                     ex.getMessage(), ex);
-            throw new IOException("File not found: '" + filePath + "'. Please check the file path.");
-
-        } catch (AccessDeniedException ex) {
-            logger.error("""
-                            Permission denied to open the provided file: '{}'.\s
-                            Exception occurred: '{}'.\s
-                            """,
-                    ex.getMessage(), ex);
-            throw new IOException("Please make sure the provided path:" + filePath + " is not a directory and that the file has appropriate permissions.");
+            throw new IOException();
 
         } catch (IOException ex) {
-            logger.error("Unexpected IO error for provided file: '{}'. Please check the provided file path.",
-                    ex.getMessage());
-            throw ex;
+            logger.error("Unexpected IO error for provided file: {}. Provided file path might be a directory " +
+                    "or might not have proper permissions, file path: {}.",
+                    ex.getMessage(), filePath);
+        throw ex;
         }
     }
 
@@ -136,10 +129,9 @@ public class MethylationFileReader {
             try {
                 betaValues.add(Double.parseDouble(lineSplit[i]));
             } catch (NumberFormatException ex){
-                String msg = String.format(
-                        "Invalid beta value '%s' at index %d — check your sample index [-si].", lineSplit[i], i
-                );
-                throw new IllegalArgumentException(msg, ex);
+                logger.error("Invalid beta value: '{}', please check if the correct sample index [-si] " +
+                        "was passed.", lineSplit[i]);
+                return null;
             }
         }
         return betaValues;
@@ -149,7 +141,7 @@ public class MethylationFileReader {
     /**
      * @param lineSplit: contains the individual lines of the input file
      * @param sampleIndex: index of first sample column (int), passed by user
-     * @return
+     * @return String containing all data of one row, excluding the beta values
      */
     private String buildMethylationLocation(String[] lineSplit, int sampleIndex) {
         StringBuilder methylationLocation = new StringBuilder();

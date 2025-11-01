@@ -3,7 +3,6 @@ package nl.bioinf.io;
 import nl.bioinf.model.SampleComparison;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -14,7 +13,7 @@ import java.util.Map;
 
 public class ComparisonFileWriter {
 
-    private static final Logger logger = LogManager.getLogger(ComparisonFileWriter.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     SampleComparison data;
     Path pathFileOutput;
 
@@ -38,7 +37,7 @@ public class ComparisonFileWriter {
                             Exception occurred: '{}'.
                             """,
                     ex.getMessage(), ex);
-            throw new IOException(ex);
+            throw ex;
         }
         System.out.println("Output generated at: " + filePath);
 

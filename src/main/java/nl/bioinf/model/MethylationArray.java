@@ -11,53 +11,54 @@ import java.util.List;
  * genes and chromosomes
  */
 public class MethylationArray {
+    private static final Logger logger = LogManager.getLogger();
     private List<String> samples = new ArrayList<>();
     private List<MethylationData> data = new ArrayList<>();
     private String header;
     private DataIndexLocation indexInformation = null;
-    private int sampleIndex = 0;
-    private static final Logger logger = LogManager.getLogger(MethylationArray.class.getName());
-
-    public void setSamples(List<String> samples) {
-        this.samples = samples;
-    }
+    private int sampleIndex;
 
     public List<String> getSamples() {
         return new ArrayList<>(samples);
     }
 
-    /**
-     * Stores the file's header, without samples, in this class
-     * @param header string containing entire first line of input file
-     */
-    public void setHeader(String header) {
-        String[] headerSplit = header.split(",");
-        StringBuilder headerString = new StringBuilder();
-        for (int i = 0; i < this.sampleIndex; i++) {
-            headerString.append(headerSplit[i]).append(",");
-        }
-        this.header = headerString.toString();
-
-        logger.debug("Header is set to: {}", this.header);
+    public void setSamples(List<String> samples) {
+        this.samples = samples;
     }
 
     /**
      * Returns the full header, including the samples, used for writing to output
+     *
      * @return full header line
      */
     public String getHeader() {
-        return header + String.format("%s", String.join(",", this.samples));
+        return this.header + String.format("%s", String.join(",", this.samples));
     }
 
-    public void setData(List<MethylationData> data) {
-        this.data = data;
+    /**
+     * Stores the file's header, without samples, in this class
+     *
+     * @param header string containing entire first line of input file
+     */
+    public void setHeader(String header, int sampleIndex) {
+        String[] headerSplit = header.split(",");
+        StringBuilder headerString = new StringBuilder();
+        for (int i = 0; i < sampleIndex; i++) {
+            headerString.append(headerSplit[i]).append(",");
+        }
+        this.header = headerString.toString();
     }
+
 
     public void addData(String methylationLocation, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
-            throw new IllegalArgumentException(("Number of beta values does not match number of samples."));
+            logger.error("""
+                    Unmatched argument lengths, n. of beta values: '{}', n. of samples '{}'.
+                    """, betaValues.size(), samples.size());
+            throw new IllegalArgumentException();
+        } else {
+            data.add(new MethylationData(methylationLocation, betaValues));
         }
-        data.add(new MethylationData(methylationLocation, betaValues));
     }
 
     public double[] getPosBetaValues(String posArg) {
@@ -68,11 +69,15 @@ public class MethylationArray {
                 betaValues.addAll(row.betaValues());
             }
         }
-    return betaValues.stream().mapToDouble(Double::doubleValue).toArray();
+        return betaValues.stream().mapToDouble(Double::doubleValue).toArray();
     }
 
     public List<MethylationData> getData() {
         return new ArrayList<>(data);
+    }
+
+    public void setData(List<MethylationData> data) {
+        this.data = data;
     }
 
     /**
@@ -104,9 +109,13 @@ public class MethylationArray {
         this.indexInformation = indexInformation;
     }
 
-    public void setSampleIndex(int sampleIndex){this.sampleIndex = sampleIndex;}
+    public int getSampleIndex() {
+        return this.sampleIndex;
+    }
 
-    public int getSampleIndex(){return this.sampleIndex;}
+    public void setSampleIndex(int sampleIndex) {
+        this.sampleIndex = sampleIndex;
+    }
 
     @Override
     public String toString() {
