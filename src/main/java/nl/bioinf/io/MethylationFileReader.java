@@ -37,7 +37,7 @@ public class MethylationFileReader {
                 logger.error("""
                         Provided file: '{}' is empty, please provide a file with beta values, gene/chr regions and samples.
                         """, filePath);
-                throw new IOException("File is empty: '" + filePath + "'"); //Error handling: Empty file
+                throw new IOException(); //Error handling: Empty file
             }
 
             String line;
@@ -95,10 +95,14 @@ public class MethylationFileReader {
 
         ArrayList<String> samples = new ArrayList<>();
         String[] headerSplit = header.split(",");
-        for (int i = sampleIndex; i < headerSplit.length; i++) {
-            samples.add(headerSplit[i]);
+        try {
+            for (int i = sampleIndex; i < headerSplit.length; i++) {
+                samples.add(headerSplit[i]);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            logger.error("Sample Index: '{}' not valid, please specify using -si", sampleIndex);
+            throw new IllegalArgumentException();
         }
-
         return samples;
     }
 
@@ -144,7 +148,6 @@ public class MethylationFileReader {
         for (int i = 0; i < sampleIndex; i++) {
             methylationLocation.append(lineSplit[i]).append(",");
         }
-
         return methylationLocation.toString();
     }
 }

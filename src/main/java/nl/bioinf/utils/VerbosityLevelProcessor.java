@@ -8,7 +8,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 /**
  * Class for verbosity settings in CommandLineParser, which can be passed as user argument
  */
-public class VerbosityLevel {
+public class VerbosityLevelProcessor {
     private static final Logger logger = LogManager.getLogger();
 
 

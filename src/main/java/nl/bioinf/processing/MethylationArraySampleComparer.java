@@ -4,14 +4,23 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;
+import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
+import org.apache.commons.math3.stat.inference.TTest;
+import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 public class MethylationArraySampleComparer {
     private static final Logger logger = LogManager.getLogger();
+
+    // Key: name of statistical tests
+    // Value: Bifunction that can be used to run the statistical test
     private final Map<String, BiFunction<double[], double[], Double>> statisticalMethods = new StatisticalMethods().getStatisticalMethods();
     private final MethylationArray data;
     private final String[] samples;
@@ -25,6 +34,7 @@ public class MethylationArraySampleComparer {
         this.data = data;
     }
 
+
     public SampleComparison performStatisticalMethods() throws IllegalArgumentException {
         for (int i = 0; i < samples.length; i++) {
             for (int j = i + 1; j < samples.length; j++) {
@@ -34,9 +44,9 @@ public class MethylationArraySampleComparer {
                     if (sample1 == -1 || sample2 == -1) {
                         logger.error("Sample not found in the data, exiting code. " +
                                 "Did not compare following samples: {} vs {}\n", samples[i], samples[j]);
-                        throw new IndexOutOfBoundsException();
+                        throw new IllegalArgumentException();
                     }
-                } catch (IndexOutOfBoundsException e) {
+                } catch (IllegalArgumentException e) {
                     return null;
                 }
 
