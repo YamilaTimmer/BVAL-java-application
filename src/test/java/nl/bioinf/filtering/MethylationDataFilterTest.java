@@ -1,12 +1,10 @@
-package nl.bioinf.comparing;
+package nl.bioinf.filtering;
 
 import jdk.jfr.Description;
-import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.model.DataIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class MethylationDataFilterTest {
 
     MethylationArray methylationData;
-
 
     @BeforeEach
     public void setup() {
@@ -27,7 +24,6 @@ class MethylationDataFilterTest {
         methylationData.addData("cg00000236,CDH5,16,53468160,53468160,+", new ArrayList<>(List.of(0.1, 0.0, 0.4)));
         methylationData.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
     }
-
 
     @Test
     @Description("Tests filtering by sample")
@@ -48,7 +44,6 @@ class MethylationDataFilterTest {
 
         // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), methylationData.toString());
-
     }
 
     @Test
@@ -63,19 +58,14 @@ class MethylationDataFilterTest {
         DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
-        // Call method filterByGene
         MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes, false);
 
-        // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
         expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
         expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
 
-        // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), methylationData.toString());
-
-
     }
 
     @Test
@@ -90,22 +80,16 @@ class MethylationDataFilterTest {
         DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
-        // Call method filterByChr
         MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr, false);
 
-        // Make array for expected data
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
         expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(0.87, 0.85, 0.89)));
         expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, 1.0, 0.45)));
 
-        // Assert if expected equals actual result
         assertEquals(expectedMethylationArray.toString(), methylationData.toString());
     }
 
-
-
-    // TODO: tests for cutoff values, cannot add data with missing beta values
     @Test
     @Description("Tests filtering by cutoff, with directional argument 'upper'")
     void filterByCutOffHyper() {
@@ -122,9 +106,7 @@ class MethylationDataFilterTest {
         expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(Double.NaN, 1.0, Double.NaN)));
 
         assertEquals(expectedMethylationArray.toString(), methylationData.toString());
-
 }
-
 
     @Test
     @Description("Tests filtering by cutoff, with directional argument 'lower'")

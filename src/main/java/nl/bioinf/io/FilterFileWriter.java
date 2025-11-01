@@ -14,28 +14,13 @@ import java.util.Locale;
 public class FilterFileWriter {
     private static final Logger logger = LogManager.getLogger();
 
-    public static void writeData(MethylationArray data, Path outputFilePath) throws IOException {
+    public static void writeFile(MethylationArray data, Path outputFilePath) throws IOException {
         File filePath = new File(outputFilePath.toUri());
 
         try (BufferedWriter newFile = new BufferedWriter(new FileWriter(filePath))) {
             String headerToWrite = data.getHeader();
             newFile.write(String.format("%s%n", headerToWrite));
-            StringBuilder sb = new StringBuilder();
-
-            for (MethylationData lineData : data.getData()) {
-                sb.append(lineData.methylationLocation());
-
-                for (Double val : lineData.betaValues()) {
-                    sb.append(',');
-                    if (val.isNaN()) {
-                        sb.append("NaN");
-                    } else {
-                        sb.append(String.format(Locale.US, "%.2f", val)); // Changes commas in numbers to periods,
-                        // to be able to distinguish from comma line seperator
-                    }
-                }
-                sb.append(System.lineSeparator());
-            }
+            StringBuilder sb = writeData(data);
 
             newFile.write(sb.toString());
 
@@ -51,5 +36,26 @@ public class FilterFileWriter {
                     ex.getMessage(), ex);
             throw ex;
         }
+    }
+
+    private static StringBuilder writeData(MethylationArray data) {
+        StringBuilder sb = new StringBuilder();
+
+        for (MethylationData lineData : data.getData()) {
+            sb.append(lineData.methylationLocation());
+
+            for (Double val : lineData.betaValues()) {
+                sb.append(',');
+                if (val.isNaN()) {
+                    sb.append(Double.NaN);
+                } else {
+                    // Changes commas in numbers to periods,
+                    // to be able to distinguish from comma line seperator (csv)
+                    sb.append(String.format(Locale.US, "%.2f", val));
+                }
+            }
+            sb.append(System.lineSeparator());
+        }
+        return sb;
     }
 }

@@ -292,7 +292,8 @@ class Filter implements Runnable {
                 ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
                 checker.addFilter(chrArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes, naRemover.removeNa));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes,
+                        naRemover.removeNa));
 
             } else if (posArguments != null && posArguments.genes != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
@@ -330,15 +331,12 @@ class Filter implements Runnable {
         }
 
         try {
-            FilterFileWriter.writeData(filteredData, filePathOutput.outputFilePath);
+            FilterFileWriter.writeFile(filteredData, filePathOutput.outputFilePath);
         } catch (IOException ex) {
             return;
-
         }
     }
-
 }
-
 
 /**
  * Subcommand for compare, takes file, allows user to compare samples using statistical methods.
@@ -373,7 +371,6 @@ class Compare implements Runnable {
                 description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
                 arity = "2..*")
         String[] genes;
-
     }
 
     @Mixin
