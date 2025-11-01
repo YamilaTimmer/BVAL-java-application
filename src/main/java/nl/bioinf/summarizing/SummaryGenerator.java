@@ -1,4 +1,4 @@
-package nl.bioinf.processing;
+package nl.bioinf.summarizing;
 
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;

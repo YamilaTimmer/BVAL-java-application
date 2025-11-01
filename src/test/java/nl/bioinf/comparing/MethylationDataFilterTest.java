@@ -1,6 +1,7 @@
-package nl.bioinf.processing;
+package nl.bioinf.comparing;
 
 import jdk.jfr.Description;
+import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.model.DataIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.junit.jupiter.api.BeforeEach;

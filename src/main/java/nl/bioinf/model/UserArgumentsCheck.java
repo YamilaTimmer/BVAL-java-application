@@ -1,4 +1,4 @@
-package nl.bioinf.processing;
+package nl.bioinf.model;
 
 
 public interface UserArgumentsCheck {

@@ -1,4 +1,4 @@
-package nl.bioinf.processing;
+package nl.bioinf.filtering;
 
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
@@ -85,7 +85,8 @@ public class MethylationDataFilter {
      * @param columnsToKeep ArrayList in which the indexes of the columns that should be kept will be saved in
      * @param filteredSamples ArrayList in which the names of the samples to keep will be saved
      */
-    private static void determineColumnsToKeep(String[] samplesFilter, List<String> samples, ArrayList<Integer> columnsToKeep, ArrayList<String> filteredSamples) {
+    private static void determineColumnsToKeep(String[] samplesFilter, List<String> samples,
+                                               ArrayList<Integer> columnsToKeep, ArrayList<String> filteredSamples) {
         for (int i = 0; i < samples.size(); i++) {
             String sample = samples.get(i);
 
@@ -173,15 +174,15 @@ public class MethylationDataFilter {
             // remove rows that don't contain the positional variable
             if (removeNa) {
                 ArrayList<Double> naValueToCheck = row.betaValues();
-                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase()) || naValueToCheck.contains(-1.00) || naValueToCheck.contains(Double.NaN)) {
+                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase()) || naValueToCheck.contains(Double.NaN)) {
                     iter.remove();
                 }
+
             } else {
                 if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
                     iter.remove();
                 }
             }
-
         }
     }
 

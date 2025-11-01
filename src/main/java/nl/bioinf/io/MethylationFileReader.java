@@ -15,7 +15,6 @@ import java.util.ArrayList;
  * MethylationArray datatype.
  */
 public class MethylationFileReader {
-    private static final int NAPLACEHOLDER = -1;
     private static final String NA = "na";
     private static final Logger logger = LogManager.getLogger();
     private MethylationArray methylationData;

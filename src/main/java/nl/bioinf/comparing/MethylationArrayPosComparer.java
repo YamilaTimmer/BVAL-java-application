@@ -1,5 +1,6 @@
-package nl.bioinf.processing;
+package nl.bioinf.comparing;
 
+import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;

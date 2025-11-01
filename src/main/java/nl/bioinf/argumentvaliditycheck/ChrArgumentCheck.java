@@ -1,6 +1,7 @@
-package nl.bioinf.processing;
+package nl.bioinf.argumentvaliditycheck;
 
 import nl.bioinf.model.MethylationArray;
+import nl.bioinf.model.UserArgumentsCheck;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
