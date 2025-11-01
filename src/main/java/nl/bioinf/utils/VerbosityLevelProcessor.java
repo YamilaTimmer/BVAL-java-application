@@ -11,7 +11,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 public class VerbosityLevelProcessor {
     private static final Logger logger = LogManager.getLogger();
 
-
     /**
      * @param verbose int as passed by user, followed by -v/--verbose
      * @throws IllegalArgumentException if verbose is out of reach <0 or >2 will throw exception
@@ -31,5 +30,4 @@ public class VerbosityLevelProcessor {
             Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.WARN);
         }
     }
-
 }

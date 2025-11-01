@@ -4,14 +4,8 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;
-import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
-import org.apache.commons.math3.stat.inference.TTest;
-import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;

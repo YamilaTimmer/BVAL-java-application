@@ -1,6 +1,6 @@
 package nl.bioinf.utils;
 
-import nl.bioinf.io.ComparingFileWriter;
+import nl.bioinf.io.ComparisonFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
 import nl.bioinf.model.MethylationArray;
@@ -66,7 +66,7 @@ class SampleIndex {
 }
 class NaRemover {
 @Option(names = {"-NA", "--remove-na"},
-        description = "Whether to remove all datarows that contain one or more NA " +
+        description = "Whether to remove all data rows that contain one or more NA " +
                 "Default: ${DEFAULT-VALUE}. Valid values: [true/false]",
         arity = "1")
 boolean removeNa = false;
@@ -361,11 +361,6 @@ class Compare implements Runnable {
                 arity = "2..*")
         String[] genes;
 
-        public String[] getPosarguments() {
-            if (genes != null) {
-                return genes;
-            } else return chr;
-        }
     }
 
     @Mixin
@@ -440,6 +435,7 @@ class Compare implements Runnable {
         }
 
         validateMethodInput();
+        MethylationArray data = null;
 
         if (sampleIndex.sampleIndex > 0) {
             try {

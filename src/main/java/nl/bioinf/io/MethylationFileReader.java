@@ -4,7 +4,6 @@ import nl.bioinf.model.DataIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
@@ -42,7 +41,7 @@ public class MethylationFileReader {
 
             String line;
             methylationData = new MethylationArray();
-            methylationData.setHeader(headerLine);
+            methylationData.setHeader(headerLine, sampleIndex);
             methylationData.setSamples(getSamples(headerLine, sampleIndex));
 
             DataIndexLocation indexLocation = new DataIndexLocation(headerLine);

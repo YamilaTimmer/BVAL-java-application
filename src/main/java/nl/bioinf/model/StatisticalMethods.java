@@ -1,6 +1,5 @@
 package nl.bioinf.model;
 
-import nl.bioinf.processing.MethylationArraySampleComparer;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;

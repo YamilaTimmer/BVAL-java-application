@@ -7,6 +7,7 @@ import java.util.*;
  */
 public class SampleComparison {
     private final List<String> sampleVersusSampleNames = new ArrayList<>();
+
     // Key: name of statistical test
     // Value: List of Doubles resulting from tests
     private final Map<String, List<Double>> statisticsData = new HashMap<>();
@@ -35,7 +36,7 @@ public class SampleComparison {
     }
 
     /**
-     * Gets all of the variables that were compared to each-other.
+     * Gets all the variables that were compared to each-other.
      * @return List of all the compared variables.
      */
     public List<String> getSampleVersusSampleNames() {
