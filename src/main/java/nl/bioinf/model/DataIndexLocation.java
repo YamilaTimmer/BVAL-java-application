@@ -2,7 +2,6 @@ package nl.bioinf.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.*;
 
 /**
@@ -12,6 +11,9 @@ import java.util.*;
  */
 public class DataIndexLocation {
     private static final Logger logger = LogManager.getLogger();
+
+    // Key: header (chr or gene)
+    // Value: the index of said key in the header
     private final Map<String, Integer> indexes;
     private final String header;
 
@@ -26,9 +28,10 @@ public class DataIndexLocation {
         List<String> listHeader = Arrays.asList(header.split(","));
         for (String indexToFind : indexesToFind) {
             int index = listHeader.indexOf(indexToFind);
-            if (index == -1) {
+            int INDEXNOTFOUND = -1;
+            if (index == INDEXNOTFOUND) {
                 logger.error("'{}' not found in header, invalid header", indexToFind);
-                System.exit(-1);
+                throw new IllegalArgumentException();
             }
             indexes.put(indexToFind, index);
         }

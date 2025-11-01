@@ -8,9 +8,8 @@ import org.apache.logging.log4j.core.config.Configurator;
 /**
  * Class for verbosity settings in CommandLineParser, which can be passed as user argument
  */
-public class VerbosityLevel {
+public class VerbosityLevelProcessor {
     private static final Logger logger = LogManager.getLogger();
-
 
     /**
      * @param verbose int as passed by user, followed by -v/--verbose
@@ -31,5 +30,4 @@ public class VerbosityLevel {
             Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.WARN);
         }
     }
-
 }

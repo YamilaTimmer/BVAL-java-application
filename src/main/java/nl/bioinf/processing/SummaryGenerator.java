@@ -4,7 +4,6 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +25,14 @@ public class SummaryGenerator {
 
         int amountNAValues = 0;
         double betaVal = 0.0;
+        int minAllowedBetaVal = 0;
 
         // Add value of all beta values to calculate the average
         logger.debug("Calculating average beta values...");
         for (MethylationData row : dataRows) {
             ArrayList<Double> betas = row.betaValues();
             for (double beta : betas) {
-                if (beta >= 0) {
+                if (beta >= minAllowedBetaVal) {
                     betaVal += beta;
                     continue;
                 }
@@ -42,7 +42,6 @@ public class SummaryGenerator {
         }
 
         double avgBetaVal = betaVal / (dataRows.size() * samples.size());
-
 
         System.out.println("Summary for input file:");
         System.out.println("Number of samples: " + samples.size());

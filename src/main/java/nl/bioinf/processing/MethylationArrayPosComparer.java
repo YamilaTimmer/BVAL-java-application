@@ -16,6 +16,8 @@ import java.util.stream.DoubleStream;
  */
 public class MethylationArrayPosComparer {
     private static final Logger logger = LogManager.getLogger();
+    // Key: name of statistical tests
+    // Value: Bifunction that can be used to run the statistical test
     private final StatisticalMethods statisticalMethods;
     private final MethylationArray data;
     private final String[] methods;
@@ -67,7 +69,7 @@ public class MethylationArrayPosComparer {
 
                         logger.error("Invalid {} found: {} or {}. Exiting application!",
                                 posFilterType.getName(), posArguments[1], posArguments[j]);
-                        System.exit(1);
+                        throw new IllegalArgumentException();
                     }
                 }
             }
@@ -77,24 +79,21 @@ public class MethylationArrayPosComparer {
     }
 
     private void validateValuesAndStatistics(double[] betaValues2, double[] betaValues1) {
-        try {
+        int naValue = -1;
 
             if (betaValues2.length != betaValues1.length &&
                     !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
                 logger.error("Used a statistical method that requires the same sample size in data. " +
-                        "Please use the [welch-test] to go around this");
+                        "Please use the [welch-test] to work around this");
                 throw new IllegalArgumentException();
 
             }
 
-            if (DoubleStream.of(betaValues1).anyMatch(x -> x == -1) ||
-                    DoubleStream.of(betaValues2).anyMatch(x -> x == -1)) {
-                logger.error("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
+            if (DoubleStream.of(betaValues1).anyMatch(x -> x == naValue) ||
+                    DoubleStream.of(betaValues2).anyMatch(x -> x == naValue)) {
+                logger.warn("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
                         "samples without -1 or NA values");
                 throw new IllegalArgumentException();
             }
-        } catch (IllegalArgumentException ex) {
-            System.exit(1);
-        }
     }
 }

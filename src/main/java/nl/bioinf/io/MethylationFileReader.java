@@ -15,6 +15,8 @@ import java.util.ArrayList;
  * MethylationArray datatype.
  */
 public class MethylationFileReader {
+    private static final int NAPLACEHOLDER = -1;
+    private static final String NA = "na";
     private static final Logger logger = LogManager.getLogger();
     private MethylationArray methylationData;
 
@@ -47,11 +49,13 @@ public class MethylationFileReader {
             methylationData.setSampleIndex(sampleIndex);
             methylationData.setHeader(headerLine, sampleIndex);
             methylationData.setSamples(getSamples(headerLine, sampleIndex));
+
             methylationData.setIndexInformation(indexLocation);
 
             while ((line = br.readLine()) != null) {
                 String[] lineSplit = line.split(",");
                 ArrayList<Double> bValues;
+
                 try {
                     bValues = getBValues(lineSplit, sampleIndex);
                 } catch (NumberFormatException ex){
@@ -95,8 +99,13 @@ public class MethylationFileReader {
 
         ArrayList<String> samples = new ArrayList<>();
         String[] headerSplit = header.split(",");
-        for (int i = sampleIndex; i < headerSplit.length; i++) {
-            samples.add(headerSplit[i]);
+        try {
+            for (int i = sampleIndex; i < headerSplit.length; i++) {
+                samples.add(headerSplit[i]);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            logger.error("Sample Index: '{}' not valid, please specify using -si", sampleIndex);
+            throw new IllegalArgumentException();
         }
 
         return samples;
@@ -117,7 +126,7 @@ public class MethylationFileReader {
     private static ArrayList<Double> getBValues(String[] lineSplit, int sampleIndex) throws NumberFormatException {
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = sampleIndex; i < lineSplit.length; i++) {
-            if (lineSplit[i].equalsIgnoreCase("na")) {
+            if (lineSplit[i].equalsIgnoreCase(NA)) {
                 betaValues.add(Double.NaN);
                 continue;
             }

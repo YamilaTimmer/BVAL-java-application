@@ -3,7 +3,6 @@ package nl.bioinf.io;
 import nl.bioinf.model.SampleComparison;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,13 +11,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public class ComparingFileWriter {
+public class ComparisonFileWriter {
 
     private static final Logger logger = LogManager.getLogger();
     SampleComparison data;
     Path pathFileOutput;
 
-    public ComparingFileWriter(SampleComparison data, Path filePathOutput) {
+    public ComparisonFileWriter(SampleComparison data, Path filePathOutput) {
         this.data = data;
         pathFileOutput = filePathOutput;
     }

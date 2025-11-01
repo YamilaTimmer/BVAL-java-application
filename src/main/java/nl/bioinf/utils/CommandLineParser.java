@@ -1,6 +1,6 @@
 package nl.bioinf.utils;
 
-import nl.bioinf.io.ComparingFileWriter;
+import nl.bioinf.io.ComparisonFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
 import nl.bioinf.model.MethylationArray;
@@ -9,6 +9,7 @@ import nl.bioinf.processing.*;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ class SampleIndex {
 }
 class NaRemover {
 @Option(names = {"-NA", "--remove-na"},
-        description = "Whether to remove all datarows that contain one or more NA " +
+        description = "Whether to remove all data rows that contain one or more NA " +
                 "Default: ${DEFAULT-VALUE}. Valid values: [true/false]",
         arity = "1")
 boolean removeNa = false;
@@ -87,7 +88,7 @@ public class CommandLineParser implements Runnable {
         try {
             fileReader = new MethylationFileReader();
             fileReader.readCSV(filePathInput.filePath, sampleIndex);
-        } catch (Exception ex) {
+        } catch (IOException | IllegalArgumentException ex) {
             return null;
         }
 
@@ -128,10 +129,10 @@ class Summary implements Runnable {
      */
     @Override
     public void run() {
-        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        VerbosityLevelProcessor verbosityLevelProcessor = new VerbosityLevelProcessor();
 
         try {
-            verbosityLevel.applyVerbosity(verbosity.verbose);
+            verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             return;
         }
@@ -184,16 +185,31 @@ class Filter implements Runnable {
 
     @ArgGroup()
     PosArguments posArguments;
+
+    /**
+     * Class to make PosArguments gene/chr mutually exclusive as gene locations are tied to chromosome
+     */
+    static class PosArguments {
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "1..*")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "1..*")
+        String[] genes;
+    }
+
     @Option(names = {"-c", "--cutoff"},
             description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than " +
                     "the cutoff are kept. Default: ${DEFAULT-VALUE}")
     float cutoff = 0.0f;
+
     @Option(names = {"-ct", "--cutofftype"},
             description = "Select whether to filter above or below cutoff. Default: ${DEFAULT-VALUE}. " +
                     "Valid values: ${COMPLETION-CANDIDATES}",
             arity = "1")
     MethylationDataFilter.CutoffType cutoffType = MethylationDataFilter.CutoffType.upper;
-
 
 
     /**
@@ -203,9 +219,10 @@ class Filter implements Runnable {
      */
     @Override
     public void run() {
-        VerbosityLevel verbosityLevel = new VerbosityLevel();
+
+        VerbosityLevelProcessor verbosityLevelProcessor = new VerbosityLevelProcessor();
         try {
-            verbosityLevel.applyVerbosity(verbosity.verbose);
+            verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             return;
 
@@ -288,6 +305,7 @@ class Filter implements Runnable {
                 filtersToRun.add(() -> MethylationDataFilter.filterByCutOff(filteredData, cutoff, cutoffType));
             }
 
+
             if (checker.pass()) {
                 // Run all filters for which the user has passed arguments
                 for (Runnable filter : filtersToRun) {
@@ -301,21 +319,9 @@ class Filter implements Runnable {
         try {
             FilterFileWriter.writeData(filteredData, filePathOutput.outputFilePath);
         } catch (IOException ex) {
-        }
-    }
+            return;
 
-    /**
-     * Class to make PosArguments gene/chr mutually exclusive as gene locations are tied to chromosome
-     */
-    static class PosArguments {
-        @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
-                arity = "1..*")
-        String[] chr;
-        @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
-                arity = "1..*")
-        String[] genes;
+        }
     }
 
 }
@@ -344,12 +350,27 @@ class Compare implements Runnable {
 
     @ArgGroup()
     PosArguments posArguments;
+
+    static class PosArguments {
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "2..*")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "2..*")
+        String[] genes;
+
+    }
+
     @Mixin
     SampleIndex sampleIndex;
+
     @Option(names = {"-s", "--sample"},
             description = "Name(s) of the sample(s) to compare with each other. default value: all samples in the file",
             arity = "2..*")
     String[] samples;
+
     @Spec
     CommandSpec spec;
     @Option(names = {"-m", "--methods"},
@@ -359,6 +380,33 @@ class Compare implements Runnable {
                     "Default value: ${DEFAULT-VALUE} (all tests are performed by default). ",
             arity = "1..*")
     String[] methods;
+
+    enum ValidMethods {
+        TTEST("t-test"),
+        SPEARMAN("spearman"),
+        WILCOXONTEST("wilcoxon-test"),
+        WELCH("welch-test");
+
+        private final String name;
+
+        ValidMethods(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static boolean isValid(String value) {
+            return Arrays.stream(values()).anyMatch(v -> v.name.equals(value));
+        }
+
+        public static List<String> validNames() {
+            return Arrays.stream(values())
+                    .map(ValidMethods::getName)
+                    .toList();
+        }
+    }
 
     private void validateMethodInput() {
 
@@ -378,16 +426,15 @@ class Compare implements Runnable {
      */
     @Override
     public void run() {
-        VerbosityLevel verbosityLevel = new VerbosityLevel();
+        VerbosityLevelProcessor verbosityLevelProcessor = new VerbosityLevelProcessor();
 
         try {
-            verbosityLevel.applyVerbosity(verbosity.verbose);
+            verbosityLevelProcessor.applyVerbosity(verbosity.verbose);
         } catch (IllegalArgumentException ex) {
             return;
         }
 
         validateMethodInput();
-
         MethylationArray data = null;
 
         if (sampleIndex.sampleIndex > 0) {
@@ -465,47 +512,9 @@ class Compare implements Runnable {
         }
 
         try {
-            new ComparingFileWriter(corrData, filePathOutput.outputFilePath).writeData();
+            new ComparisonFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException ex) {
+            return;
         }
-    }
-
-    enum ValidMethods {
-        TTEST("t-test"),
-        SPEARMAN("spearman"),
-        WILCOXONTEST("wilcoxon-test"),
-        WELCH("welch-test");
-
-        private final String name;
-
-        ValidMethods(String name) {
-            this.name = name;
-        }
-
-        public static boolean isValid(String value) {
-            return Arrays.stream(values()).anyMatch(v -> v.name.equals(value));
-        }
-
-        public static List<String> validNames() {
-            return Arrays.stream(values())
-                    .map(ValidMethods::getName)
-                    .toList();
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    static class PosArguments {
-        @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
-                arity = "2..*")
-        String[] chr;
-        @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
-                arity = "2..*")
-        String[] genes;
-
     }
 }

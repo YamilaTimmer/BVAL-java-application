@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main_summary" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="nl.bioinf.Main" />
+    <module name="bval-app.main" />
+    <option name="PROGRAM_PARAMETERS" value="summary --file data/testdata.csv -si 7" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="nl.bioinf.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
