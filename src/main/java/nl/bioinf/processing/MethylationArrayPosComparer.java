@@ -79,6 +79,7 @@ public class MethylationArrayPosComparer {
     }
 
     private void validateValuesAndStatistics(double[] betaValues2, double[] betaValues1) {
+        int naValue = -1;
 
             if (betaValues2.length != betaValues1.length &&
                     !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
@@ -88,9 +89,9 @@ public class MethylationArrayPosComparer {
 
             }
 
-            if (DoubleStream.of(betaValues1).anyMatch(x -> x == -1) ||
-                    DoubleStream.of(betaValues2).anyMatch(x -> x == -1)) {
-                logger.error("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
+            if (DoubleStream.of(betaValues1).anyMatch(x -> x == naValue) ||
+                    DoubleStream.of(betaValues2).anyMatch(x -> x == naValue)) {
+                logger.warn("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
                         "samples without -1 or NA values");
                 throw new IllegalArgumentException();
             }

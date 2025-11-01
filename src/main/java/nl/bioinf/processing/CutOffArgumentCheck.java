@@ -28,10 +28,12 @@ public class CutOffArgumentCheck implements UserArgumentsCheck {
      */
     @Override
     public boolean pass() throws IllegalArgumentException {
+        double cutoffMin = 0.0;
+        double cutoffMax = 1.0;
         logger.info("Starting validity check for cutoff filter...");
 
         // Check if passed cutoff is too high/low (beta-values have a range of [0.0-1.0]
-        if (cutoff > 1.0 | cutoff < 0.0) {
+        if (cutoff > cutoffMax | cutoff < cutoffMin) {
 
             logger.error("Provided cutoff value: '{}' is out of bounds, please provide a cutoff value within " +
                     "a range of [0.0-1.0].", cutoff);

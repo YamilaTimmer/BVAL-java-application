@@ -14,12 +14,13 @@ import java.util.ArrayList;
  * MethylationArray datatype.
  */
 public class MethylationFileReader {
+    private static final int NAPLACEHOLDER = -1;
+    private static final String NA = "na";
     private static final Logger logger = LogManager.getLogger();
     private MethylationArray methylationData;
 
     public MethylationFileReader() {
         methylationData = new MethylationArray();
-
     }
 
     /**
@@ -120,8 +121,8 @@ public class MethylationFileReader {
     private static ArrayList<Double> getBValues(String[] lineSplit, int sampleIndex) throws NumberFormatException {
         ArrayList<Double> betaValues = new ArrayList<>();
         for (int i = sampleIndex; i < lineSplit.length; i++) {
-            if (lineSplit[i].equalsIgnoreCase("na")) {
-                betaValues.add((double) -1);
+            if (lineSplit[i].equalsIgnoreCase(NA)) {
+                betaValues.add((double) NAPLACEHOLDER);
                 continue;
             }
 
