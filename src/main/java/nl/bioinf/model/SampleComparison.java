@@ -16,7 +16,6 @@ public class SampleComparison {
         for (String method : methods) {
             statisticsData.put(method, new ArrayList<>());
         }
-
     }
 
     /**
@@ -29,6 +28,7 @@ public class SampleComparison {
 
     /**
      * Add variable names that where compared to each-other.
+     *
      * @param sample string that contains the variable names that where compared.
      */
     public void addNewSampleVsSample(String sample) {
@@ -37,6 +37,7 @@ public class SampleComparison {
 
     /**
      * Gets all the variables that were compared to each-other.
+     *
      * @return List of all the compared variables.
      */
     public List<String> getSampleVersusSampleNames() {
@@ -45,7 +46,8 @@ public class SampleComparison {
 
     /**
      * Adds a new result of statistical test.
-     * @param method name of statistical test.
+     *
+     * @param method    name of statistical test.
      * @param dataPoint double, resulting from said test.
      */
     public void addToData(String method, double dataPoint) {
@@ -54,6 +56,7 @@ public class SampleComparison {
 
     /**
      * Gets the statistical data
+     *
      * @return Map that contains the methods as keys, and List of doubles as value;
      */
     public Map<String, List<Double>> getStatisticsData() {

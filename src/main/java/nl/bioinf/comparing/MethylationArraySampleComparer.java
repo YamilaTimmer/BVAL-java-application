@@ -6,6 +6,7 @@ import nl.bioinf.model.SampleComparison;
 import nl.bioinf.model.StatisticalMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
@@ -37,7 +38,7 @@ public class MethylationArraySampleComparer {
                 int sample1 = data.getSamples().indexOf(samples[i]);
                 int sample2 = data.getSamples().indexOf(samples[j]);
 
-              try {
+                try {
                     if (sample1 == invalidSample || sample2 == invalidSample) {
                         logger.error("Sample not found in the data, exiting code. Did not compare following samples: {} vs {}\n", samples[i], samples[j]);
                         throw new IllegalArgumentException();
@@ -50,10 +51,10 @@ public class MethylationArraySampleComparer {
                 double[] sample2BetaValues = getBetaValues(sample2);
                 if (DoubleStream.of(sample1BetaValues).anyMatch(x -> x == naValue) ||
                         DoubleStream.of(sample2BetaValues).anyMatch(x -> x == naValue)) {
-                     logger.warn("Found invalid values (-1 / NA) in 1 of the samples in the comparison: {} vs {}, " +
+                    logger.warn("Found invalid values (-1 / NA) in 1 of the samples in the comparison: {} vs {}, " +
                                     "please compare samples without -1 or NA values. Continuing comparisons, " +
                                     "excluding {} vs {}. Run with -NA or --remove-na to remove all NA values.",
-                            samples[i], samples[j], samples[i], samples[j]);;
+                            samples[i], samples[j], samples[i], samples[j]);
                     continue;
                 }
                 String sampleNames = String.format("%s,%s", samples[i], samples[j]);

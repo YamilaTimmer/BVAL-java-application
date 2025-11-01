@@ -5,10 +5,11 @@ import nl.bioinf.model.DataIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MethylationDataFilterTest {
 
@@ -96,7 +97,7 @@ class MethylationDataFilterTest {
 
         float cutoff = 0.7f;
 
-        MethylationDataFilter.filterByCutOff(methylationData , cutoff, MethylationDataFilter.CutoffType.upper);
+        MethylationDataFilter.filterByCutOff(methylationData, cutoff, MethylationDataFilter.CutoffType.upper);
 
         MethylationArray expectedMethylationArray = new MethylationArray();
 
@@ -106,7 +107,7 @@ class MethylationDataFilterTest {
         expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(Double.NaN, 1.0, Double.NaN)));
 
         assertEquals(expectedMethylationArray.toString(), methylationData.toString());
-}
+    }
 
     @Test
     @Description("Tests filtering by cutoff, with directional argument 'lower'")
@@ -114,12 +115,12 @@ class MethylationDataFilterTest {
 
         float cutoff = 0.7f;
 
-        MethylationDataFilter.filterByCutOff(methylationData , cutoff, MethylationDataFilter.CutoffType.lower);
+        MethylationDataFilter.filterByCutOff(methylationData, cutoff, MethylationDataFilter.CutoffType.lower);
 
         MethylationArray expectedMethylationArray = new MethylationArray();
 
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
-        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(Double.NaN,Double.NaN,Double.NaN)));
+        expectedMethylationArray.addData("cg00000029,TP53,17,7565097,7565097,+", new ArrayList<>(List.of(Double.NaN, Double.NaN, Double.NaN)));
         expectedMethylationArray.addData("cg00000236,CDH5,16,53468160,53468160,+", new ArrayList<>(List.of(0.1, 0.0, 0.4)));
         expectedMethylationArray.addData("cg00000321,BRCA1,X,65678934,65678934,+", new ArrayList<>(List.of(0.0, Double.NaN, 0.45)));
 

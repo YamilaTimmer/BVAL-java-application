@@ -4,6 +4,7 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 

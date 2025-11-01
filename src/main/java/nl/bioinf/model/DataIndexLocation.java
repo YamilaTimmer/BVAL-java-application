@@ -2,7 +2,11 @@ package nl.bioinf.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Model to hold index locations of different important values like:
@@ -24,7 +28,7 @@ public class DataIndexLocation {
     }
 
     private void findIndexes() {
-        String[] indexesToFind = new String[] {"chr", "gene"};
+        String[] indexesToFind = new String[]{"chr", "gene"};
         List<String> listHeader = Arrays.asList(header.split(","));
         for (String indexToFind : indexesToFind) {
             int index = listHeader.indexOf(indexToFind);

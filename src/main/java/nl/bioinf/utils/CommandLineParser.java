@@ -1,13 +1,14 @@
 package nl.bioinf.utils;
 
 import nl.bioinf.argumentvaliditycheck.*;
+import nl.bioinf.comparing.MethylationArrayPosComparer;
+import nl.bioinf.comparing.MethylationArraySampleComparer;
 import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.io.ComparisonFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
-import nl.bioinf.comparing.*;
 import nl.bioinf.summarizing.SummaryGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,13 +71,15 @@ class SampleIndex {
             required = true)
     int sampleIndex;
 }
+
 class NaRemover {
-@Option(names = {"-NA", "--remove-na"},
-        description = "Whether to remove all data rows that contain one or more NA " +
-                "Default: ${DEFAULT-VALUE}. Valid values: [true/false]",
-        arity = "1")
-boolean removeNa = false;
+    @Option(names = {"-NA", "--remove-na"},
+            description = "Whether to remove all data rows that contain one or more NA " +
+                    "Default: ${DEFAULT-VALUE}. Valid values: [true/false]",
+            arity = "1")
+    boolean removeNa = false;
 }
+
 /**
  * Parent class that is called in main
  */
@@ -121,16 +124,13 @@ public class CommandLineParser implements Runnable {
         description = "Takes 1 file and provides short summary on e.g. amount of samples and avg. beta-values",
         mixinStandardHelpOptions = true)
 class Summary implements Runnable {
+    private static final Logger logger = LogManager.getLogger();
     @Mixin
     FilePathInput filePathInput;
-
     @Mixin
     Verbosity verbosity;
-
     @Mixin
     SampleIndex sampleIndex;
-
-    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Run method of summary subcommand, runs when user passes subcommand summary and outputs a summary to the terminal
@@ -175,41 +175,21 @@ class Summary implements Runnable {
         mixinStandardHelpOptions = true)
 class Filter implements Runnable {
 
+    private static final Logger logger = LogManager.getLogger();
     @Mixin
     FilePathInput filePathInput;
-
     @Mixin
     SampleIndex sampleIndex;
-
     @Mixin
     SampleInput sampleInput;
-
     @Mixin
     Verbosity verbosity;
-
     @Mixin
     FilePathOutput filePathOutput;
-
     @Mixin
     NaRemover naRemover;
-
     @ArgGroup()
     PosArguments posArguments;
-
-    /**
-     * Class to make PosArguments gene/chr mutually exclusive as gene locations are tied to chromosome
-     */
-    static class PosArguments {
-        @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
-                arity = "1..*")
-        String[] chr;
-        @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
-                arity = "1..*")
-        String[] genes;
-    }
-
     @Option(names = {"-c", "--cutoff"},
             description = "Cutoff value to filter beta values on [range = 0.0-1.0], by default the values higher than " +
                     "the cutoff are kept. Default: ${DEFAULT-VALUE}")
@@ -220,9 +200,6 @@ class Filter implements Runnable {
                     "Valid values: ${COMPLETION-CANDIDATES}",
             arity = "1")
     MethylationDataFilter.CutoffType cutoffType = MethylationDataFilter.CutoffType.upper;
-
-    private static final Logger logger = LogManager.getLogger();
-
 
     /**
      * Run method of filter subcommand, runs when user passes subcommand filter.
@@ -336,6 +313,20 @@ class Filter implements Runnable {
             return;
         }
     }
+
+    /**
+     * Class to make PosArguments gene/chr mutually exclusive as gene locations are tied to chromosome
+     */
+    static class PosArguments {
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "1..*")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "1..*")
+        String[] genes;
+    }
 }
 
 /**
@@ -347,32 +338,17 @@ class Filter implements Runnable {
         mixinStandardHelpOptions = true)
 class Compare implements Runnable {
 
+    private static final Logger logger = LogManager.getLogger();
     @Mixin
     FilePathInput filePathInput;
-
     @Mixin
     Verbosity verbosity;
-
     @Mixin
     FilePathOutput filePathOutput;
-
     @Mixin
     NaRemover naRemover;
-
     @ArgGroup()
     PosArguments posArguments;
-
-    static class PosArguments {
-        @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
-                arity = "2..*")
-        String[] chr;
-        @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
-                arity = "2..*")
-        String[] genes;
-    }
-
     @Mixin
     SampleIndex sampleIndex;
 
@@ -391,33 +367,6 @@ class Compare implements Runnable {
             arity = "1..*")
     String[] methods;
 
-    enum ValidMethods {
-        TTEST("t-test"),
-        SPEARMAN("spearman"),
-        WILCOXONTEST("wilcoxon-test"),
-        WELCH("welch-test");
-
-        private final String name;
-
-        ValidMethods(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public static boolean isValid(String value) {
-            return Arrays.stream(values()).anyMatch(v -> v.name.equals(value));
-        }
-
-        public static List<String> validNames() {
-            return Arrays.stream(values())
-                    .map(ValidMethods::getName)
-                    .toList();
-        }
-    }
-
     private void validateMethodInput() {
 
         for (String method : methods) {
@@ -428,8 +377,6 @@ class Compare implements Runnable {
             }
         }
     }
-
-    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Run method of compare subcommand, runs when user passes compare filter.
@@ -529,5 +476,43 @@ class Compare implements Runnable {
         } catch (IOException ex) {
             return;
         }
+    }
+
+    enum ValidMethods {
+        TTEST("t-test"),
+        SPEARMAN("spearman"),
+        WILCOXONTEST("wilcoxon-test"),
+        WELCH("welch-test");
+
+        private final String name;
+
+        ValidMethods(String name) {
+            this.name = name;
+        }
+
+        public static boolean isValid(String value) {
+            return Arrays.stream(values()).anyMatch(v -> v.name.equals(value));
+        }
+
+        public static List<String> validNames() {
+            return Arrays.stream(values())
+                    .map(ValidMethods::getName)
+                    .toList();
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    static class PosArguments {
+        @Option(names = {"-chr", "--chromosome"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                arity = "2..*")
+        String[] chr;
+        @Option(names = {"-g", "--gene"},
+                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                arity = "2..*")
+        String[] genes;
     }
 }

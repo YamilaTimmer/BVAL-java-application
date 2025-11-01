@@ -55,7 +55,7 @@ public class ChrArgumentCheck implements UserArgumentsCheck {
                         throw new IllegalArgumentException();
                     }
 
-                  // Throw NumberFormatException if chr could not be parsed to int
+                    // Throw NumberFormatException if chr could not be parsed to int
                 } catch (NumberFormatException ex) {
                     logger.error("Invalid input: '{}', unknown character please provide a number between 1-23 or " +
                             "X/Y for chromosome input.", chr);

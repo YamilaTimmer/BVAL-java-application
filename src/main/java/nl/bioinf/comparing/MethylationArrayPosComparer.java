@@ -7,6 +7,7 @@ import nl.bioinf.model.StatisticalMethods;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
@@ -28,10 +29,10 @@ public class MethylationArrayPosComparer {
 
     /**
      *
-     * @param data Methylation array.
-     * @param methods Statistical methods acquired through CLI.
+     * @param data          Methylation array.
+     * @param methods       Statistical methods acquired through CLI.
      * @param posFilterType Used to log weather chromosomes or genes are compared.
-     * @param posArguments Array if either chromosomes or genes to compare
+     * @param posArguments  Array if either chromosomes or genes to compare
      */
     public MethylationArrayPosComparer(MethylationArray data, String[] methods,
                                        MethylationDataFilter.PosFilterType posFilterType, String[] posArguments) {
@@ -46,12 +47,13 @@ public class MethylationArrayPosComparer {
     /**
      * Compare the beta values of either genes OR chromosomes, based on user passed argument(s),
      * via different statistical tests
+     *
      * @return {@link SampleComparison}, that holds the data of the compared action.
      */
     public SampleComparison performStatisticalMethods() {
         logger.info("Starting comparing on {}", posFilterType.getName());
-        for (int i = 0; i < posArguments.length-1; i++) {
-            for (int j = i+1; j < posArguments.length; j++) {
+        for (int i = 0; i < posArguments.length - 1; i++) {
+            for (int j = i + 1; j < posArguments.length; j++) {
                 double[] betaValues1 = data.getPosBetaValues(posArguments[i]);
                 double[] betaValues2 = data.getPosBetaValues(posArguments[j]);
                 logger.debug("Sizes of beta values: {} = {}, {} = {}",
@@ -82,19 +84,19 @@ public class MethylationArrayPosComparer {
     private void validateValuesAndStatistics(double[] betaValues2, double[] betaValues1) {
         int naValue = -1;
 
-            if (betaValues2.length != betaValues1.length &&
-                    !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
-                logger.error("Used a statistical method that requires the same sample size in data. " +
-                        "Please use the [welch-test] to work around this");
-                throw new IllegalArgumentException();
+        if (betaValues2.length != betaValues1.length &&
+                !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
+            logger.error("Used a statistical method that requires the same sample size in data. " +
+                    "Please use the [welch-test] to work around this");
+            throw new IllegalArgumentException();
 
-            }
+        }
 
-            if (DoubleStream.of(betaValues1).anyMatch(x -> x == naValue) ||
-                    DoubleStream.of(betaValues2).anyMatch(x -> x == naValue)) {
-                logger.warn("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
-                        "samples without -1 or NA values");
-                throw new IllegalArgumentException();
-            }
+        if (DoubleStream.of(betaValues1).anyMatch(x -> x == naValue) ||
+                DoubleStream.of(betaValues2).anyMatch(x -> x == naValue)) {
+            logger.warn("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
+                    "samples without -1 or NA values");
+            throw new IllegalArgumentException();
+        }
     }
 }

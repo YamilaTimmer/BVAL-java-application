@@ -3,6 +3,7 @@ package nl.bioinf.model;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.stat.inference.TTest;
 import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,14 @@ public class StatisticalMethods {
         statisticalMethods.put("wilcoxon-test", RunStatisticalMethods.WILCOXONTEST::run);
         statisticalMethods.put("welch-test", RunStatisticalMethods.WELCH::run);
 
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Map<String, BiFunction<double[], double[], Double>> getStatisticalMethods() {
+        return Collections.unmodifiableMap(statisticalMethods);
     }
 
     enum RunStatisticalMethods {
@@ -55,13 +64,5 @@ public class StatisticalMethods {
 
 
         public abstract double run(double[] sample1, double[] sample2);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Map<String, BiFunction<double[], double[], Double>> getStatisticalMethods() {
-        return Collections.unmodifiableMap(statisticalMethods);
     }
 }

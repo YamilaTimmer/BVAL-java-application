@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MethylationArrayTest {
 
@@ -22,13 +23,12 @@ class MethylationArrayTest {
         MethylationFileReader methylationFileReader = new MethylationFileReader();
 
         assertThrows(IllegalArgumentException.class, () ->
-            methylationFileReader.readCSV(filePath, 6));
+                methylationFileReader.readCSV(filePath, 6));
     }
 
 
-    
     @Test
-    void testReturnCopyOfData(){
+    void testReturnCopyOfData() {
         // Create MethylationArray
         ArrayList<String> samples = new ArrayList<>(Arrays.asList("sample1", "sample2", "sample3"));
         ArrayList<Double> values = new ArrayList<>(Arrays.asList(1.0, 0.5, 0.0));
@@ -48,9 +48,8 @@ class MethylationArrayTest {
         ArrayList<Double> values = new ArrayList<>(Arrays.asList(1.0, 0.5));
         MethylationArray tester = new MethylationArray();
         tester.setSamples(samples);
-        assertThrows(IllegalArgumentException.class, () -> {
-            tester.addData("cg00000029,TP53,17,7565097,7565097,+", values);
-        });
+        assertThrows(IllegalArgumentException.class, () -> tester.addData("cg00000029,TP53,17,7565097," +
+                "7565097,+", values));
 
 
     }

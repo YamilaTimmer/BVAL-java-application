@@ -4,6 +4,7 @@ import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,31 +15,6 @@ import java.util.List;
  */
 public class MethylationDataFilter {
     private static final Logger logger = LogManager.getLogger(MethylationDataFilter.class.getName());
-
-    /**
-     * Enum for positional filter, determined by whether user wants to filter on gene/chromosome (mutually exclusive)
-     */
-    public enum PosFilterType {
-        GENE("GENES"),
-        CHROMOSOME("CHR");
-
-        private final String name;
-
-        PosFilterType(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    /**
-     * Enum for cutoff type, determined by whether user wants to filter beta values above or below the specified cutoff
-     */
-    public enum CutoffType {
-        upper, lower
-    }
 
     /**
      * Filter data based on user passed argument(s) for samples, removing all columns that do not pass the filter
@@ -79,10 +55,10 @@ public class MethylationDataFilter {
     /**
      * Determine what columns (corresponding with samples) should be kept, based on user input
      *
-     * @param samplesFilter String array that user has provided, containing sample names that correspond with
-     *                      columns in the data
-     * @param samples       List containing all samples of the input data
-     * @param columnsToKeep ArrayList in which the indexes of the columns that should be kept will be saved in
+     * @param samplesFilter   String array that user has provided, containing sample names that correspond with
+     *                        columns in the data
+     * @param samples         List containing all samples of the input data
+     * @param columnsToKeep   ArrayList in which the indexes of the columns that should be kept will be saved in
      * @param filteredSamples ArrayList in which the names of the samples to keep will be saved
      */
     private static void determineColumnsToKeep(String[] samplesFilter, List<String> samples,
@@ -103,7 +79,7 @@ public class MethylationDataFilter {
     /**
      * Keep only the samples of which the columns match the indexes that correspond with the columns that should be kept
      *
-     * @param dataRows the rows of data of the methylationArray object
+     * @param dataRows      the rows of data of the methylationArray object
      * @param columnsToKeep indexes of columns that match samples that were selected to keep by user
      */
     private static void removeUnwantedSamples(List<MethylationData> dataRows, ArrayList<Integer> columnsToKeep) {
@@ -153,12 +129,12 @@ public class MethylationDataFilter {
      * Remove rows that don`t contain chromosomes or genes as specified by user parameters
      *
      * @param methylationArray methylationArray contains parsed data from input file, including present genes
-     * @param posFilterType enum, either CHROMOSOME or GENE
-     * @param posFilter String array that user has provided, containing either chromosome- or gene names
-     * @param iter iterator for iterating through dataRows
+     * @param posFilterType    enum, either CHROMOSOME or GENE
+     * @param posFilter        String array that user has provided, containing either chromosome- or gene names
+     * @param iter             iterator for iterating through dataRows
      */
     private static void removeUnwantedPos(MethylationArray methylationArray, PosFilterType posFilterType,
-                                              String[] posFilter, Iterator<MethylationData> iter, boolean removeNa) {
+                                          String[] posFilter, Iterator<MethylationData> iter, boolean removeNa) {
         String valueToCheck;
         while (iter.hasNext()) {
             MethylationData row = iter.next();
@@ -234,19 +210,42 @@ public class MethylationDataFilter {
             if (cutoffType == CutoffType.lower) {
                 if (betaValue <= cutoff) {
                     filteredBetaValues.add(betaValue);
-                }
-                else  {
+                } else {
                     filteredBetaValues.add(Double.NaN);
                 }
             } else { // if CutoffType = 'upper'
                 if (betaValue >= cutoff) {
                     filteredBetaValues.add(betaValue);
-                }
-                else  {
+                } else {
                     filteredBetaValues.add(Double.NaN);
                 }
             }
         }
         return filteredBetaValues;
+    }
+
+    /**
+     * Enum for positional filter, determined by whether user wants to filter on gene/chromosome (mutually exclusive)
+     */
+    public enum PosFilterType {
+        GENE("GENES"),
+        CHROMOSOME("CHR");
+
+        private final String name;
+
+        PosFilterType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    /**
+     * Enum for cutoff type, determined by whether user wants to filter beta values above or below the specified cutoff
+     */
+    public enum CutoffType {
+        upper, lower
     }
 }

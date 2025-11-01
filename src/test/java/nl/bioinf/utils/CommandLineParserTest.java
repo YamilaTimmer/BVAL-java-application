@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommandLineParserTest {
 
@@ -81,7 +81,7 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage info should be printed when user passes undefined arguments")
-    void testIllegalArgument(){
+    void testIllegalArgument() {
         CommandLineParser commandLineParser = new CommandLineParser();
         CommandLine cmd = new CommandLine(commandLineParser);
 
@@ -92,7 +92,7 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage help/warning should be printed if user passes more than the max amount of files (1)")
-    void testTooManyFiles(){
+    void testTooManyFiles() {
         Summary summary = new Summary();
         CommandLine cmd = new CommandLine(summary);
 
@@ -104,7 +104,7 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage help/warning should be printed if user passes both -chr and -g options (they are mutually exclusive)")
-    void bothChromosomeAndGeneArePassed(){
+    void bothChromosomeAndGeneArePassed() {
 
         Filter filter = new Filter();
         CommandLine cmd = new CommandLine(filter);
@@ -117,7 +117,7 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage help/warning should be printed if user passes both hypo and hyper (they are mutually exclusive)")
-    void bothDirectionArgsArePassed(){
+    void bothDirectionArgsArePassed() {
 
         Filter filter = new Filter();
         CommandLine cmd = new CommandLine(filter);
