@@ -40,7 +40,7 @@ public class ComparisonFileWriter {
                     ex.getMessage(), ex);
             throw ex;
         }
-        System.out.println("Output generated at: " + filePath);
+        logger.info("Output generated at: {}", filePath);
 
     }
 
