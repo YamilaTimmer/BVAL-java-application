@@ -236,7 +236,6 @@ class Filter implements Runnable {
 
         if (data != null) {
             filteredData.setSampleIndex(data.getSampleIndex());
-
             filteredData.setHeader(data.getHeader(), data.getSampleIndex());
             filteredData.setSamples(data.getSamples());
             filteredData.setData(data.getData());
@@ -248,6 +247,10 @@ class Filter implements Runnable {
         // List to hold methods to be run based on user arguments
         List<Runnable> filtersToRun = new ArrayList<>();
         CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
+
+        if (naRemover.removeNa) {
+            MethylationDataFilter.removeNA(filteredData);
+        }
 
         try {
 
@@ -269,8 +272,7 @@ class Filter implements Runnable {
                 ChrArgumentCheck chrArgumentCheck = new ChrArgumentCheck(chromosomes, data);
                 checker.addFilter(chrArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes,
-                        naRemover.removeNa));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes));
 
             } else if (posArguments != null && posArguments.genes != null) {
                 MethylationDataFilter.PosFilterType posFilterType = MethylationDataFilter.PosFilterType.GENE;
@@ -283,7 +285,7 @@ class Filter implements Runnable {
                 GeneArgumentCheck geneArgumentCheck = new GeneArgumentCheck(genes, data);
                 checker.addFilter(geneArgumentCheck);
 
-                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes, naRemover.removeNa));
+                filtersToRun.add(() -> MethylationDataFilter.filterByPos(filteredData, posFilterType, genes));
 
             }
 
@@ -425,6 +427,10 @@ class Compare implements Runnable {
 
             CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
 
+            if (naRemover.removeNa) {
+                MethylationDataFilter.removeNA(filteredData);
+            }
+
             try {
                 if (posArguments.chr != null) {
                     String[] chromosomes = Arrays.stream(posArguments.chr)
@@ -437,7 +443,7 @@ class Compare implements Runnable {
 
 
                     if (checker.pass()) {
-                        MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes, naRemover.removeNa);
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, chromosomes);
                         MethylationDataFilter.filterBySample(filteredData, samples);
                         corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
                                 chromosomes).performStatisticalMethods();
@@ -453,7 +459,7 @@ class Compare implements Runnable {
 
                     if (checker.pass()) {
 
-                        MethylationDataFilter.filterByPos(filteredData, posFilterType, genes, naRemover.removeNa);
+                        MethylationDataFilter.filterByPos(filteredData, posFilterType, genes);
                         MethylationDataFilter.filterBySample(filteredData, samples);
                         corrData = new MethylationArrayPosComparer(filteredData, methods, posFilterType,
                                 genes).performStatisticalMethods();

@@ -59,7 +59,7 @@ class MethylationDataFilterTest {
         DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
-        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes, false);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes);
 
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));
@@ -81,7 +81,7 @@ class MethylationDataFilterTest {
         DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
-        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr, false);
+        MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr);
 
         MethylationArray expectedMethylationArray = new MethylationArray();
         expectedMethylationArray.setSamples(new ArrayList<>(List.of("Sample1", "Sample2", "Sample3")));

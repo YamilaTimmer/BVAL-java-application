@@ -105,8 +105,7 @@ public class MethylationDataFilter {
      * @param posFilterType    enum, either CHROMOSOME or GENE
      * @param posFilter        String array that user has provided, containing either chromosome- or gene names
      */
-    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter,
-                                   boolean removeNa) {
+    public static void filterByPos(MethylationArray methylationArray, PosFilterType posFilterType, String[] posFilter) {
         logger.info("Starting filtering on {}(s)", posFilterType);
         logger.debug("Filtering on: {} {}.", posFilterType, Arrays.toString(posFilter));
 
@@ -117,7 +116,7 @@ public class MethylationDataFilter {
 
         logger.debug("Removing rows that don't contain given {} arguments", posFilterType);
 
-        removeUnwantedPos(methylationArray, posFilterType, posFilter, iter, removeNa);
+        removeUnwantedPos(methylationArray, posFilterType, posFilter, iter);
 
         logger.debug("Saving filtered {} data", posFilterType);
         methylationArray.setData(dataRows);
@@ -134,7 +133,7 @@ public class MethylationDataFilter {
      * @param iter             iterator for iterating through dataRows
      */
     private static void removeUnwantedPos(MethylationArray methylationArray, PosFilterType posFilterType,
-                                          String[] posFilter, Iterator<MethylationData> iter, boolean removeNa) {
+                                          String[] posFilter, Iterator<MethylationData> iter) {
         String valueToCheck;
         while (iter.hasNext()) {
             MethylationData row = iter.next();
@@ -147,19 +146,30 @@ public class MethylationDataFilter {
                 valueToCheck = row.getChromosome(methylationArray.getIndexInformation());
             }
 
-            // remove rows that don't contain the positional variable
-            if (removeNa) {
-                ArrayList<Double> naValueToCheck = row.betaValues();
-                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase()) || naValueToCheck.contains(Double.NaN)) {
-                    iter.remove();
-                }
-
-            } else {
                 if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
                     iter.remove();
-                }
+
             }
         }
+    }
+
+    public static void removeNA(MethylationArray methylationArray) {
+
+        logger.info("Removing NA's");
+
+        List<MethylationData> dataRows = methylationArray.getData();
+
+        Iterator<MethylationData> iter = dataRows.iterator();
+
+        while (iter.hasNext()) {
+            MethylationData row = iter.next();
+            ArrayList<Double> naValueToCheck = row.betaValues();
+            if (naValueToCheck.contains(Double.NaN)) {
+                iter.remove();
+            }
+        }
+
+        methylationArray.setData(dataRows);
     }
 
     /**
