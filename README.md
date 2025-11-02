@@ -32,6 +32,7 @@ For further developing and/or testing we recommend cloning the repository, this 
 ```bash
 git clone https://github.com/YamilaTimmer/methylation-java-app
 ```
+
 > [!IMPORTANT]
 > Disregarding the method of installation, a JVM installation is also needed to be able to run the tool. Preferably it is the same version of Java as described under the [version info](#version-info). If the Java version differs, it could possibly lead to parts of the tool not working.
 
@@ -50,7 +51,7 @@ Also see the [example data](https://github.com/YamilaTimmer/BVAL-java-applicatio
 > [!IMPORTANT]  
 > There is no strict column order, as the app relies on checking on column names instead. Make sure to name the gene column `gene` and the chromosome column `chr`! Samples columns can have any name, but the index of the first sample column has to be specified, this index uses normal counting, so the first column of the file is index 1, etc. **All other samples have to be after the first sample column and no other columns should be behind or within the sample columns.**
 
-#### How to obtain input data
+##### How to obtain input data
 [DepMap](https://depmap.org/portal/data_page/?tab=allData) has two large datasets from the [CCLE project](https://depmap.org/portal/ccle/), which can be used as input for BVAL. Datasets can also be found through [GEO](https://www.ncbi.nlm.nih.gov/geo/), when looking for methylation data. Processed files containing beta values are not as common to find through GEO, but there are some. The file will likely contain words such as 'processed' and 'matrix'.
 
 Some datasets might be tab separated, but can easily be converted to .csv by running the command below, which will replace all tabs with a comma.
@@ -65,6 +66,12 @@ Afterwards the tool can be ran using the data as input, read more about the use 
 > If using one of the DepMap datasets, make sure to pass `-si 8` as argument, as the samples start from the 8th column and on
 
 When working with raw data, some steps prior will have to be done, including mapping and aligning of the data and calculating the beta values, a commonly used R-package for this is [minfi](https://pmc.ncbi.nlm.nih.gov/articles/PMC4016708/), read more about how to use this package [here](https://bioconductor.org/packages/devel/bioc/vignettes/minfi/inst/doc/minfi.html).
+
+##### Missing values
+It is common for beta value methylation data to contain missing values, however the way missing values are noted can differ between datasets. Our tool uses `NaN` values, if your dataset uses another marker for missing values, then you can easily convert them using the bash command below, here `na` is used as example, but you can replace it with whatever missing value marker is being used.
+```bash
+sed -i '' 's/na/NaN/' methylation_data.csv 
+```
 
 #### Use cases of BVAL
 The tool contains three distinct use cases, below some examples are shown on how to use these.
@@ -107,16 +114,17 @@ Generating a filtered output file from the input can be done by passing `filter`
 * `-si/--sample-index`: should be the index of the first sample column
   
 **Optional arguments**:
-* `-s/--sample`: one or more samples, specified as the corresponding column names from the input file
-* `-chr/--chromosome`: one or more chromosomes (mutually exclusive with --gene)
-* `-g/--gene`: one or more gene names (mutually exclusive with --chromosome)
-* `-c/--cutoff`: a value ≥ 0 and ≤ 1.0 that serves as a cutoff value for filtering on beta values 
-* `-ct/--cutofftype`: how to filter using the cutoff (upper/lower), by default it filters out any values below the cutoff (upper), but using lower will filter out any values higher than the cutoff
-* `-o/--output`: allows user to give path to where the output file should be saved
+* `-s/--sample`: one or more samples, specified as the corresponding column names from the input file.
+* `-chr/--chromosome`: one or more chromosomes (mutually exclusive with --gene).
+* `-g/--gene`: one or more gene names (mutually exclusive with --chromosome).
+* `-c/--cutoff`: a value ≥ 0 and ≤ 1.0 that serves as a cutoff value for filtering on beta values, any value that does not meet the cutoff, will be changed into a "missing" value. These can be removed by running the `-NA` command.
+* `-ct/--cutofftype`: how to filter using the cutoff (upper/lower), by default it filters out any values below the cutoff (upper), but using lower will filter out any values higher than the cutoff.
+* `-o/--output`: allows user to give path to where the output file should be saved.
+* `-NA/--remove-na`: removes all rows that contain one or more missing value, this way the user can decide whether to keep values that did not pass the cutoff filter. Use by passing true or false (default = false).
 
 Below an example of the command, with arguments is shown. This example filters the input data in a way that only Sample1 and Sample 2 (the first two columns) are kept, with only rows containing chromosome 17. Only beta values below 0.5 are kept.
 ```bash
-filter -f data/exampledata.csv -si 7 -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower
+filter -f data/exampledata.csv -si 7 -s Sample1 Sample2 -chr 17 -c 0.5 -ct lower 
 ```
 
 The filtered output is written to the user-specified path, if no path is given it is automatically generated as output.txt in the same directory as the tool
@@ -134,14 +142,18 @@ compare -f <file-path> -s <samples> -m <comparison-method>
 * `-si/--sampleindex`: should be the index of the first sample column
   
 **Optional arguments**:
-* `-s/--sample`: one or more samples to compare to each other, specified as the corresponding column names from the input file. If no sample is specified, all samples in the file will be compared to eachother.
+* `-s/--sample`: two or more samples to compare to each other, specified as the corresponding column names from the input file. If no sample is specified, all samples in the file will be compared to each other.
+* `-chr/--chromosome`: two or more chromosomes to be compared to each other (mutually exclusive with --gene).
+* `-g/--gene`: two or more genes to be compared to each other (mutually exclusive with --chromosome).
 * `-m/--methods`: statistical method(s) on which the samples should be compared, possible methods are:
 	- [Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test) [t-test], 
 	- [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient) [spearman], 
-	- [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test) [wilcoxon-test])
+	- [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test) [wilcoxon-test],
+	- Welch's _t_-test [wilcoxon-test]
+	- https://en.wikipedia.org/wiki/Welch%27s_t-test)
   If no methods are specified, all methods are ran.
 * `-o/--output`: allows user to give path to where the output file should be saved
-
+* `-NA/--remove-na`: removes all rows that contain one or more missing value, this way the user can decide whether to keep values that did not pass the cutoff filter. Use by passing true or false (default = false).
 #### Information on verbosity
 As user you can specify how much output you would like to receive in the terminal, this can be set using `--verbose`, followed by either `0`, `1` or `2`. 
 - `0` [WARNING]: default setting, only shows errors and warnings
