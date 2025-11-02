@@ -66,7 +66,7 @@ public class MethylationFileReader {
                 logger.error("Invalid beta value: '{}', could not parse to double. Check if correct sample " +
                         "index [-si] was provided and make sure all beta values are either numbers in the range of [0-1] " +
                         "or NaN.", lineSplit[i]);
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Stopped run, due to invalid beta value: " + lineSplit[i]);
             }
 
             if (Double.isNaN(betaVal)) {
@@ -117,7 +117,8 @@ public class MethylationFileReader {
                 try {
                     bValues = getBValues(lineSplit, sampleIndex);
                 } catch (IllegalArgumentException ex) {
-                    return;
+                    logger.error(ex.getMessage());
+                    throw new IllegalArgumentException(ex.getMessage());
                 }
 
                 try {
@@ -156,9 +157,8 @@ public class MethylationFileReader {
         StringBuilder methylationLocation = new StringBuilder();
         for (int i = 0; i < sampleIndex; i++) {
             methylationLocation.append(lineSplit[i]);
-            if (i < sampleIndex - 1) {
                 methylationLocation.append(",");
-            }
+
         }
 
         return methylationLocation.toString();
