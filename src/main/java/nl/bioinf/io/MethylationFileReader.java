@@ -69,10 +69,6 @@ public class MethylationFileReader {
                 throw new IllegalArgumentException("Stopped run, due to invalid beta value: " + lineSplit[i]);
             }
 
-            if (Double.isNaN(betaVal)) {
-                betaValues.add(Double.NaN);
-                continue;
-            }
 
             if (betaVal < 0 || betaVal > 1) {
                 logger.error("Beta value out of range: '{}', must be in range of [0-1].", betaVal);
@@ -126,7 +122,7 @@ public class MethylationFileReader {
                 } catch (IllegalArgumentException ex) {
                     return;
                 }
-            }
+                }
 
         } catch (NoSuchFileException ex) {
             logger.error("""

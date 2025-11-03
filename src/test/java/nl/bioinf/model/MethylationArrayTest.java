@@ -23,7 +23,7 @@ class MethylationArrayTest {
         MethylationFileReader methylationFileReader = new MethylationFileReader();
 
         assertThrows(IllegalArgumentException.class, () ->
-                methylationFileReader.readCSV(filePath, 6));
+                methylationFileReader.readCSV(filePath, 7));
     }
 
 
