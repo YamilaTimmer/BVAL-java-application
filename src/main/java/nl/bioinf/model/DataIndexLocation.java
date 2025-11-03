@@ -21,12 +21,19 @@ public class DataIndexLocation {
     private final Map<String, Integer> indexes;
     private final String header;
 
+    /**
+     *
+     * @param header String that contains the header of the methylation array file.
+     */
     public DataIndexLocation(String header) {
         this.header = header;
         indexes = new HashMap<>();
         findIndexes();
     }
 
+    /**
+     * Finds the indexes of "chr" and "gene" in the header and stores the index in a hashmap.
+     */
     private void findIndexes() {
         String[] indexesToFind = new String[]{"chr", "gene"};
         List<String> listHeader = Arrays.asList(header.split(","));

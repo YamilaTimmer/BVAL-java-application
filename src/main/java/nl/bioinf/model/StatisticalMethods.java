@@ -33,6 +33,9 @@ public class StatisticalMethods {
         return Collections.unmodifiableMap(statisticalMethods);
     }
 
+    /**
+     * A way to store and run the different statistical tests
+     */
     enum RunStatisticalMethods {
         TTEST {
             @Override
@@ -62,7 +65,12 @@ public class StatisticalMethods {
             }
         };
 
-
+        /**
+         * Runs the specified statistical test
+         * @param sample1 double array of beta values that belong to sample 1
+         * @param sample2 double array of beta values that belong to sample 2
+         * @return double that is the resulting number of the statistical test.
+         */
         public abstract double run(double[] sample1, double[] sample2);
     }
 }

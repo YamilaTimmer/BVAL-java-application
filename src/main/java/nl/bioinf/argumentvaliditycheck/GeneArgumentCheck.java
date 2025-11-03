@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Checks validity of gene argument(s) passed by user
@@ -13,7 +14,7 @@ import java.util.List;
 public class GeneArgumentCheck implements UserArgumentsCheck {
     private static final Logger logger = LogManager.getLogger();
     private final String[] filterGenes;
-    private final List<String> genes;
+    private final Set<String> genes;
 
     /**
      * Sets passed gene argument(s) and all genes in the dataset as class variable

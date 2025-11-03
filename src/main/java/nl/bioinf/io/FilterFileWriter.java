@@ -12,9 +12,18 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 
+/**
+ * Writes the data {@link MethylationArray} after filtering to a file.
+ */
 public class FilterFileWriter {
     private static final Logger logger = LogManager.getLogger();
 
+    /**
+     *
+     * @param data           {@link MethylationArray}
+     * @param outputFilePath path to write the resulting file to.
+     * @throws IOException
+     */
     public static void writeFile(MethylationArray data, Path outputFilePath) throws IOException {
         File filePath = new File(outputFilePath.toUri());
 

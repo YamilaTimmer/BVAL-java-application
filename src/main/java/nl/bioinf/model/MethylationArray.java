@@ -3,9 +3,7 @@ package nl.bioinf.model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Datatype to hold methylation data containing beta values, also holds information on samples,
@@ -51,6 +49,12 @@ public class MethylationArray {
     }
 
 
+    /**
+     * Adds the beta values location in the genome and beta values.
+     * @param methylationLocation       String that contains the position in the genome of the beta values
+     * @param betaValues                List of doubles that contain all the beta values of that specific location
+     * @throws IllegalArgumentException whenever the size of the samples and beta values are not the same
+     */
     public void addData(String methylationLocation, ArrayList<Double> betaValues) throws IllegalArgumentException {
         if (betaValues.size() != samples.size()) {
             logger.error("""
@@ -62,6 +66,11 @@ public class MethylationArray {
         }
     }
 
+    /**
+     * Gets the beta values that belong to a specific genomic region (chr / gene)
+     * @param posArg String that either contains a gene or a chromosome, used to extract beta values
+     * @return       array of doubles that contain the beta values
+     */
     public double[] getPosBetaValues(String posArg) {
         List<Double> betaValues = new ArrayList<>();
 
@@ -73,10 +82,16 @@ public class MethylationArray {
         return betaValues.stream().mapToDouble(Double::doubleValue).toArray();
     }
 
+    /**
+     * @return List containing {@link MethylationData}
+     */
     public List<MethylationData> getData() {
         return new ArrayList<>(data);
     }
 
+    /**
+     * @param data List of {@link MethylationData}
+     */
     public void setData(List<MethylationData> data) {
         this.data = data;
     }
@@ -84,28 +99,40 @@ public class MethylationArray {
     /**
      * Used for checking if user filter argument genes are present in the input data
      *
-     * @return list of all genes present in data
+     * @return Set of all genes present in data
      */
-    public List<String> getGenes() {
-        ArrayList<String> genes = new ArrayList<>();
+    public Set<String> getGenes() {
+        Set<String> genes = new HashSet<>();
         for (MethylationData d : data) {
             genes.add(d.getGene(indexInformation).toUpperCase());
         }
-        return Collections.unmodifiableList(genes);
+        return Collections.unmodifiableSet(genes);
     }
 
-    public List<String> getChromosomes() {
-        ArrayList<String> chromosomes = new ArrayList<>();
+    /**
+     * Gets all of the chromosomes found in the data
+     * @return Set of all chromosomes found in data
+     */
+    public Set<String> getChromosomes() {
+        Set<String> chromosomes = new HashSet<>();
         for (MethylationData d : data) {
             chromosomes.add(d.getChromosome(indexInformation).toUpperCase());
         }
-        return Collections.unmodifiableList(chromosomes);
+        return Collections.unmodifiableSet(chromosomes);
     }
 
+    /**
+     *
+     * @return {@link DataIndexLocation} containing the index of chr and gene in the header
+     */
     public DataIndexLocation getIndexInformation() {
         return indexInformation;
     }
 
+    /**
+     *
+     * @param indexInformation {@link DataIndexLocation} containing the index of chr and gene in the header
+     */
     public void setIndexInformation(DataIndexLocation indexInformation) {
         this.indexInformation = indexInformation;
     }

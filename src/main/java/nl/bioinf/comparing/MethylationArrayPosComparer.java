@@ -29,10 +29,10 @@ public class MethylationArrayPosComparer {
 
     /**
      *
-     * @param data          Methylation array.
-     * @param methods       Statistical methods acquired through CLI.
-     * @param posFilterType Used to log weather chromosomes or genes are compared.
-     * @param posArguments  Array if either chromosomes or genes to compare
+     * @param data          {@link MethylationArray}
+     * @param methods       statistical methods acquired through CLI.
+     * @param posFilterType used to log weather chromosomes or genes are compared.
+     * @param posArguments  array if either chromosomes or genes to compare
      */
     public MethylationArrayPosComparer(MethylationArray data, String[] methods,
                                        MethylationDataFilter.PosFilterType posFilterType, String[] posArguments) {
@@ -48,7 +48,7 @@ public class MethylationArrayPosComparer {
      * Compare the beta values of either genes OR chromosomes, based on user passed argument(s),
      * via different statistical tests
      *
-     * @return {@link SampleComparison}, that holds the data of the compared action.
+     * @return {@link SampleComparison} that holds the data of the compared action.
      */
     public SampleComparison performStatisticalMethods() {
         logger.info("Starting comparing on {}", posFilterType.getName());

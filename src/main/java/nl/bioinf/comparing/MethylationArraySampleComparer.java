@@ -10,7 +10,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
-
+/**
+ * Compare class that will compare the beta values of samples via statistical tests
+ */
 public class MethylationArraySampleComparer {
     private static final Logger logger = LogManager.getLogger();
 
@@ -22,6 +24,12 @@ public class MethylationArraySampleComparer {
     private final String[] methods;
     SampleComparison statisticalData;
 
+    /**
+     *
+     * @param data    {@link MethylationArray}
+     * @param samples Array of samples that will be compared to eachother
+     * @param methods Statistical methods used to compare the beta values
+     */
     public MethylationArraySampleComparer(MethylationArray data, String[] samples, String[] methods) {
         this.samples = samples;
         this.methods = methods;
@@ -29,6 +37,12 @@ public class MethylationArraySampleComparer {
         this.data = data;
     }
 
+    /**
+     * Performs statistical methods on the beta values ({@link MethylationArray}) it will do this for all samples
+     * given in the constructor.
+     * @return {@link SampleComparison} Model that will store the comparison results
+     * @throws IllegalArgumentException Whenever samples are not found in the data
+     */
     public SampleComparison performStatisticalMethods() throws IllegalArgumentException {
         int invalidSample = -1;
 

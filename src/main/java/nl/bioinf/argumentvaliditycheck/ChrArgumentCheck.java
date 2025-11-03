@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Checks validity of chromosome argument(s) passed by user
@@ -13,7 +14,7 @@ import java.util.List;
 public class ChrArgumentCheck implements UserArgumentsCheck {
     private static final Logger logger = LogManager.getLogger();
     private final String[] filterChr;
-    private final List<String> chromosomes;
+    private final Set<String> chromosomes;
 
     /**
      * Sets passed chromosome arguments as class variable.

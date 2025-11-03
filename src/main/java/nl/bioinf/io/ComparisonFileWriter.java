@@ -1,5 +1,6 @@
 package nl.bioinf.io;
 
+import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,17 +13,30 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Writes a file containing the results of comparing the beta values of different samples / chromosomes / genes
+ * via {@link nl.bioinf.comparing.MethylationArraySampleComparer} / {@link nl.bioinf.comparing.MethylationArrayPosComparer}.
+ */
 public class ComparisonFileWriter {
 
     private static final Logger logger = LogManager.getLogger();
-    SampleComparison data;
-    Path pathFileOutput;
+    private final SampleComparison data;
+    private final Path pathFileOutput;
 
+    /**
+     *
+     * @param data           {@link SampleComparison}
+     * @param filePathOutput Path to write the resulting file to.
+     */
     public ComparisonFileWriter(SampleComparison data, Path filePathOutput) {
         this.data = data;
         pathFileOutput = filePathOutput;
     }
 
+    /**
+     * Writes the data from a {@link SampleComparison} instance to a file.
+     * @throws IOException
+     */
     public void writeData() throws IOException {
         File filePath = new File(pathFileOutput.toUri());
         logger.info("Writing data to file: {}.", filePath);
