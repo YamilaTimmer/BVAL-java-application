@@ -51,8 +51,9 @@ public class MethylationArray {
 
     /**
      * Adds the beta values location in the genome and beta values.
-     * @param methylationLocation       String that contains the position in the genome of the beta values
-     * @param betaValues                List of doubles that contain all the beta values of that specific location
+     *
+     * @param methylationLocation String that contains the position in the genome of the beta values
+     * @param betaValues          List of doubles that contain all the beta values of that specific location
      * @throws IllegalArgumentException whenever the size of the samples and beta values are not the same
      */
     public void addData(String methylationLocation, ArrayList<Double> betaValues) throws IllegalArgumentException {
@@ -68,8 +69,9 @@ public class MethylationArray {
 
     /**
      * Gets the beta values that belong to a specific genomic region (chr / gene)
+     *
      * @param posArg String that either contains a gene or a chromosome, used to extract beta values
-     * @return       array of doubles that contain the beta values
+     * @return array of doubles that contain the beta values
      */
     public double[] getPosBetaValues(String posArg) {
         List<Double> betaValues = new ArrayList<>();
@@ -77,8 +79,7 @@ public class MethylationArray {
         for (MethylationData row : data) {
             if (row.methylationLocation().toUpperCase().contains(posArg.toUpperCase())) {
                 betaValues.addAll(row.betaValues());
-            }
-            else {
+            } else {
                 logger.error("Variable not found in data: {}", posArg);
                 throw new IllegalArgumentException();
             }
@@ -115,6 +116,7 @@ public class MethylationArray {
 
     /**
      * Gets all of the chromosomes found in the data
+     *
      * @return Set of all chromosomes found in data
      */
     public Set<String> getChromosomes() {

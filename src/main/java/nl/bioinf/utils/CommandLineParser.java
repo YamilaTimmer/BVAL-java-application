@@ -312,7 +312,6 @@ class Filter implements Runnable {
         try {
             FilterFileWriter.writeFile(filteredData, filePathOutput.outputFilePath);
         } catch (IOException ex) {
-            return;
         }
     }
 
@@ -480,7 +479,6 @@ class Compare implements Runnable {
         try {
             new ComparisonFileWriter(corrData, filePathOutput.outputFilePath).writeData();
         } catch (IOException ex) {
-            return;
         }
     }
 

@@ -1,6 +1,5 @@
 package nl.bioinf.io;
 
-import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.SampleComparison;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +34,7 @@ public class ComparisonFileWriter {
 
     /**
      * Writes the data from a {@link SampleComparison} instance to a file.
+     *
      * @throws IOException
      */
     public void writeData() throws IOException {

@@ -27,7 +27,7 @@ public class StatisticalMethods {
 
     /**
      *
-     * @return
+     * @return Map with keys of the statistical test names, and as value a {@link BiFunction} with 2 double[] as input and a double as output
      */
     public Map<String, BiFunction<double[], double[], Double>> getStatisticalMethods() {
         return Collections.unmodifiableMap(statisticalMethods);
@@ -67,6 +67,7 @@ public class StatisticalMethods {
 
         /**
          * Runs the specified statistical test
+         *
          * @param sample1 double array of beta values that belong to sample 1
          * @param sample2 double array of beta values that belong to sample 2
          * @return double that is the resulting number of the statistical test.

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
+
 /**
  * Compare class that will compare the beta values of samples via statistical tests
  */
@@ -40,6 +41,7 @@ public class MethylationArraySampleComparer {
     /**
      * Performs statistical methods on the beta values ({@link MethylationArray}) it will do this for all samples
      * given in the constructor.
+     *
      * @return {@link SampleComparison} Model that will store the comparison results
      * @throws IllegalArgumentException Whenever samples are not found in the data
      */
@@ -55,7 +57,7 @@ public class MethylationArraySampleComparer {
                     logger.error("Sample not found in the data, exiting code. Did not compare following " +
                             "samples: '{}' vs '{}'.", samples[i], samples[j]);
                     throw new IllegalArgumentException();
-                    }
+                }
 
                 double[] sample1BetaValues = getBetaValues(sample1);
                 double[] sample2BetaValues = getBetaValues(sample2);
