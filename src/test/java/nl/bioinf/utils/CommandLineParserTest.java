@@ -104,7 +104,7 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage help/warning should be printed if user passes both -chr and -g options (they are mutually exclusive)")
-    void bothChromosomeAndGeneArePassed() {
+    void bothChromosomeAndGeneArePassedFilter() {
 
         Filter filter = new Filter();
         CommandLine cmd = new CommandLine(filter);
@@ -117,7 +117,7 @@ class CommandLineParserTest {
 
     @Test
     @Description("Usage help/warning should be printed if user passes both hypo and hyper (they are mutually exclusive)")
-    void bothDirectionArgsArePassed() {
+    void bothDirectionArgsArePassedFilter() {
 
         Filter filter = new Filter();
         CommandLine cmd = new CommandLine(filter);
@@ -127,4 +127,18 @@ class CommandLineParserTest {
 
         assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
     }
+
+    @Test
+    @Description("Usage help/warning should be printed if user passes both -chr and -g options (they are mutually exclusive)")
+    void bothChromosomeAndGeneComparing() {
+        Compare compare = new Compare();
+        CommandLine cmd = new CommandLine(compare);
+
+        // Pass Two arguments for --file
+        int exitCode = cmd.execute("--file data1.csv -chr 10 -gene TP53");
+
+        assertEquals(CommandLine.ExitCode.USAGE, exitCode); // Check if Picocli returns usage info
+    }
+
+
 }

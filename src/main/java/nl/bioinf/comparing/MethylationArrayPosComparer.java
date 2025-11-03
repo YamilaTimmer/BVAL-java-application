@@ -60,6 +60,14 @@ public class MethylationArrayPosComparer {
                         posArguments[i], betaValues1.length,
                         posArguments[j], betaValues2.length);
                 validateValuesAndStatistics(betaValues2, betaValues1);
+                if (DoubleStream.of(betaValues1).anyMatch(Double::isNaN) ||
+                        DoubleStream.of(betaValues2).anyMatch(Double::isNaN)) {
+                    logger.warn("Found invalid value(s) (missing value/NaN) in 1 of the samples in the comparison: {} vs {}, " +
+                                    "please compare samples without missing values. Continuing comparisons, " +
+                                    "excluding {} vs {}. Run with -NA or --remove-na to remove all NA values.",
+                            data.getSamples().get(i), data.getSamples().get(j), data.getSamples().get(i), data.getSamples().get(j));
+                    continue;
+                }
                 String compareName = String.format("%s,%s", posArguments[i], posArguments[j]);
                 statisticalData.addNewSampleVsSample(compareName);
 
@@ -92,11 +100,6 @@ public class MethylationArrayPosComparer {
 
         }
 
-        if (DoubleStream.of(betaValues1).anyMatch(x -> x == naValue) ||
-                DoubleStream.of(betaValues2).anyMatch(x -> x == naValue)) {
-            logger.warn("Found invalid values in 1 of the samples: (-1 / NA), please compare " +
-                    "samples without -1 or NA values");
-            throw new IllegalArgumentException();
-        }
+
     }
 }

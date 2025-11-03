@@ -57,9 +57,15 @@ public class MethylationFileReader {
      */
     private static ArrayList<Double> getBValues(String[] lineSplit, int sampleIndex) throws IllegalArgumentException {
         ArrayList<Double> betaValues = new ArrayList<>();
+        String naValue = "NA";
+
         double betaVal;
 
         for (int i = sampleIndex; i < lineSplit.length; i++) {
+            if (lineSplit[i].equals(naValue)) {
+                betaValues.add(Double.NaN);
+                continue;
+            }
             try {
                 betaVal = Double.parseDouble(lineSplit[i]);
             } catch (NumberFormatException ex) {
