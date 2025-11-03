@@ -79,10 +79,11 @@ public class MethylationArray {
         for (MethylationData row : data) {
             if (row.methylationLocation().toUpperCase().contains(posArg.toUpperCase())) {
                 betaValues.addAll(row.betaValues());
-            } else {
-                logger.error("Variable not found in data: {}", posArg);
-                throw new IllegalArgumentException();
             }
+        }
+        if (betaValues.isEmpty()) {
+            logger.error("Variable not found in data: {}", posArg);
+            throw new IllegalArgumentException();
         }
         return betaValues.stream().mapToDouble(Double::doubleValue).toArray();
     }
