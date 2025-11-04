@@ -2,7 +2,7 @@ package nl.bioinf.comparing;
 
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
-import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.ComparisonResults;
 import nl.bioinf.model.StatisticalMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ public class MethylationArraySampleComparer {
     private final MethylationArray data;
     private final String[] samples;
     private final String[] methods;
-    SampleComparison statisticalData;
+    ComparisonResults statisticalData;
 
     /**
      *
@@ -34,7 +34,7 @@ public class MethylationArraySampleComparer {
     public MethylationArraySampleComparer(MethylationArray data, String[] samples, String[] methods) {
         this.samples = samples;
         this.methods = methods;
-        statisticalData = new SampleComparison(methods);
+        statisticalData = new ComparisonResults(methods);
         this.data = data;
     }
 
@@ -42,10 +42,10 @@ public class MethylationArraySampleComparer {
      * Performs statistical methods on the beta values ({@link MethylationArray}) it will do this for all samples
      * given in the constructor.
      *
-     * @return {@link SampleComparison} Model that will store the comparison results
+     * @return {@link ComparisonResults} Model that will store the comparison results
      * @throws IllegalArgumentException Whenever samples are not found in the data
      */
-    public SampleComparison performStatisticalMethods() throws IllegalArgumentException {
+    public ComparisonResults performStatisticalMethods() throws IllegalArgumentException {
         int invalidSample = -1;
 
         for (int i = 0; i < samples.length; i++) {

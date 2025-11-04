@@ -1,6 +1,6 @@
 package nl.bioinf.io;
 
-import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.ComparisonResults;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,21 +19,21 @@ import java.util.Map;
 public class ComparisonFileWriter {
 
     private static final Logger logger = LogManager.getLogger();
-    private final SampleComparison data;
+    private final ComparisonResults data;
     private final Path pathFileOutput;
 
     /**
      *
-     * @param data           {@link SampleComparison}
+     * @param data           {@link ComparisonResults}
      * @param filePathOutput Path to write the resulting file to.
      */
-    public ComparisonFileWriter(SampleComparison data, Path filePathOutput) {
+    public ComparisonFileWriter(ComparisonResults data, Path filePathOutput) {
         this.data = data;
         pathFileOutput = filePathOutput;
     }
 
     /**
-     * Writes the data from a {@link SampleComparison} instance to a file.
+     * Writes the data from a {@link ComparisonResults} instance to a file.
      *
      * @throws IOException
      */

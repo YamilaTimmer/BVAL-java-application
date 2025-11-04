@@ -4,7 +4,7 @@ import jdk.jfr.Description;
 import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.io.MethylationFileReader;
 import nl.bioinf.model.MethylationArray;
-import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.ComparisonResults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ class MethylationArrayPosComparerTest {
                 MethylationDataFilter.PosFilterType.CHROMOSOME,
                 new String[] {"17", "X"});
 
-        SampleComparison result = posComparer.performStatisticalMethods();
+        ComparisonResults result = posComparer.performStatisticalMethods();
         assertNotNull(result);
         assertTrue(result.toString().contains("17,X"));
     }
@@ -54,7 +54,7 @@ class MethylationArrayPosComparerTest {
                 MethylationDataFilter.PosFilterType.GENE,
                 new String[] {"APC", "TP53"});
 
-        SampleComparison result = posComparer.performStatisticalMethods();
+        ComparisonResults result = posComparer.performStatisticalMethods();
         assertNotNull(result);
         assertTrue(result.toString().contains("APC,TP53"));
 

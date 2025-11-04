@@ -3,7 +3,7 @@ package nl.bioinf.comparing;
 import jdk.jfr.Description;
 import nl.bioinf.io.MethylationFileReader;
 import nl.bioinf.model.MethylationArray;
-import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.ComparisonResults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ class MethylationArraySampleComparerTest {
                                                             new String[] {"Sample2", "Sample3"},
                                                             new String[] {"t-test"});
 
-        SampleComparison result = sampleComparer.performStatisticalMethods();
+        ComparisonResults result = sampleComparer.performStatisticalMethods();
         assertNotNull(result, "Resulting SampleComparison should not be null");
         assertTrue(result.toString().contains("Sample2,Sample3"), "toString should contain the samples that were compared");
     }
@@ -58,7 +58,7 @@ class MethylationArraySampleComparerTest {
         MethylationArraySampleComparer sampleComparer = new MethylationArraySampleComparer(methylationDataCorrect,
                 new String[] {"Sample1", "Sample2"},
                 new String[] {"t-test"});
-        SampleComparison result = sampleComparer.performStatisticalMethods();
+        ComparisonResults result = sampleComparer.performStatisticalMethods();
         assertNotNull(result, "result should never be null");
         assertTrue(result.getSampleVersusSampleNames().isEmpty());
     }
@@ -70,7 +70,7 @@ class MethylationArraySampleComparerTest {
                 new String[] {"Sample1", "Sample2", "Sample3"},
                 new String[] {"t-test", "spearman"});
 
-        SampleComparison result = sampleComparer.performStatisticalMethods();
+        ComparisonResults result = sampleComparer.performStatisticalMethods();
         assertNotNull(result, "result should never be null");
         assertFalse(result.toString().contains("Sample1"), "Should never contain a result that contained a NA value");
         assertTrue(result.toString().contains("Sample2,Sample3"));

@@ -2,7 +2,7 @@ package nl.bioinf.comparing;
 
 import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.model.MethylationArray;
-import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.ComparisonResults;
 import nl.bioinf.model.StatisticalMethods;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +25,7 @@ public class MethylationArrayPosComparer {
     private final String[] methods;
     private final String[] posArguments;
     MethylationDataFilter.PosFilterType posFilterType;
-    SampleComparison statisticalData;
+    ComparisonResults statisticalData;
 
     /**
      *
@@ -38,7 +38,7 @@ public class MethylationArrayPosComparer {
                                        MethylationDataFilter.PosFilterType posFilterType, String[] posArguments) {
         this.data = data;
         this.methods = methods;
-        statisticalData = new SampleComparison(methods);
+        statisticalData = new ComparisonResults(methods);
         this.posFilterType = posFilterType;
         statisticalMethods = new StatisticalMethods();
         this.posArguments = posArguments;
@@ -48,9 +48,9 @@ public class MethylationArrayPosComparer {
      * Compare the beta values of either genes OR chromosomes, based on user passed argument(s),
      * via different statistical tests
      *
-     * @return {@link SampleComparison} that holds the data of the compared action.
+     * @return {@link ComparisonResults} that holds the data of the compared action.
      */
-    public SampleComparison performStatisticalMethods() {
+    public ComparisonResults performStatisticalMethods() {
         logger.info("Starting comparing on {}", posFilterType.getName());
         for (int i = 0; i < posArguments.length - 1; i++) {
             for (int j = i + 1; j < posArguments.length; j++) {

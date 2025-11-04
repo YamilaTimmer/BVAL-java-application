@@ -5,14 +5,14 @@ import java.util.*;
 /**
  * Model that holds the results of statistics tests
  */
-public class SampleComparison {
+public class ComparisonResults {
     private final List<String> sampleVersusSampleNames = new ArrayList<>();
 
     // Key: name of statistical test
     // Value: List of Doubles resulting from tests
     private final Map<String, List<Double>> statisticsData = new HashMap<>();
 
-    public SampleComparison(String[] methods) {
+    public ComparisonResults(String[] methods) {
         for (String method : methods) {
             statisticsData.put(method, new ArrayList<>());
         }

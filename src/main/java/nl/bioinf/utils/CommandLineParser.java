@@ -8,7 +8,7 @@ import nl.bioinf.io.ComparisonFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
 import nl.bioinf.model.MethylationArray;
-import nl.bioinf.model.SampleComparison;
+import nl.bioinf.model.ComparisonResults;
 import nl.bioinf.summarizing.SummaryGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -412,7 +412,7 @@ class Compare implements Runnable {
             samples = data.getSamples().toArray(String[]::new);
         }
 
-        SampleComparison corrData = null;
+        ComparisonResults corrData = null;
         MethylationArray filteredData;
 
         if (posArguments != null & data != null) {
