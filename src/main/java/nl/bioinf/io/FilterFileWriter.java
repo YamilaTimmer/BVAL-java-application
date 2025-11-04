@@ -55,7 +55,6 @@ public class FilterFileWriter {
             sb.append(lineData.methylationLocation());
 
             for (Double val : lineData.betaValues()) {
-                sb.append(',');
                 if (val.isNaN()) {
                     sb.append(Double.NaN);
                 } else {
@@ -63,7 +62,9 @@ public class FilterFileWriter {
                     // to be able to distinguish from comma line seperator (csv)
                     sb.append(String.format(Locale.US, "%.2f", val));
                 }
+                sb.append(',');
             }
+            sb.deleteCharAt(sb.length()-1);
             sb.append(System.lineSeparator());
         }
         return sb;
