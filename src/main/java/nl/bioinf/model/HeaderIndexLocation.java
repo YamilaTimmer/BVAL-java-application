@@ -13,7 +13,7 @@ import java.util.Map;
  * chr, gene, etc.
  * This will be used to adapt to different possible orders in the header
  */
-public class DataIndexLocation {
+public class HeaderIndexLocation {
     private static final Logger logger = LogManager.getLogger();
 
     // Key: header (chr or gene)
@@ -25,7 +25,7 @@ public class DataIndexLocation {
      *
      * @param header String that contains the header of the methylation array file.
      */
-    public DataIndexLocation(String header) {
+    public HeaderIndexLocation(String header) {
         this.header = header;
         indexes = new HashMap<>();
         findIndexes();

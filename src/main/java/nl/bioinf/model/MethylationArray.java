@@ -14,7 +14,7 @@ public class MethylationArray {
     private List<String> samples = new ArrayList<>();
     private List<MethylationData> data = new ArrayList<>();
     private String header;
-    private DataIndexLocation indexInformation = null;
+    private HeaderIndexLocation indexInformation = null;
     private int sampleIndex;
 
     public List<String> getSamples() {
@@ -130,17 +130,17 @@ public class MethylationArray {
 
     /**
      *
-     * @return {@link DataIndexLocation} containing the index of chr and gene in the header
+     * @return {@link HeaderIndexLocation} containing the index of chr and gene in the header
      */
-    public DataIndexLocation getIndexInformation() {
+    public HeaderIndexLocation getIndexInformation() {
         return indexInformation;
     }
 
     /**
      *
-     * @param indexInformation {@link DataIndexLocation} containing the index of chr and gene in the header
+     * @param indexInformation {@link HeaderIndexLocation} containing the index of chr and gene in the header
      */
-    public void setIndexInformation(DataIndexLocation indexInformation) {
+    public void setIndexInformation(HeaderIndexLocation indexInformation) {
         this.indexInformation = indexInformation;
     }
 

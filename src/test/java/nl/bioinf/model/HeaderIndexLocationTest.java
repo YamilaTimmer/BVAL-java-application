@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DataIndexLocationTest {
+class HeaderIndexLocationTest {
 
     @Test
     @DisplayName("Tests if IllegalArgumentError is thrown if header does not contain 'chr'")
     void testDataIndexLocationInvalidHeader() {
         assertThrows(IllegalArgumentException.class, () ->
-                new DataIndexLocation("id,gene,sample1,sample2"));
+                new HeaderIndexLocation("id,gene,sample1,sample2"));
     }
 
 }

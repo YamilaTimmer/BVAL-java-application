@@ -1,7 +1,7 @@
 package nl.bioinf.filtering;
 
 import jdk.jfr.Description;
-import nl.bioinf.model.DataIndexLocation;
+import nl.bioinf.model.HeaderIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class MethylationDataFilterTest {
         String headerLine = "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3";
         methylationData.setHeader(headerLine, 7);
 
-        DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
+        HeaderIndexLocation indexLocation = new HeaderIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
         MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.GENE, genes);
@@ -78,7 +78,7 @@ class MethylationDataFilterTest {
         String headerLine = "id,gene,chr,fpos,tpos,strand,Sample1,Sample2,Sample3";
         methylationData.setHeader(headerLine, 7);
 
-        DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
+        HeaderIndexLocation indexLocation = new HeaderIndexLocation(headerLine);
         methylationData.setIndexInformation(indexLocation);
 
         MethylationDataFilter.filterByPos(methylationData, MethylationDataFilter.PosFilterType.CHROMOSOME, chr);

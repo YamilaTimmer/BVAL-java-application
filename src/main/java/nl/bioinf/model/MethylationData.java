@@ -13,10 +13,10 @@ public record MethylationData(String methylationLocation, ArrayList<Double> beta
     /**
      * Gets the gene name from the genomic information string
      *
-     * @param location {@link DataIndexLocation} containing the index of the gene
+     * @param location {@link HeaderIndexLocation} containing the index of the gene
      * @return String that contains the name of the gene
      */
-    public String getGene(DataIndexLocation location) {
+    public String getGene(HeaderIndexLocation location) {
         String[] split = methylationLocation.split(",");
         return split[location.getGeneIndex()].trim();
     }
@@ -24,10 +24,10 @@ public record MethylationData(String methylationLocation, ArrayList<Double> beta
     /**
      * Gets the gene name from the genomic information string
      *
-     * @param location {@link DataIndexLocation} containing the index of the chromosome
+     * @param location {@link HeaderIndexLocation} containing the index of the chromosome
      * @return String that contains the name of the chromosome
      */
-    public String getChromosome(DataIndexLocation location) {
+    public String getChromosome(HeaderIndexLocation location) {
         String[] split = methylationLocation.split(",");
         return split[location.getChrIndex()].trim();
     }

@@ -1,6 +1,6 @@
 package nl.bioinf.io;
 
-import nl.bioinf.model.DataIndexLocation;
+import nl.bioinf.model.HeaderIndexLocation;
 import nl.bioinf.model.MethylationArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,7 +104,7 @@ public class MethylationFileReader {
             }
 
             String line;
-            DataIndexLocation indexLocation = new DataIndexLocation(headerLine);
+            HeaderIndexLocation indexLocation = new HeaderIndexLocation(headerLine);
 
             methylationData = new MethylationArray();
             methylationData.setSampleIndex(sampleIndex);
