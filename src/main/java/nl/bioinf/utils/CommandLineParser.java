@@ -511,11 +511,11 @@ class Compare implements Runnable {
 
     static class PosArguments {
         @Option(names = {"-chr", "--chromosome"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ chromosomes",
+                description = "Positional argument to filter data on @|bold,underline two or more|@ chromosomes",
                 arity = "2..*")
         String[] chr;
         @Option(names = {"-g", "--gene"},
-                description = "Positional argument to filter data on @|bold,underline one or more|@ genes",
+                description = "Positional argument to filter data on @|bold,underline two or more|@ genes",
                 arity = "2..*")
         String[] genes;
     }
