@@ -149,8 +149,7 @@ compare -f <file-path> -s <samples> -m <comparison-method>
 	- [Student's _t_-test](https://en.wikipedia.org/wiki/Student%27s_t-test) [t-test], 
 	- [Spearman's rank correlation coefficient](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient) [spearman], 
 	- [Wilcoxon signed-rank test](https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test) [wilcoxon-test],
-	- Welch's _t_-test [wilcoxon-test]
-	- https://en.wikipedia.org/wiki/Welch%27s_t-test)
+	- [Welch's _t_-test](https://en.wikipedia.org/wiki/Welch%27s_t-test) [welch-test]
   If no methods are specified, all methods are ran.
 * `-o/--output`: allows user to give path to where the output file should be saved
 * `-NA/--remove-na`: removes all rows that contain one or more missing value, this way the user can decide whether to keep values that did not pass the cutoff filter. Use by passing true or false (default = false).
