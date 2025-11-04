@@ -5,11 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -85,5 +87,16 @@ class MethylationFileReaderTest {
 
         // Assert whether expected and actual MethylationArray are equal
         assertEquals(expectedMethylationArray.toString(), actualMethylationArray.toString());
+    }
+
+    @Test
+    @DisplayName("Test for reading file with invalid header")
+    void testInvalidMethylationArrayHeader() throws URISyntaxException, IOException {
+        ClassLoader classloader = getClass().getClassLoader();
+        Path filePath = Path.of(Objects.requireNonNull(
+                classloader.getResource("InvalidHeader.csv")).toURI());
+
+        MethylationFileReader methylationFileReader = new MethylationFileReader();
+        assertThrows(IllegalArgumentException.class, () -> methylationFileReader.readCSV(filePath, 6));
     }
 }
