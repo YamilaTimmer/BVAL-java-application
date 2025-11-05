@@ -22,7 +22,7 @@ public class FilterFileWriter {
      *
      * @param data           {@link MethylationArray}
      * @param outputFilePath path to write the resulting file to.
-     * @throws IOException
+     * @throws IOException for instances where file writing failed
      */
     public static void writeFile(MethylationArray data, Path outputFilePath) throws IOException {
         File filePath = new File(outputFilePath.toUri());
@@ -59,12 +59,12 @@ public class FilterFileWriter {
                     sb.append(Double.NaN);
                 } else {
                     // Changes commas in numbers to periods,
-                    // to be able to distinguish from comma line seperator (csv)
+                    // to be able to distinguish from comma line separator (csv)
                     sb.append(String.format(Locale.US, "%.2f", val));
                 }
                 sb.append(',');
             }
-            sb.deleteCharAt(sb.length()-1);
+            sb.deleteCharAt(sb.length() - 1);
             sb.append(System.lineSeparator());
         }
         return sb;

@@ -1,8 +1,8 @@
 package nl.bioinf.comparing;
 
+import nl.bioinf.model.ComparisonResults;
 import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.MethylationData;
-import nl.bioinf.model.ComparisonResults;
 import nl.bioinf.model.StatisticalMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +28,7 @@ public class MethylationArraySampleComparer {
     /**
      *
      * @param data    {@link MethylationArray}
-     * @param samples Array of samples that will be compared to eachother
+     * @param samples Array of samples that will be compared to each other
      * @param methods Statistical methods used to compare the beta values
      */
     public MethylationArraySampleComparer(MethylationArray data, String[] samples, String[] methods) {
@@ -48,41 +48,44 @@ public class MethylationArraySampleComparer {
     public ComparisonResults performStatisticalMethods() throws IllegalArgumentException {
         int invalidSample = -1;
 
-        for (int i = 0; i < samples.length; i++) {
-            for (int j = i + 1; j < samples.length; j++) {
-                int sample1 = data.getSamples().indexOf(samples[i]);
-                int sample2 = data.getSamples().indexOf(samples[j]);
+        if (samples != null) {
+            for (int i = 0; i < samples.length; i++) {
+                for (int j = i + 1; j < samples.length; j++) {
+                    int sample1 = data.getSamples().indexOf(samples[i]);
+                    int sample2 = data.getSamples().indexOf(samples[j]);
 
-                if (sample1 == invalidSample || sample2 == invalidSample) {
-                    logger.error("Sample not found in the data, exiting code. Did not compare following " +
-                            "samples: '{}' vs '{}'.", samples[i], samples[j]);
-                    throw new IllegalArgumentException();
-                }
+                    if (sample1 == invalidSample || sample2 == invalidSample) {
+                        logger.error("Sample not found in the data, exiting code. Did not compare following " +
+                                "samples: '{}' vs '{}'.", samples[i], samples[j]);
+                        throw new IllegalArgumentException();
+                    }
 
-                double[] sample1BetaValues = getBetaValues(sample1);
-                double[] sample2BetaValues = getBetaValues(sample2);
-                if (DoubleStream.of(sample1BetaValues).anyMatch(Double::isNaN) ||
-                        DoubleStream.of(sample2BetaValues).anyMatch(Double::isNaN)) {
-                    logger.warn("Found invalid value(s) (missing value/NaN) in 1 of the samples in the comparison: {} vs {}, " +
-                                    "please compare samples without missing values. Continuing comparisons, " +
-                                    "excluding {} vs {}. Run with -NA or --remove-na to remove all NA values.",
-                            samples[i], samples[j], samples[i], samples[j]);
-                    continue;
-                }
-                String sampleNames = String.format("%s,%s", samples[i], samples[j]);
-                statisticalData.addNewSampleVsSample(sampleNames);
+                    double[] sample1BetaValues = getBetaValues(sample1);
+                    double[] sample2BetaValues = getBetaValues(sample2);
+                    if (DoubleStream.of(sample1BetaValues).anyMatch(Double::isNaN) ||
+                            DoubleStream.of(sample2BetaValues).anyMatch(Double::isNaN)) {
+                        logger.warn("Found invalid value(s) (missing value/NaN) in 1 of the samples in the comparison: {} vs {}, " +
+                                        "please compare samples without missing values. Continuing comparisons, " +
+                                        "excluding {} vs {}. Run with -NA or --remove-na to remove all NA values.",
+                                samples[i], samples[j], samples[i], samples[j]);
+                        continue;
+                    }
+                    String sampleNames = String.format("%s,%s", samples[i], samples[j]);
+                    statisticalData.addNewSampleVsSample(sampleNames);
 
-                for (String statisticalMethod : methods) {
-                    BiFunction<double[], double[], Double> func = statisticalMethods.get(statisticalMethod);
-                    double methodOutput = func.apply(sample1BetaValues, sample2BetaValues);
-                    statisticalData.addToData(statisticalMethod, methodOutput);
+                    for (String statisticalMethod : methods) {
+                        BiFunction<double[], double[], Double> func = statisticalMethods.get(statisticalMethod);
+                        double methodOutput = func.apply(sample1BetaValues, sample2BetaValues);
+                        statisticalData.addToData(statisticalMethod, methodOutput);
 
+                    }
                 }
             }
-        }
 
-        logger.info("Successfully performed statistical-methods: {}, on samples {}.", methods, samples);
-        return statisticalData;
+            logger.info("Successfully performed statistical-methods: {}, on samples {}.", methods, samples);
+            return statisticalData;
+        }
+        return null;
     }
 
     private double[] getBetaValues(int sample) {

@@ -1,8 +1,8 @@
 package nl.bioinf.comparing;
 
 import nl.bioinf.filtering.MethylationDataFilter;
-import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.ComparisonResults;
+import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.StatisticalMethods;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.logging.log4j.LogManager;
@@ -90,16 +90,12 @@ public class MethylationArrayPosComparer {
     }
 
     private void validateValuesAndStatistics(double[] betaValues2, double[] betaValues1) {
-        int naValue = -1;
 
         if (betaValues2.length != betaValues1.length &&
                 !Arrays.stream(methods).allMatch(s -> s.equals("welch-test"))) {
             logger.error("Used a statistical method that requires the same sample size in data. " +
                     "Please use the [welch-test] to work around this");
             throw new IllegalArgumentException();
-
         }
-
-
     }
 }

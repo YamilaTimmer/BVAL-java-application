@@ -146,9 +146,8 @@ public class MethylationDataFilter {
                 valueToCheck = row.getChromosome(methylationArray.getIndexInformation());
             }
 
-                if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
-                    iter.remove();
-
+            if (!Arrays.asList(posFilter).contains(valueToCheck.toUpperCase())) {
+                iter.remove();
             }
         }
     }
@@ -158,7 +157,6 @@ public class MethylationDataFilter {
         logger.info("Removing NA's");
 
         List<MethylationData> dataRows = methylationArray.getData();
-
         Iterator<MethylationData> iter = dataRows.iterator();
 
         while (iter.hasNext()) {
@@ -168,7 +166,6 @@ public class MethylationDataFilter {
                 iter.remove();
             }
         }
-
         methylationArray.setData(dataRows);
     }
 

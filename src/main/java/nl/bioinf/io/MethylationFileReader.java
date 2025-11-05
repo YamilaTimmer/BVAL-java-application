@@ -43,7 +43,6 @@ public class MethylationFileReader {
             logger.error("Sample Index: '{}' not valid, please specify using -si", sampleIndex);
             throw new IllegalArgumentException();
         }
-
         return samples;
     }
 
@@ -74,7 +73,6 @@ public class MethylationFileReader {
                         "or NaN.", lineSplit[i]);
                 throw new IllegalArgumentException("Stopped run, due to invalid beta value: " + lineSplit[i]);
             }
-
 
             if (betaVal < 0 || betaVal > 1) {
                 logger.error("Beta value out of range: '{}', must be in range of [0-1].", betaVal);
@@ -126,9 +124,9 @@ public class MethylationFileReader {
                 try {
                     methylationData.addData(buildMethylationLocation(lineSplit, sampleIndex), bValues);
                 } catch (IllegalArgumentException ex) {
-                    return;
+                    throw new IllegalArgumentException(ex.getMessage());
                 }
-                }
+            }
 
         } catch (NoSuchFileException ex) {
             logger.error("""
@@ -159,7 +157,7 @@ public class MethylationFileReader {
         StringBuilder methylationLocation = new StringBuilder();
         for (int i = 0; i < sampleIndex; i++) {
             methylationLocation.append(lineSplit[i]);
-                methylationLocation.append(",");
+            methylationLocation.append(",");
 
         }
 

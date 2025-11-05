@@ -36,7 +36,7 @@ public class ComparisonFileWriter {
     /**
      * Writes the data from a {@link ComparisonResults} instance to a file.
      *
-     * @throws IOException
+     * @throws IOException for instances where file writing failed
      */
     public void writeData() throws IOException {
         File filePath = new File(pathFileOutput.toUri());
@@ -82,7 +82,6 @@ public class ComparisonFileWriter {
             newFileBody.append(String.format("%n"));
             sampleIndex++;
         }
-
         return newFileBody.toString();
     }
 }

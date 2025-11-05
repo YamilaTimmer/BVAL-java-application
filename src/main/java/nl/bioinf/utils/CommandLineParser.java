@@ -7,8 +7,8 @@ import nl.bioinf.filtering.MethylationDataFilter;
 import nl.bioinf.io.ComparisonFileWriter;
 import nl.bioinf.io.FilterFileWriter;
 import nl.bioinf.io.MethylationFileReader;
-import nl.bioinf.model.MethylationArray;
 import nl.bioinf.model.ComparisonResults;
+import nl.bioinf.model.MethylationArray;
 import nl.bioinf.summarizing.SummaryGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -476,9 +476,11 @@ class Compare implements Runnable {
             }
         }
 
-        try {
-            new ComparisonFileWriter(corrData, filePathOutput.outputFilePath).writeData();
-        } catch (IOException ex) {
+        if (corrData != null) {
+            try {
+                new ComparisonFileWriter(corrData, filePathOutput.outputFilePath).writeData();
+            } catch (IOException ex) {
+            }
         }
     }
 
