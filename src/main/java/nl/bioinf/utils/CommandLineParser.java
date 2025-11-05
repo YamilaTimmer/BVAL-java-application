@@ -414,6 +414,9 @@ class Compare implements Runnable {
 
         ComparisonResults corrData = null;
         MethylationArray filteredData;
+        if (naRemover.removeNa) {
+            MethylationDataFilter.removeNA(data);
+        }
 
         if (posArguments != null & data != null) {
             filteredData = new MethylationArray();
@@ -426,9 +429,7 @@ class Compare implements Runnable {
 
             CompositeUserArgumentsCheck checker = new CompositeUserArgumentsCheck();
 
-            if (naRemover.removeNa) {
-                MethylationDataFilter.removeNA(filteredData);
-            }
+
 
             try {
                 if (posArguments.chr != null) {
